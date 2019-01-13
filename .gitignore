@@ -15,7 +15,7 @@ src/main/resources/db.properties
 *.iml
 
 #Ignore target
-target/*
+*/target/*
 
 ### STS ###
 .apt_generated
@@ -39,3 +39,5 @@ target/*
 /dist/
 /nbdist/
 /.nb-gradle/
+
+*/application.yaml
