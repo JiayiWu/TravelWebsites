@@ -1,9 +1,12 @@
 package cn.edu.nju.travel.controller;
 
+import cn.edu.nju.travel.dao.UserDao;
+import cn.edu.nju.travel.entity.UserEntity;
 import cn.edu.nju.travel.form.LoginForm;
 import cn.edu.nju.travel.form.SimpleResponse;
 import cn.edu.nju.travel.form.UserForm;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,10 +23,8 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/account/")
 public class AccountController {
 
-
-
-
-
+    @Autowired
+    UserDao userDao;
 
     @ApiOperation(value = "登录校验", response = SimpleResponse.class, notes = "Type 0表示普通用户登录，1表示管理员角色登录")
     @RequestMapping(value = "login", method = RequestMethod.POST)
@@ -34,6 +35,10 @@ public class AccountController {
     @ApiOperation(value = "注册", response = SimpleResponse.class, notes = "只能对普通用户进行注册")
     @RequestMapping(value = "register", method = RequestMethod.POST)
     public SimpleResponse register(HttpSession httpSession, @RequestBody UserForm userForm){
+        UserEntity userEntity = new UserEntity();
+        userEntity.setName("test");
+        userEntity.setPassword("test");
+        userDao.save(userEntity);
         return null;
     }
 

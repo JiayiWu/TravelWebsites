@@ -1,25 +1,46 @@
 package cn.edu.nju.travel.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Data
+@Entity
+@Table(name = "audit")
 public class AuditEntity {
-    private Integer id;
+    @Id
+    @GeneratedValue
+    private int id;
 
-    private Integer activityId;
+    @Column(name = "activity_id")
+    private int activityId;
 
-    private Integer activityCreateId;
+    @Column(name = "activity_create_id")
+    private int activityCreateId;
 
-    private Integer joinUserId;
+    @Column(name = "join_user_id")
+    private int joinUserId;
 
-    private Integer state;
+    @Column(name = "state")
+    private int state;
 
+    @Column(name = "create_time")
+    @CreationTimestamp
     private Timestamp createTime;
 
+    @Column(name = "modify_time")
+    @UpdateTimestamp
     private Timestamp modifyTime;
 
+    @Column(name = "context")
     private String context;
 
 }

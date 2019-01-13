@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:mysql://119.29.157.178:3306/TravelWebsite
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        id:
+          new_generator_mappings: false
