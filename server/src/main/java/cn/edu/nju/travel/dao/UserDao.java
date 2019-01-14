@@ -8,5 +8,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  */
 public interface UserDao extends PagingAndSortingRepository<UserEntity, Integer> {
 
+    UserEntity findByName(String name);
+
     UserEntity findByNameAndPassword(String name, String password);
 }

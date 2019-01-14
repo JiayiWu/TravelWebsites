@@ -1,8 +1,6 @@
 package cn.edu.nju.travel.controller;
 
 import cn.edu.nju.travel.constant.RoleTypeCode;
-import cn.edu.nju.travel.dao.UserDao;
-import cn.edu.nju.travel.entity.UserEntity;
 import cn.edu.nju.travel.form.LoginForm;
 import cn.edu.nju.travel.form.ResponseCode;
 import cn.edu.nju.travel.form.SimpleResponse;

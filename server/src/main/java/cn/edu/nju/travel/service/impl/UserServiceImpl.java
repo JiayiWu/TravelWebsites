@@ -29,6 +29,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void register(String name, String mobile, String mail, String password, String logoUrl)
             throws Exception {
+        if(userDao.findByName(name) != null){
+            throw new ServerException(ResponseCode.Error, "用户名已存在");
+        }
         UserEntity userEntity = new UserEntity();
         userEntity.setName(name);
         userEntity.setMobile(mobile);
