@@ -8,4 +8,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  */
 public interface AdminDao extends PagingAndSortingRepository<AdminEntity, Integer>{
 
+    AdminEntity findByNameAndPassword(String name, String password);
 }
