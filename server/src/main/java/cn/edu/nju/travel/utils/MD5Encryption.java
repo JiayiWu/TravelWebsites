@@ -15,4 +15,5 @@ public class MD5Encryption {
         byte[] output = md.digest(input);
         return Base64.encodeBase64String(output);
     }
+
 }

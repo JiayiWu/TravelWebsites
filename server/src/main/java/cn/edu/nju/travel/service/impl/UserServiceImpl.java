@@ -6,8 +6,10 @@ import cn.edu.nju.travel.dao.AdminDao;
 import cn.edu.nju.travel.dao.UserDao;
 import cn.edu.nju.travel.entity.AdminEntity;
 import cn.edu.nju.travel.entity.UserEntity;
+import cn.edu.nju.travel.form.ResponseCode;
 import cn.edu.nju.travel.service.UserService;
 import cn.edu.nju.travel.utils.MD5Encryption;
+import cn.edu.nju.travel.utils.ServerException;
 import cn.edu.nju.travel.vo.UserInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,12 +57,19 @@ public class UserServiceImpl implements UserService {
             case USER:
                 UserEntity userEntity = userDao.findByNameAndPassword(name, MD5Encryption.encrypt
                         (password));
-                return userEntity!=null?new UserInfoVO(userEntity):null;
+                if(userEntity == null){
+                    throw new ServerException(ResponseCode.Error, "用户名或密码错误");
+                }
+                return new UserInfoVO(userEntity);
             case ADMIN:
                 AdminEntity adminEntity = adminDao.findByNameAndPassword(name, MD5Encryption
                         .encrypt(password));
-                return adminEntity!=null?new UserInfoVO(adminEntity):null;
+                if(adminEntity == null){
+                    throw new ServerException(ResponseCode.Error,"管理员用户名或密码错误");
+                }
+                return new UserInfoVO(adminEntity);
+            default:
+                throw new ServerException(ResponseCode.Error, "用户类型错误");
         }
-        return null;
     }
 }

@@ -24,4 +24,15 @@ public enum RoleTypeCode {
     public int getIndex() {
         return index;
     }
+
+    public static RoleTypeCode getTypeByIndex(int index){
+        switch (index){
+            case 0:
+                return USER;
+            case 1:
+                return ADMIN;
+        }
+
+        return null;
+    }
 }

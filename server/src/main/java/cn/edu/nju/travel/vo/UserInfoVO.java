@@ -1,5 +1,6 @@
 package cn.edu.nju.travel.vo;
 
+import cn.edu.nju.travel.constant.RoleTypeCode;
 import cn.edu.nju.travel.entity.AdminEntity;
 import cn.edu.nju.travel.entity.UserEntity;
 import lombok.AllArgsConstructor;
@@ -27,16 +28,20 @@ public class UserInfoVO {
 
     private String logoUrl;
 
+    private int type;
+
     public UserInfoVO(UserEntity userEntity){
         this.id = userEntity.getId();
         this.name = userEntity.getName();
         this.mobile = userEntity.getMobile();
         this.mail = userEntity.getMail();
         this.logoUrl = userEntity.getLogoUrl();
+        this.type = RoleTypeCode.USER.getIndex();
     }
 
     public UserInfoVO(AdminEntity adminEntity){
         this.id = adminEntity.getId();
         this.name = adminEntity.getName();
+        this.type = RoleTypeCode.ADMIN.getIndex();
     }
 }

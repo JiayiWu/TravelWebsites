@@ -1,5 +1,6 @@
 package cn.edu.nju.travel.controller;
 
+import cn.edu.nju.travel.constant.RoleTypeCode;
 import cn.edu.nju.travel.dao.UserDao;
 import cn.edu.nju.travel.entity.UserEntity;
 import cn.edu.nju.travel.form.LoginForm;
@@ -32,9 +33,17 @@ public class AccountController {
     @ApiOperation(value = "登录校验", response = SimpleResponse.class, notes = "Type 0表示普通用户登录，1表示管理员角色登录")
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public SimpleResponse login(HttpSession httpSession, @RequestBody  LoginForm loginForm){
-//        UserInfoVO userInfoVO = userService.login(loginForm.getUsername(), loginForm.getPassword
-//                (), loginForm.getType());
-        return null;
+        try{
+            UserInfoVO userInfoVO = userService.login(loginForm.getUsername(),
+                    loginForm.getPassword(), RoleTypeCode.getTypeByIndex(loginForm.getType()));
+            httpSession.setAttribute("userId",userInfoVO.getId());
+            httpSession.setAttribute("userType",userInfoVO.getType());
+            httpSession.setAttribute("username",userInfoVO.getName());
+            return SimpleResponse.ok(userInfoVO);
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
+        }
+
     }
 
     @ApiOperation(value = "注册", response = SimpleResponse.class, notes = "只能对普通用户进行注册")
@@ -47,9 +56,16 @@ public class AccountController {
                     userForm.getPassword(),
                     userForm.getLogoUrl());
         }catch (Exception e){
-            return new SimpleResponse(ResponseCode.Error,null,e.getMessage());
+            return SimpleResponse.exception(e);
         }
 
+        return new SimpleResponse(ResponseCode.OK);
+    }
+
+    @ApiOperation(value = "退出登录", response = SimpleResponse.class, notes = "用户退出登录")
+    @RequestMapping(value = "logout", method = RequestMethod.POST)
+    public SimpleResponse logout(HttpSession httpSession){
+        httpSession.invalidate();
         return new SimpleResponse(ResponseCode.OK);
     }
 
