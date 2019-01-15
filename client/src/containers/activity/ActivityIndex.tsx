@@ -14,6 +14,11 @@ const Create = Loadable({
   loading: () => <div>loading...</div>
 })
 
+const Detail = Loadable({
+  loader: () => import('./ActivityDetail'),
+  loading: () => <div>loading...</div>
+})
+
 interface ActivityIndexProps extends RouteComponentProps {
 
 }
@@ -26,6 +31,7 @@ class ActivityIndex extends React.Component<ActivityIndexProps, any> {
         <Switch>
           <Route exact path={`${match.path}/`} component={Homepage}/>
           <Route path={`${match.path}/create`} component={Create}/>
+          <Route path={`${match.path}/detail`} component={Detail} />
           {/* <Route render={() => <div>no corresponding...</div>} /> */}
         </Switch>
         

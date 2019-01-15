@@ -1,0 +1,45 @@
+@import '~@utils/constant.module.scss';
+:local(.container) {
+  width: 100%;
+  :local(.tabPane) {
+    :local(.card) {
+      border: 1px dashed #d7d7d7;
+      padding: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      :local(.item) {
+        margin-right: 40px;
+        font-size: 14px;
+        i {
+          color: $primary-color;
+          margin-right: 5px;
+        }
+      }
+    }
+    :local(.content) {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    :local(.memberContainer) {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      :local(.memberItem) {
+        margin-right: 10px;
+        display: inline-flex;
+        align-items: center;
+        width:200px;
+        img {
+          width: 48px;
+          height: 48px;
+        }
+        :local(.infoWrapper) {
+          margin-left: 10px;
+        }
+      }
+    }
+
+  }
+}
