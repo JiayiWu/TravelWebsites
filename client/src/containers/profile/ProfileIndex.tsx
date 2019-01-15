@@ -20,23 +20,27 @@ class ProfileIndex extends React.Component<ProfileProps, any> {
       <div className={styles.container}>
         <div className={styles.headerImage} style={{ backgroundImage: `url(${HeaderImage})`}} >
           <div className={styles.headerMenu}>
-            <div className={styles.menuItem} data-active={true}>我的窝</div>
-            <div className={styles.menuItem}>我的活动</div>
-            <div className={styles.menuItem}>我的消息</div>
+            <div className={styles.centerWidth}>
+              <div className={styles.menuItem} data-active={true}>我的窝</div>
+              <div className={styles.menuItem}>我的活动</div>
+              <div className={styles.menuItem}>我的消息</div>
+            </div>
+
+            
           </div>
         </div>
         <div className={styles.centerContainer}>
           
           <div className={styles.infoContainer}>
             <div className={styles.userLogo} style={{ backgroundImage: `url(${HeaderImage})`}}/>
-            <h1 className={styles.userName}>张文玘</h1>
+            <div className={styles.userName}>张文玘</div>
             <div className={styles.btnGroup}>
               <div className={styles.myBtn}>
-                <h1>2</h1>
+                <div>2</div>
                 <div>关注</div>
               </div>
               <div className={styles.myBtn}>
-                <h1>2</h1>
+                <div>2</div>
                 <div>粉丝</div>
               </div>
             </div>

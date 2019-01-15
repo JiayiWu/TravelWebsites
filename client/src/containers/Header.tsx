@@ -57,10 +57,10 @@ class Header extends React.Component<RouteComponentProps &HeaderProps, any> {
           </div>
           
         </div>
-        {/* <Switch> */}
+        <Switch>
           {/* <Route path={`${url}`} component={ActivityIndex}/> */}
           <Route path={`${url}/my`} component={ProfileIndex} />
-        {/* </Switch> */}
+        </Switch>
       </div>
     )
   }
