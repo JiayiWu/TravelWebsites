@@ -15,7 +15,7 @@ src/main/resources/db.properties
 *.iml
 
 #Ignore target
-target/*
+
 
 ### STS ###
 .apt_generated
