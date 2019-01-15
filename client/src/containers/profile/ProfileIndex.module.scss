@@ -1,0 +1,92 @@
+@import '~@utils/constant.module.scss';
+:local(.container) {
+  width: 100%;
+
+  :local(.headerImage) {
+    background-size: cover;
+    background-position: center center;
+
+    height: 280px;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+    
+
+    :local(.headerMenu) {
+      height: 60px;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      background-color: rgba(255, 255, 255, 0.8);
+      :local(.menuItem) {
+        padding: 10px 15px;
+        font-size: 18px;
+        font-weight: 600;
+        color: $font-color;
+        border-bottom: 3px solid transparent;
+        &:hover {
+          color: #ff9d00;
+        }
+        &[data-active=true] {
+          border-bottom: 3px solid #ff9d00;
+        }
+      }
+    }
+  }
+
+  :local(.centerContainer) {
+    width: $center-width;
+    margin: auto;
+    position: relative;
+
+    
+
+    :local(.infoContainer) {
+      width: 280px;
+      position: relative;
+      :local(.userLogo) {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center center;
+        position: absolute;
+        left: 50%;
+        box-sizing: border-box;
+        transform: translate(-50%, -40%);
+
+      }
+      :local(.userName) {
+        padding-top: 80px;
+        text-align: center;
+        
+      }
+      :local(.btnGroup) {
+        width: 100%;
+        height: 62px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        border: 1px solid #e2e2e2;
+
+        :local(.myBtn) {
+          width: 50%;
+          // display: inline-flex;
+          // align-items: center;
+          // justify-content: center;
+          border-right: 1px solid #e2e2e2;
+          & > h1 {
+            margin: 0;
+          }
+          & > div {
+            font-size: 14px;
+          }
+        }
+        :local(.myBtn):last-child {
+          border-right: none;
+        }
+      }
+    }
+  }
+}
