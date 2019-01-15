@@ -49,7 +49,7 @@ public class ActivityEntity  {
     @Column(name = "join_type")
     private Integer joinType;
 
-    @Column(name = "cover_time")
+    @Column(name = "cover_url")
     private String coverUrl;
 
     @Column(name = "description")

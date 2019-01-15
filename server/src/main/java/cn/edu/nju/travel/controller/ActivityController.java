@@ -4,9 +4,11 @@ import cn.edu.nju.travel.form.ActivityForm;
 import cn.edu.nju.travel.form.ActivityListForm;
 import cn.edu.nju.travel.form.AttendActivityForm;
 import cn.edu.nju.travel.form.SimpleResponse;
+import cn.edu.nju.travel.service.ActivityService;
 import cn.edu.nju.travel.vo.ActivityInfoVO;
 import cn.edu.nju.travel.vo.AuthenticationInfoListVO;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -21,10 +23,27 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/activity/")
 public class ActivityController {
 
+    @Autowired
+    ActivityService activityService;
+
     @ApiOperation(value = "创建活动", response = SimpleResponse.class, notes = "创建成功返回0")
     @RequestMapping(value = "check", method = RequestMethod.POST)
-    public SimpleResponse createActivity(HttpSession httpSession, @RequestBody ActivityForm activityCreateForm){
-        return null;
+    public SimpleResponse createActivity(HttpSession httpSession,
+                                         @RequestBody ActivityForm activityCreateForm){
+        try{
+            //id?
+            activityService.createActivity(activityCreateForm.getCreateId(),
+                    activityCreateForm.getLocation(),
+                    activityCreateForm.getStartTime(),
+                    activityCreateForm.getEndTime(),
+                    activityCreateForm.getJoinType(),
+                    activityCreateForm.getCoverUrl(),
+                    activityCreateForm.getDescription());
+
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
+        }
+        return SimpleResponse.ok(0);
     }
 
 
@@ -48,8 +67,10 @@ public class ActivityController {
     @ApiOperation(value = "查看活动详细信息", response = ActivityInfoVO.class)
     @RequestMapping(value = "info/{id}", method = RequestMethod.GET)
     public SimpleResponse getActivityInfo(HttpSession httpSession, @PathVariable int id){
+
         return null;
     }
+
     @ApiOperation(value = "参加活动", response = SimpleResponse.class)
     @RequestMapping(value = "attend", method = RequestMethod.POST)
     public SimpleResponse attendActivity(HttpSession httpSession, @RequestBody AttendActivityForm attendActivityForm){

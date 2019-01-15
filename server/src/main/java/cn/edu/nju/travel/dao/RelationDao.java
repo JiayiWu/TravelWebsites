@@ -8,4 +8,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  */
 public interface RelationDao extends PagingAndSortingRepository<RelationEntity, Integer>{
 
+    Iterable<RelationEntity> findAllByActivityId(Integer activityId);
 }

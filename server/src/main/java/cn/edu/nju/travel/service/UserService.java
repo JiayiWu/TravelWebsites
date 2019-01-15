@@ -3,6 +3,7 @@ package cn.edu.nju.travel.service;
 import cn.edu.nju.travel.constant.RoleTypeCode;
 import cn.edu.nju.travel.vo.UserInfoVO;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 /**
  * Created on 2019/1/14
@@ -17,5 +18,9 @@ public interface UserService {
     void changePassword(int userId, String password);
 
     UserInfoVO login(String name, String password, RoleTypeCode code) throws Exception;
+
+    UserInfoVO findById(Integer id);
+
+    List<UserInfoVO> findAllById(List<Integer> idList);
 
 }

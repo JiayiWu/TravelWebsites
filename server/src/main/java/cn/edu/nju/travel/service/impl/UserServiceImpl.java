@@ -14,6 +14,10 @@ import cn.edu.nju.travel.vo.UserInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 /**
  * Created on 2019/1/14
  */
@@ -75,4 +79,22 @@ public class UserServiceImpl implements UserService {
                 throw new ServerException(ResponseCode.Error, "用户类型错误");
         }
     }
+
+    @Override
+    public UserInfoVO findById(Integer id) {
+        UserEntity entity = userDao.findById(id).get();
+        return new UserInfoVO(entity);
+    }
+
+    @Override
+    public List<UserInfoVO> findAllById(List<Integer> idList) {
+        Iterable<UserEntity> entitys = userDao.findAllById(idList);
+        List<UserInfoVO> userInfoVOList = new ArrayList<>();
+        for(UserEntity entity : entitys){
+            userInfoVOList.add(new UserInfoVO(entity));
+        }
+        return userInfoVOList;
+    }
+
+
 }
