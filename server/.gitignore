@@ -39,5 +39,3 @@ target/*
 /dist/
 /nbdist/
 /.nb-gradle/
-
-**/application.yaml
