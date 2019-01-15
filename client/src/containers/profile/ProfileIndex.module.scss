@@ -1,0 +1,116 @@
+@import '~@utils/constant.module.scss';
+:local(.container) {
+  width: 100%;
+  background-color: #efefef;
+  position: relative;
+  min-height: calc(100% - 61px);
+
+  :local(.headerImage) {
+    background-size: cover;
+    background-position: center center;
+
+    height: 280px;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+    border-bottom: 1px solid #d6d6d6;
+    box-sizing: border-box;    
+
+    :local(.headerMenu) {
+      height: 60px;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      
+      background-color: rgba(255, 255, 255, 0.8);
+      :local(.centerWidth) {
+        width: $center-width;
+        margin: auto;
+        position: relative;
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding-left: 280px;
+        box-sizing: border-box;
+        :local(.menuItem) {
+          padding: 10px 15px;
+          font-size: 18px;
+          font-weight: 600;
+          color: $font-color;
+          border-bottom: 3px solid transparent;
+          display: flex;
+          align-items: center;
+          height: 100%;
+          box-sizing: border-box;
+          &:hover {
+            color: #ff9d00;
+          }
+          &[data-active=true] {
+            border-bottom: 3px solid #ff9d00;
+          }
+        }
+      }
+      
+    }
+  }
+
+  :local(.centerContainer) {
+    width: $center-width;
+    margin: auto;
+    position: relative;
+    min-height: calc(100% - 280px);
+
+    :local(.infoContainer) {
+      width: 280px;
+      position: relative;
+      background-color: white;
+      box-shadow: 0 0 2px rgba(0,0,0,0.05);
+      min-height: 100%;
+      :local(.userLogo) {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center center;
+        position: absolute;
+        left: 50%;
+        box-sizing: border-box;
+        transform: translate(-50%, -40%);
+
+      }
+      :local(.userName) {
+        padding-top: 80px;
+        text-align: center;
+        font-size: 22px;
+        font-weight: 500;
+        margin-bottom: 20px;
+        
+      }
+      :local(.btnGroup) {
+        width: 100%;
+        height: 62px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        border: 1px solid #e2e2e2;
+
+        :local(.myBtn) {
+          width: 50%;
+          display: inline-flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          border-right: 1px solid #e2e2e2;
+          height: 100%;
+          font-size: 14px;
+          & > div:first-child {
+            font-weight: 500;
+            font-size: 22px;
+          }
+        }
+        :local(.myBtn):last-child {
+          border-right: none;
+        }
+      }
+    }
+  }
+}
