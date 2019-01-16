@@ -11,7 +11,7 @@ public interface ActivityService {
 
     int createActivity(Integer createId, String location, Long startTime,
                        Long endTime, Integer joinType,
-                              String coverUrl, String description);
+                              String coverUrl, String description) throws Exception;
 
-    ActivityInfoVO findActivityById(Integer id);
+    ActivityInfoVO findActivityById(Integer id) throws Exception;
 }

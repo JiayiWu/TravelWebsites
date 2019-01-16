@@ -19,8 +19,8 @@ public interface UserService {
 
     UserInfoVO login(String name, String password, RoleTypeCode code) throws Exception;
 
-    UserInfoVO findById(Integer id);
+    UserInfoVO findById(Integer id) throws Exception;
 
-    List<UserInfoVO> findAllById(List<Integer> idList);
+    List<UserInfoVO> findAllById(List<Integer> idList) throws Exception;
 
 }

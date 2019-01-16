@@ -61,7 +61,7 @@ public class AcitivityServiceImpl implements ActivityService{
     }
 
     @Override
-    public ActivityInfoVO findActivityById(Integer id) {
+    public ActivityInfoVO findActivityById(Integer id) throws Exception{
         ActivityEntity activityEntity = activityDao.findById(id).get();
 
         UserInfoVO creator = userService.findById(activityEntity.getCreateId());
