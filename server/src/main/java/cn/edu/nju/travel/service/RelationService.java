@@ -15,7 +15,7 @@ public interface RelationService {
      * @param activityId
      * @return
      */
-    List<RelationEntity> findAllRelationByActivityId(Integer activityId);
+    List<RelationEntity> findAllRelationByActivityId(Integer activityId) throws Exception;
 
     /**
      * 根据用户id查找此用户报名的所有活动
@@ -23,8 +23,22 @@ public interface RelationService {
      * @param userId
      * @return
      */
-    List<RelationEntity> findAllRelationByUserID(Integer userId);
+    List<RelationEntity> findAllRelationByUserID(Integer userId) throws Exception;
 
+    /**
+     * 用户申请参加活动
+     * 如果活动无需验证，则直接通过，生成state通过的relation
+     * 如果需要验证，则生成state不通过的relation和待验证的Audit
+     * @param activityId
+     * @param userId
+     * @param attachmentUrl
+     * @param context
+     * @return
+     * @throws Exception
+     */
+    int attendActivity(Integer activityId, Integer userId, String attachmentUrl, String context) throws Exception;
 
+    int quitActivity(Integer activityId, Integer user) throws Exception;
 
+    int auditAttendActivity(Integer activityId, Integer userId, Integer result) throws Exception;
 }

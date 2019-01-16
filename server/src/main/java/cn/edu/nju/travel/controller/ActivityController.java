@@ -1,10 +1,9 @@
 package cn.edu.nju.travel.controller;
 
-import cn.edu.nju.travel.form.ActivityForm;
-import cn.edu.nju.travel.form.ActivityListForm;
-import cn.edu.nju.travel.form.AttendActivityForm;
-import cn.edu.nju.travel.form.SimpleResponse;
+import cn.edu.nju.travel.form.*;
 import cn.edu.nju.travel.service.ActivityService;
+import cn.edu.nju.travel.service.RelationService;
+import cn.edu.nju.travel.utils.ServerException;
 import cn.edu.nju.travel.vo.ActivityInfoVO;
 import cn.edu.nju.travel.vo.AuthenticationInfoListVO;
 import io.swagger.annotations.ApiOperation;
@@ -26,6 +25,9 @@ public class ActivityController {
     @Autowired
     ActivityService activityService;
 
+    @Autowired
+    RelationService relationService;
+
     @ApiOperation(value = "创建活动", response = SimpleResponse.class, notes = "创建成功返回0")
     @RequestMapping(value = "check", method = RequestMethod.POST)
     public SimpleResponse createActivity(HttpSession httpSession,
@@ -38,6 +40,8 @@ public class ActivityController {
                     activityCreateForm.getEndTime(),
                     activityCreateForm.getJoinType(),
                     activityCreateForm.getCoverUrl(),
+                    //todo
+                    //中文编码问题
                     activityCreateForm.getDescription());
 
         }catch (Exception e){
@@ -67,19 +71,34 @@ public class ActivityController {
     @ApiOperation(value = "查看活动详细信息", response = ActivityInfoVO.class)
     @RequestMapping(value = "info/{id}", method = RequestMethod.GET)
     public SimpleResponse getActivityInfo(HttpSession httpSession, @PathVariable int id){
-
-        return null;
+        try{
+            ActivityInfoVO activityInfoVO = activityService.findActivityById(id);
+            return SimpleResponse.ok(activityInfoVO);
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
+        }
     }
 
     @ApiOperation(value = "参加活动", response = SimpleResponse.class)
     @RequestMapping(value = "attend", method = RequestMethod.POST)
     public SimpleResponse attendActivity(HttpSession httpSession, @RequestBody AttendActivityForm attendActivityForm){
-        return null;
+        try{
+            relationService.attendActivity(attendActivityForm.getActivityId(),attendActivityForm.getUserId(),
+                    attendActivityForm.getAttachmentUrl(),attendActivityForm.getContext());
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
+        }
+        return SimpleResponse.ok(0);
     }
 
     @ApiOperation(value = "离开某个活动", response = SimpleResponse.class)
     @RequestMapping(value = "quit/{activityId}/user/{userId}", method = RequestMethod.POST)
     public SimpleResponse quitActivity(HttpSession httpSession, @PathVariable int activityId,@PathVariable int userId){
+        try {
+            relationService.quitActivity(activityId,userId);
+        } catch (Exception e) {
+            return SimpleResponse.exception(e);
+        }
         return null;
     }
 
@@ -92,12 +111,26 @@ public class ActivityController {
     @ApiOperation(value = "审批用户加入申请", response = SimpleResponse.class,notes = "需要校验当前登录用户是否有审批权限 0 新申请审批，还未处理 1 审批通过  2  审批拒绝")
     @RequestMapping(value = "application/check/{activityId}/user/{userId}/result/{result}", method = RequestMethod.POST)
     public SimpleResponse checkApplication(HttpSession httpSession, @PathVariable int activityId,@PathVariable int userId,@PathVariable int result){
-        return null;
+
+
+        try {
+            Integer creatorId = (Integer) httpSession.getAttribute("userId");
+            if (activityService.isCreator(activityId,creatorId)){
+                relationService.auditAttendActivity(activityId,userId,result);
+            }else {
+                throw new ServerException(ResponseCode.Error,"不是创建者，没有审批权限");
+            }
+            return null;
+        } catch (Exception e) {
+            return SimpleResponse.exception(e);
+        }
     }
 
     @ApiOperation(value = "审批列表", response = AuthenticationInfoListVO.class,notes = "state -1获取该用户可以看见的所有审批，0 查看待处审批 1 查看审批通过申请  2  查看审批拒绝的申请")
     @RequestMapping(value = "application/list/{state}", method = RequestMethod.GET)
     public SimpleResponse applicationList(HttpSession httpSession,@PathVariable int state){
+        Integer creatorId = (Integer) httpSession.getAttribute("userId");
+//        a
         return null;
     }
 }

@@ -61,7 +61,7 @@ public class AcitivityServiceImpl implements ActivityService{
     }
 
     @Override
-    public ActivityInfoVO findActivityById(Integer id) {
+    public ActivityInfoVO findActivityById(Integer id) throws Exception{
         ActivityEntity activityEntity = activityDao.findById(id).get();
 
         UserInfoVO creator = userService.findById(activityEntity.getCreateId());
@@ -100,5 +100,15 @@ public class AcitivityServiceImpl implements ActivityService{
         activityInfoVO.setAttendList(attendList);
 
         return activityInfoVO;
+    }
+
+    @Override
+    public boolean isCreator(Integer activityId, Integer userId) throws Exception {
+
+        ActivityEntity activityEntity = activityDao.findById(activityId).get();
+        if (activityEntity.getCreateId().equals(userId)){
+            return true;
+        }
+        return false;
     }
 }
