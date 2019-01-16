@@ -101,4 +101,14 @@ public class AcitivityServiceImpl implements ActivityService{
 
         return activityInfoVO;
     }
+
+    @Override
+    public boolean isCreator(Integer activityId, Integer userId) throws Exception {
+
+        ActivityEntity activityEntity = activityDao.findById(activityId).get();
+        if (activityEntity.getCreateId().equals(userId)){
+            return true;
+        }
+        return false;
+    }
 }

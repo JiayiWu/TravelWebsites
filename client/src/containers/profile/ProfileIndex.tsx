@@ -1,32 +1,50 @@
 import * as React from 'react'
-import { RouteComponentProps } from 'react-router'
-import { Route, Switch } from 'react-router-dom'
 import styles from './ProfileIndex.module.scss'
 import HeaderImage from '@utils/image/profile/header.jpeg'
+import ProfileHomepage from './ProfileHomepage'
 
 interface ProfileProps {
 
 }
 
+const CONTENT_TYPE = {
+  HOMEPAGE: 0,
+  ACTIVITY: 1,
+  NEWS: 2,
+}
+
+const CONTENT_LIST = ['我的窝', '我的活动', '我的消息']
+
 class ProfileIndex extends React.Component<ProfileProps, any> {
   state = {
-    
+    contentType: CONTENT_TYPE.HOMEPAGE
   }
   componentWillMount() {
     console.log('profile render')
   }
+  renderMenu = () => {
+    const { contentType } = this.state
+    return CONTENT_LIST.map((name, index) => {
+      return (
+        <div
+          className={styles.menuItem}
+          data-active={contentType === index}
+          onClick={() => this.setState({ contentType: index })}
+        >
+          {name}
+        </div>
+      )
+    })
+  }
   public render() {
+    const { contentType } = this.state
     return (
       <div className={styles.container}>
         <div className={styles.headerImage} style={{ backgroundImage: `url(${HeaderImage})`}} >
           <div className={styles.headerMenu}>
             <div className={styles.centerWidth}>
-              <div className={styles.menuItem} data-active={true}>我的窝</div>
-              <div className={styles.menuItem}>我的活动</div>
-              <div className={styles.menuItem}>我的消息</div>
+              {this.renderMenu()}
             </div>
-
-            
           </div>
         </div>
         <div className={styles.centerContainer}>
@@ -46,9 +64,11 @@ class ProfileIndex extends React.Component<ProfileProps, any> {
             </div>
           </div>
 
-          {/* <Switch>
-            <Route />
-          </Switch> */}
+          <div className={styles.contentContainer} >
+            {contentType === CONTENT_TYPE.HOMEPAGE &&
+              <ProfileHomepage />
+            }
+          </div>
         </div>
       </div>
     )

@@ -14,4 +14,6 @@ public interface ActivityService {
                               String coverUrl, String description) throws Exception;
 
     ActivityInfoVO findActivityById(Integer id) throws Exception;
+
+    boolean isCreator(Integer activityId, Integer userId) throws Exception;
 }

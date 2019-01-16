@@ -39,4 +39,6 @@ public interface RelationService {
     int attendActivity(Integer activityId, Integer userId, String attachmentUrl, String context) throws Exception;
 
     int quitActivity(Integer activityId, Integer user) throws Exception;
+
+    int auditAttendActivity(Integer activityId, Integer userId, Integer result) throws Exception;
 }
