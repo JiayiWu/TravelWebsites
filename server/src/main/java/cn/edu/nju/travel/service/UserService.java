@@ -1,6 +1,8 @@
 package cn.edu.nju.travel.service;
 
+import cn.edu.nju.travel.constant.ApproveStateCode;
 import cn.edu.nju.travel.constant.RoleTypeCode;
+import cn.edu.nju.travel.vo.UserAuthVO;
 import cn.edu.nju.travel.vo.UserInfoVO;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -22,5 +24,13 @@ public interface UserService {
     UserInfoVO findById(Integer id);
 
     List<UserInfoVO> findAllById(List<Integer> idList);
+
+    UserAuthVO uploadAuthInfo(int userId, String attachUrl, String context) throws Exception;
+
+    UserAuthVO getAuthInfo(int userId);
+
+    List<UserAuthVO> getAuthInfoOnePage(Integer lastId, int pageSize, ApproveStateCode state);
+
+
 
 }

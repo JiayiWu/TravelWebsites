@@ -1,22 +1,25 @@
 package cn.edu.nju.travel.service.impl;
 
+import cn.edu.nju.travel.constant.ApproveStateCode;
 import cn.edu.nju.travel.constant.RoleTypeCode;
 import cn.edu.nju.travel.constant.UserStateCode;
 import cn.edu.nju.travel.dao.AdminDao;
+import cn.edu.nju.travel.dao.AuthenticationDao;
 import cn.edu.nju.travel.dao.UserDao;
 import cn.edu.nju.travel.entity.AdminEntity;
+import cn.edu.nju.travel.entity.AuthenticationEntity;
 import cn.edu.nju.travel.entity.UserEntity;
 import cn.edu.nju.travel.form.ResponseCode;
+import cn.edu.nju.travel.service.FileService;
 import cn.edu.nju.travel.service.UserService;
 import cn.edu.nju.travel.utils.MD5Encryption;
 import cn.edu.nju.travel.utils.ServerException;
+import cn.edu.nju.travel.vo.UserAuthVO;
 import cn.edu.nju.travel.vo.UserInfoVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Created on 2019/1/14
@@ -29,6 +32,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     AdminDao adminDao;
+
+    @Autowired
+    AuthenticationDao authenticationDao;
+
+    @Autowired
+    FileService fileService;
 
     @Override
     public void register(String name, String mobile, String mail, String password, String logoUrl)
@@ -94,6 +103,42 @@ public class UserServiceImpl implements UserService {
             userInfoVOList.add(new UserInfoVO(entity));
         }
         return userInfoVOList;
+    }
+
+    @Override
+    public UserAuthVO uploadAuthInfo(int userId, String attachUrl, String context)
+            throws Exception {
+        AuthenticationEntity authenticationEntity = authenticationDao.findByUserId(userId);
+        if(authenticationEntity == null){
+            authenticationEntity = new AuthenticationEntity();
+            authenticationEntity.setUserId(userId);
+        }else{
+            if (authenticationEntity.getState() == ApproveStateCode.ACCEPT.getIndex()){
+                throw new ServerException(ResponseCode.Error, "认证审批已通过，不可修改");
+            }
+            //删除原来的认证图片
+            String oldUrl = authenticationEntity.getAttachmentUrl();
+            if (!attachUrl.equals(oldUrl)){
+                fileService.deleteOldFile(oldUrl);
+            }
+        }
+        authenticationEntity.setAttachmentUrl(attachUrl);
+        authenticationEntity.setContext(context);
+        authenticationEntity.setState(ApproveStateCode.NEW.getIndex());
+
+        return new UserAuthVO(authenticationEntity);
+    }
+
+    @Override
+    public UserAuthVO getAuthInfo(int userId) {
+        AuthenticationEntity entity = authenticationDao.findByUserId(userId);
+        return entity==null?null:new UserAuthVO(entity);
+    }
+
+    @Override
+    public List<UserAuthVO> getAuthInfoOnePage(Integer lastId, int pageSize,
+            ApproveStateCode state) {
+        return null;
     }
 
 
