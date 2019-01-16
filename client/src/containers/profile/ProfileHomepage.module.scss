@@ -1,0 +1,52 @@
+:local(.container) {
+  width: 100%;
+  height: 100%;
+
+  :local(.infoContainer) {
+    padding: 26px;
+    border: 1px solid #d9d9d9;
+    background-color: white;
+
+    margin-bottom: 10px;
+    :local(.header) {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #333;
+
+      :local(.operation) {
+        > i {
+          font-size: 20px;
+          cursor: pointer;
+        }
+      }
+    }
+
+    :local(.content) {
+      :local(.imageWrapper) {
+        width: 100%;
+        height: 300px;
+        background-position: center center;
+        background-size: cover;
+        position: relative;
+
+        :local(.uploadField) {
+          background-color: rgba(0, 0, 0, 0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+
+          &::after {
+            content: '重新上传';
+            font-size: 35px;
+            color: white;
+
+          }
+        }
+      }
+    }
+  }
+}
