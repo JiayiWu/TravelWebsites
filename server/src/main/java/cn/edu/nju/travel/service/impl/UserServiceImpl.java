@@ -90,13 +90,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfoVO findById(Integer id) {
+    public UserInfoVO findById(Integer id) throws Exception{
         UserEntity entity = userDao.findById(id).get();
         return new UserInfoVO(entity);
     }
 
     @Override
-    public List<UserInfoVO> findAllById(List<Integer> idList) {
+    public List<UserInfoVO> findAllById(List<Integer> idList) throws Exception{
         Iterable<UserEntity> entitys = userDao.findAllById(idList);
         List<UserInfoVO> userInfoVOList = new ArrayList<>();
         for(UserEntity entity : entitys){

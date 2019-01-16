@@ -5,6 +5,7 @@ import cn.edu.nju.travel.form.ActivityListForm;
 import cn.edu.nju.travel.form.AttendActivityForm;
 import cn.edu.nju.travel.form.SimpleResponse;
 import cn.edu.nju.travel.service.ActivityService;
+import cn.edu.nju.travel.service.RelationService;
 import cn.edu.nju.travel.vo.ActivityInfoVO;
 import cn.edu.nju.travel.vo.AuthenticationInfoListVO;
 import io.swagger.annotations.ApiOperation;
@@ -26,6 +27,9 @@ public class ActivityController {
     @Autowired
     ActivityService activityService;
 
+    @Autowired
+    RelationService relationService;
+
     @ApiOperation(value = "创建活动", response = SimpleResponse.class, notes = "创建成功返回0")
     @RequestMapping(value = "check", method = RequestMethod.POST)
     public SimpleResponse createActivity(HttpSession httpSession,
@@ -38,6 +42,8 @@ public class ActivityController {
                     activityCreateForm.getEndTime(),
                     activityCreateForm.getJoinType(),
                     activityCreateForm.getCoverUrl(),
+                    //todo
+                    //中文编码问题
                     activityCreateForm.getDescription());
 
         }catch (Exception e){
@@ -67,19 +73,30 @@ public class ActivityController {
     @ApiOperation(value = "查看活动详细信息", response = ActivityInfoVO.class)
     @RequestMapping(value = "info/{id}", method = RequestMethod.GET)
     public SimpleResponse getActivityInfo(HttpSession httpSession, @PathVariable int id){
-
-        return null;
+        try{
+            ActivityInfoVO activityInfoVO = activityService.findActivityById(id);
+            return SimpleResponse.ok(activityInfoVO);
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
+        }
     }
 
     @ApiOperation(value = "参加活动", response = SimpleResponse.class)
     @RequestMapping(value = "attend", method = RequestMethod.POST)
     public SimpleResponse attendActivity(HttpSession httpSession, @RequestBody AttendActivityForm attendActivityForm){
-        return null;
+        try{
+            relationService.attendActivity(attendActivityForm.getActivityId(),attendActivityForm.getUserId(),
+                    attendActivityForm.getAttachmentUrl(),attendActivityForm.getContext());
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
+        }
+        return SimpleResponse.ok(0);
     }
 
     @ApiOperation(value = "离开某个活动", response = SimpleResponse.class)
     @RequestMapping(value = "quit/{activityId}/user/{userId}", method = RequestMethod.POST)
     public SimpleResponse quitActivity(HttpSession httpSession, @PathVariable int activityId,@PathVariable int userId){
+
         return null;
     }
 
