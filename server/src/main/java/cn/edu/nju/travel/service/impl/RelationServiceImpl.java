@@ -81,8 +81,41 @@ public class RelationServiceImpl implements RelationService {
     }
 
     @Override
-    public int quitActivity(Integer activityId, Integer user) throws Exception {
+    public int quitActivity(Integer activityId, Integer userId) throws Exception {
+//        Iterable<RelationEntity> relationEntityIterable = relationDao.findAllByActivityIdAndUserId(activityId, userId);
+//        Iterable<AuditEntity> auditEntityIterable = auditDao.findAllByActivityIdAndUserId(activityId,userId);
 
+        //判断哪些需要修改的逻辑只能放在Dao里
+        //对于relation：state从0变为2（有效->删除）
+        //对于audit：state从0/1变为3（待审批->删除；通过->删除）
+
+//        for(RelationEntity relationEntity : relationEntityIterable){
+//            //只有通过批准的才可能出现退出操作;且同一个活动同一个用户应该只会出现一次通过批准；
+//            if(relationEntity.getState() == 0){
+//                relationDao.updateStateDelete(activityId,userId);
+//                break;
+//            }
+//        }
+//        for(AuditEntity auditEntity : auditEntityIterable){
+//
+//        }
+
+//        relationDao.updateStateDelete(activityId,userId);
+        auditDao.updateAuditDelete(activityId,userId);
+
+        return 0;
+    }
+
+    @Override
+    public int auditAttendActivity(Integer activityId, Integer userId, Integer result) throws Exception {
+
+//        auditDao.updateAuditApproveOrRefuse(activityId, userId, result);
+
+        if(result.equals(RelationStateCode.VALID.getIndex())){
+            //通过申请
+//            relationDao.updateStateValid(activityId, userId);
+        }
+        //不批准的话原本就是INVALID，不需要修改state
         return 0;
     }
 }
