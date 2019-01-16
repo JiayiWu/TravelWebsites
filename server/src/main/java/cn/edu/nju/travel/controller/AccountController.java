@@ -9,9 +9,9 @@ import cn.edu.nju.travel.service.UserService;
 import cn.edu.nju.travel.vo.UserInfoVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
@@ -29,7 +29,7 @@ public class AccountController {
     UserService userService;
 
     @ApiOperation(value = "登录校验", response = SimpleResponse.class, notes = "Type 0表示普通用户登录，1表示管理员角色登录")
-    @RequestMapping(value = "login", method = RequestMethod.POST)
+    @PostMapping("login")
     public SimpleResponse login(HttpSession httpSession, @RequestBody  LoginForm loginForm){
         try{
             UserInfoVO userInfoVO = userService.login(loginForm.getUsername(),
@@ -45,7 +45,7 @@ public class AccountController {
     }
 
     @ApiOperation(value = "注册", response = SimpleResponse.class, notes = "只能对普通用户进行注册")
-    @RequestMapping(value = "register", method = RequestMethod.POST)
+    @PostMapping("register")
     public SimpleResponse register(HttpSession httpSession, @RequestBody UserForm userForm){
         try{
             userService.register(userForm.getName(),
@@ -61,7 +61,7 @@ public class AccountController {
     }
 
     @ApiOperation(value = "退出登录", response = SimpleResponse.class, notes = "用户退出登录")
-    @RequestMapping(value = "logout", method = RequestMethod.POST)
+    @PostMapping("logout")
     public SimpleResponse logout(HttpSession httpSession){
         httpSession.invalidate();
         return new SimpleResponse(ResponseCode.OK);

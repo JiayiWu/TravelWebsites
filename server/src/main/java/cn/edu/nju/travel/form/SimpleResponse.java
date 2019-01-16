@@ -4,7 +4,7 @@ package cn.edu.nju.travel.form;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.function.Supplier;
-
+import lombok.extern.slf4j.Slf4j;
 
 public class SimpleResponse {
 
@@ -38,6 +38,7 @@ public class SimpleResponse {
   }
 
   public static SimpleResponse exception(Exception exception) {
+    exception.printStackTrace();
     return new SimpleResponse(ResponseCode.CATCH_EXCEPTION, exception.getMessage());
   }
 

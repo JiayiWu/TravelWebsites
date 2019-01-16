@@ -3,8 +3,10 @@ package cn.edu.nju.travel.service.impl;
 import cn.edu.nju.travel.form.ResponseCode;
 import cn.edu.nju.travel.form.SimpleResponse;
 import cn.edu.nju.travel.service.FileService;
+import cn.edu.nju.travel.utils.FileOptions;
 import cn.edu.nju.travel.utils.ServerException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -27,7 +29,8 @@ public class FileServiceImpl implements FileService{
 
 
     @Override
-    public String handleFileUpload(MultipartFile file, String directory) {
+    public String handleFileUpload(MultipartFile file, String directory)
+            throws Exception {
 
         if(file.isEmpty()){
             throw new ServerException(ResponseCode.Error,"文件不能为空");
@@ -38,40 +41,47 @@ public class FileServiceImpl implements FileService{
 
         int index = file.getOriginalFilename().lastIndexOf(".");
         String suffix = file.getOriginalFilename().substring(index);
-        try {
-            File path = new File(ResourceUtils.getURL("classpath:").getPath());
-            if(!path.exists()){
-                path = new File("");
-            }
-            String contextPath = Paths.get(path.getAbsolutePath(),"static").toString();
-            String randomName = getRandomFileName();
-            String saveFileName = Paths.get(contextPath,directory,randomName+suffix)
+        String contextPath = FileOptions.getContextPath();
+        String randomName = FileOptions.getRandomName();
+        String saveFileName = Paths.get(contextPath,directory,randomName+suffix)
+                .toString();
+        File saveFile = new File(saveFileName);
+        while(saveFile.exists()){
+            randomName = FileOptions.getRandomName();
+            saveFileName = Paths.get(contextPath,directory,randomName+suffix)
                     .toString();
-            File saveFile = new File(saveFileName);
-            while(saveFile.exists()){
-                randomName = getRandomFileName();
-                saveFileName = Paths.get(contextPath,directory,randomName+suffix)
-                        .toString();
-                saveFile = new File(saveFileName);
-            }
-            File parentFile = saveFile.getParentFile();
-            if(!parentFile.exists()){
-                parentFile.mkdirs();
-            }
-            file.transferTo(saveFile);
-            return directory+"/"+randomName+suffix;
-        } catch (IOException e) {
-            throw new ServerException(ResponseCode.Error,e.getMessage());
+            saveFile = new File(saveFileName);
         }
+        File parentFile = saveFile.getParentFile();
+        if(!parentFile.exists()){
+            parentFile.mkdirs();
+        }
+        file.transferTo(saveFile);
+        return directory+"/"+randomName+suffix;
+
     }
 
-    private String getRandomFileName(){
-        SimpleDateFormat simpleDateFormat;
-        simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-        Date date = new Date();
-        String str = simpleDateFormat.format(date);
-        Random random = new Random();
-        int ranNum = (int) (random.nextDouble() * (99999 - 10000 + 1)) + 10000;// 获取5位随机数
-        return ranNum + str;
+    @Override
+    public boolean deleteOldFile(String oldPath) throws Exception {
+        if (oldPath == null) {
+            return true;
+        }
+        String relativePath = oldPath;
+        if (oldPath.startsWith("http")) {
+            String[] urlArr = oldPath.split("/");
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 2; i < urlArr.length; i++) {
+                stringBuilder.append(urlArr[i]);
+                if (i != urlArr.length - 1) {
+                    stringBuilder.append("/");
+                }
+            }
+            relativePath = stringBuilder.toString();
+        }
+        String contextPath = FileOptions.getContextPath();
+        File oldFile = Paths.get(contextPath, relativePath).toFile();
+        return !oldFile.exists() || oldFile.delete();
+
     }
+
 }

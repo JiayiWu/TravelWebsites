@@ -35,9 +35,6 @@ public class UserEntity {
     @NotNull
     private String password;
 
-    @Column
-    private Integer state;
-
     @Column(name = "create_time")
     @CreationTimestamp
     private Timestamp createTime;

@@ -9,6 +9,7 @@ spring:
       hibernate:
         id:
           new_generator_mappings: false
+        dialect: org.hibernate.dialect.MySQL5Dialect
   servlet:
     multipart:
       max-file-size: 20MB
@@ -21,3 +22,7 @@ file:
   savePath: img
 server:
   port: 8181
+
+travel:
+  constant:
+    pageSize: 2

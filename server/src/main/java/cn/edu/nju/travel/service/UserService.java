@@ -15,9 +15,9 @@ public interface UserService {
     void register(String name, String mobile, String mail, String password, String logoUrl)
             throws Exception;
 
-    UserInfoVO modifyInfo(int userId, String mobile, String mail, String logoUrl);
+    UserInfoVO modifyInfo(int userId, String mobile, String mail, String logoUrl) throws Exception;
 
-    void changePassword(int userId, String password);
+    void changePassword(int userId, String password) throws Exception;
 
     UserInfoVO login(String name, String password, RoleTypeCode code) throws Exception;
 
@@ -25,11 +25,8 @@ public interface UserService {
 
     List<UserInfoVO> findAllById(List<Integer> idList) throws Exception;
 
-    UserAuthVO uploadAuthInfo(int userId, String attachUrl, String context) throws Exception;
 
-    UserAuthVO getAuthInfo(int userId);
-
-    List<UserAuthVO> getAuthInfoOnePage(Integer lastId, int pageSize, ApproveStateCode state);
+    boolean isAdmin(int userId);
 
 
 

@@ -1,20 +1,15 @@
 package cn.edu.nju.travel.service.impl;
 
-import cn.edu.nju.travel.constant.ApproveStateCode;
 import cn.edu.nju.travel.constant.RoleTypeCode;
-import cn.edu.nju.travel.constant.UserStateCode;
 import cn.edu.nju.travel.dao.AdminDao;
-import cn.edu.nju.travel.dao.AuthenticationDao;
 import cn.edu.nju.travel.dao.UserDao;
 import cn.edu.nju.travel.entity.AdminEntity;
-import cn.edu.nju.travel.entity.AuthenticationEntity;
 import cn.edu.nju.travel.entity.UserEntity;
 import cn.edu.nju.travel.form.ResponseCode;
 import cn.edu.nju.travel.service.FileService;
 import cn.edu.nju.travel.service.UserService;
 import cn.edu.nju.travel.utils.MD5Encryption;
 import cn.edu.nju.travel.utils.ServerException;
-import cn.edu.nju.travel.vo.UserAuthVO;
 import cn.edu.nju.travel.vo.UserInfoVO;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +29,6 @@ public class UserServiceImpl implements UserService {
     AdminDao adminDao;
 
     @Autowired
-    AuthenticationDao authenticationDao;
-
-    @Autowired
     FileService fileService;
 
     @Override
@@ -51,20 +43,33 @@ public class UserServiceImpl implements UserService {
         userEntity.setMail(mail);
         userEntity.setPassword(MD5Encryption.encrypt(password));
         userEntity.setLogoUrl(logoUrl);
-        userEntity.setState(UserStateCode.UNCERTIFIED.getIndex());
         userDao.save(userEntity);
 
     }
 
     @Override
-    public UserInfoVO modifyInfo(int userId, String mobile, String mail, String logoUrl) {
-        //todo
-        return null;
+    public UserInfoVO modifyInfo(int userId, String mobile, String mail, String logoUrl)
+            throws Exception {
+        UserEntity entity = userDao.findById(userId);
+        if(entity == null){
+            throw new ServerException(ResponseCode.Error,"此用户不存在");
+        }
+        entity.setMobile(mobile);
+        entity.setMail(mail);
+        if(!logoUrl.equals(entity.getLogoUrl())){
+            fileService.deleteOldFile(entity.getLogoUrl());
+            entity.setLogoUrl(logoUrl);
+        }
+        return new UserInfoVO(userDao.save(entity));
     }
 
     @Override
-    public void changePassword(int userId, String password) {
-        //todo
+    public void changePassword(int userId, String password) throws Exception {
+        UserEntity entity = userDao.findById(userId);
+        if(entity == null){
+            throw new ServerException(ResponseCode.Error,"此用户不存在");
+        }
+        entity.setPassword(MD5Encryption.encrypt(password));
     }
 
     @Override
@@ -106,39 +111,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserAuthVO uploadAuthInfo(int userId, String attachUrl, String context)
-            throws Exception {
-        AuthenticationEntity authenticationEntity = authenticationDao.findByUserId(userId);
-        if(authenticationEntity == null){
-            authenticationEntity = new AuthenticationEntity();
-            authenticationEntity.setUserId(userId);
-        }else{
-            if (authenticationEntity.getState() == ApproveStateCode.ACCEPT.getIndex()){
-                throw new ServerException(ResponseCode.Error, "认证审批已通过，不可修改");
-            }
-            //删除原来的认证图片
-            String oldUrl = authenticationEntity.getAttachmentUrl();
-            if (!attachUrl.equals(oldUrl)){
-                fileService.deleteOldFile(oldUrl);
-            }
-        }
-        authenticationEntity.setAttachmentUrl(attachUrl);
-        authenticationEntity.setContext(context);
-        authenticationEntity.setState(ApproveStateCode.NEW.getIndex());
-
-        return new UserAuthVO(authenticationEntity);
-    }
-
-    @Override
-    public UserAuthVO getAuthInfo(int userId) {
-        AuthenticationEntity entity = authenticationDao.findByUserId(userId);
-        return entity==null?null:new UserAuthVO(entity);
-    }
-
-    @Override
-    public List<UserAuthVO> getAuthInfoOnePage(Integer lastId, int pageSize,
-            ApproveStateCode state) {
-        return null;
+    public boolean isAdmin(int userId) {
+        AdminEntity entity = adminDao.findById(userId);
+        return entity != null;
     }
 
 

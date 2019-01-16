@@ -12,5 +12,5 @@ public interface RelationDao extends PagingAndSortingRepository<RelationEntity, 
     Iterable<RelationEntity> findAllByActivityId(Integer activityId);
 
     //todo
-    int updateStateDelete(@Param("activity_id") Integer activityId, @Param("join_user_id") Integer userId);
+//    int updateStateDelete(@Param("activity_id") Integer activityId, @Param("join_user_id") Integer userId);
 }

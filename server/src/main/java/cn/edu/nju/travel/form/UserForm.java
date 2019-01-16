@@ -21,7 +21,5 @@ public class UserForm {
 
     private String password;
 
-    private Integer state;
-
     private String logoUrl;
 }
