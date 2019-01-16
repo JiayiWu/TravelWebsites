@@ -2,6 +2,7 @@ import * as React from 'react'
 import styles from './ProfileIndex.module.scss'
 import HeaderImage from '@utils/image/profile/header.jpeg'
 import ProfileHomepage from './ProfileHomepage'
+import ProfileActivity from './ProfileActivity'
 
 interface ProfileProps {
 
@@ -67,6 +68,9 @@ class ProfileIndex extends React.Component<ProfileProps, any> {
           <div className={styles.contentContainer} >
             {contentType === CONTENT_TYPE.HOMEPAGE &&
               <ProfileHomepage />
+            }
+            {contentType === CONTENT_TYPE.ACTIVITY &&
+              <ProfileActivity />
             }
           </div>
         </div>

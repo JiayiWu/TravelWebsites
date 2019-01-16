@@ -1,0 +1,53 @@
+@import '~@utils/constant.module.scss';
+:local(.actCard) {
+  width: 100%;
+  height: 150px;
+  display: flex;
+  // align-items: center;
+  padding: 15px 5px 15px 0px;
+  border-top: 1px solid #e5e5e5;
+  
+
+  & > div:first-child {
+    width: 220px;
+    height: 100%;
+    background-size: cover;
+    background-position: center center;
+    flex-shrink: 0;
+  }
+
+  :local(.right) {
+    flex-grow: 1;
+    margin-left: 15px;
+    font-size: 14px;
+    :local(.titleWrapper) {
+      font-size: 18px;
+      margin-bottom: 10px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      color: $font-color;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    :local(.infoLine) {
+      margin-bottom: 0px;
+      & > div {
+        display: inline-block;
+        i {
+          margin-right: 5px;
+        }
+      }
+      div:not(:last-child) {
+        margin-right: 10px;
+      }
+    }
+  }
+  &:hover {
+    background-color: #f8f8f8;
+    :local(.title) {
+      color: $primary-color;
+    }
+  }
+}
