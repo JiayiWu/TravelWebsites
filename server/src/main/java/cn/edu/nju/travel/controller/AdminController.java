@@ -50,7 +50,7 @@ public class AdminController {
         return null;
     }
 
-    @ApiOperation(value = "认证用户", response = SimpleResponse.class,notes = "进行用户认证, state: 1 通过 2 "
+    @ApiOperation(value = "认证用户", response = UserAuthVO.class,notes = "进行用户认证, state: 1 通过 2 "
             + "拒绝")
     @PostMapping("application/authUser")
     public SimpleResponse authUser(HttpSession httpSession,@RequestParam("applierId")int applierId,
