@@ -72,7 +72,7 @@ public class AdminController {
         }
     }
 
-    @ApiOperation(value = "获取待认证用户列表", response = SimpleResponse.class,notes = "state "
+    @ApiOperation(value = "获取待认证用户列表", response = UserAuthVO.class,notes = "state "
             + "不传则获取该用户可以看见的所有审批，0 查看待处审批 1 查看审批通过申请  2  查看审批拒绝的申请;"
             + "lastId 上一页的最后一个id，传0则表示第一页")
     @PostMapping("application/userList")
