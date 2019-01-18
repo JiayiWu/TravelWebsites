@@ -4,6 +4,7 @@ import cn.edu.nju.travel.constant.ApproveStateCode;
 import cn.edu.nju.travel.form.SimpleResponse;
 import cn.edu.nju.travel.service.AuthService;
 import cn.edu.nju.travel.service.UserService;
+import cn.edu.nju.travel.vo.AuthenticationActivityInfoListVO;
 import cn.edu.nju.travel.vo.AuthenticationInfoListVO;
 import cn.edu.nju.travel.vo.UserAuthVO;
 import io.swagger.annotations.ApiOperation;
@@ -43,7 +44,7 @@ public class AdminController {
         return null;
     }
 
-    @ApiOperation(value = "审批列表", response = AuthenticationInfoListVO.class,notes = "state -1获取该用户可以看见的所有审批，0 查看待处审批 1 查看审批通过申请  2  查看审批拒绝的申请")
+    @ApiOperation(value = "新申请活动审批列表", response = AuthenticationActivityInfoListVO.class,notes = "state -1获取该用户可以看见的所有审批，0 查看待处审批 1 查看审批通过申请  2  查看审批拒绝的申请")
     @RequestMapping(value = "application/list/{state}", method = RequestMethod.GET)
     public SimpleResponse applicationList(HttpSession httpSession,@PathVariable int state){
         //todo
