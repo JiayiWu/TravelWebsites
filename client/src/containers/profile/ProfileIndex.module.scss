@@ -63,6 +63,7 @@
 
     :local(.infoContainer) {
       width: 280px;
+      flex-shrink: 0;
       position: relative;
       background-color: white;
       box-shadow: 0 0 2px rgba(0,0,0,0.05);
@@ -120,6 +121,7 @@
       margin-top: 18px;
       margin-left: 18px;
       position: relative;
+      width: calc(100% - 280px);
     }
   }
 }

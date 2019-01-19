@@ -4,6 +4,7 @@ import cn.edu.nju.travel.constant.ApproveStateCode;
 import cn.edu.nju.travel.form.SimpleResponse;
 import cn.edu.nju.travel.service.AuthService;
 import cn.edu.nju.travel.service.UserService;
+import cn.edu.nju.travel.vo.AuthenticationActivityInfoListVO;
 import cn.edu.nju.travel.vo.AuthenticationInfoListVO;
 import cn.edu.nju.travel.vo.UserAuthVO;
 import io.swagger.annotations.ApiOperation;
@@ -43,14 +44,14 @@ public class AdminController {
         return null;
     }
 
-    @ApiOperation(value = "审批列表", response = AuthenticationInfoListVO.class,notes = "state -1获取该用户可以看见的所有审批，0 查看待处审批 1 查看审批通过申请  2  查看审批拒绝的申请")
+    @ApiOperation(value = "新申请活动审批列表", response = AuthenticationActivityInfoListVO.class,notes = "state -1获取该用户可以看见的所有审批，0 查看待处审批 1 查看审批通过申请  2  查看审批拒绝的申请")
     @RequestMapping(value = "application/list/{state}", method = RequestMethod.GET)
     public SimpleResponse applicationList(HttpSession httpSession,@PathVariable int state){
         //todo
         return null;
     }
 
-    @ApiOperation(value = "认证用户", response = SimpleResponse.class,notes = "进行用户认证, state: 1 通过 2 "
+    @ApiOperation(value = "认证用户", response = UserAuthVO.class,notes = "进行用户认证, state: 1 通过 2 "
             + "拒绝")
     @PostMapping("application/authUser")
     public SimpleResponse authUser(HttpSession httpSession,@RequestParam("applierId")int applierId,
@@ -71,7 +72,7 @@ public class AdminController {
         }
     }
 
-    @ApiOperation(value = "获取待认证用户列表", response = SimpleResponse.class,notes = "state "
+    @ApiOperation(value = "获取待认证用户列表", response = UserAuthVO.class,notes = "state "
             + "不传则获取该用户可以看见的所有审批，0 查看待处审批 1 查看审批通过申请  2  查看审批拒绝的申请;"
             + "lastId 上一页的最后一个id，传0则表示第一页")
     @PostMapping("application/userList")

@@ -1,0 +1,45 @@
+:local(.container) {
+  // width: calc(100% - 280px);
+  & > div {
+    margin-bottom: 10px;
+  }
+
+  :local(.cardContainer) {
+    padding: 26px;
+    border: 1px solid #d9d9d9;
+    background-color: white;
+  }
+  :local(.countContainer) {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    position: relative;
+    justify-content: space-between;
+    :local(.left) {
+      display: inline-flex;
+      align-items: center;
+    }
+    :local(.item) {
+      padding: 0 30px;
+      border-right: 1px solid #d9d9d9;
+      font-size: 18px;
+      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      :local(.label) {
+        font-weight: normal;
+        font-size: 16px;
+      }
+    }
+    > div:last-child {
+      border-right: none;
+      float: right;
+    }
+  }
+
+  :local(.activityContainer) {
+    padding-top: 0;
+  }
+}

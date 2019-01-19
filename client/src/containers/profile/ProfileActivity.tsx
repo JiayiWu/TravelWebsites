@@ -1,7 +1,9 @@
 import * as React from 'react'
+import classnames from 'classnames'
 import { Button, Tabs } from 'antd'
 import styles from './ProfileActivity.module.scss'
-import { ACTIVITY_LIST } from '@utils/constant.js'
+import ActivityCard from '../activity/components/ActivityCard'
+import { ACTIVITY_LIST } from '../../utils/constants'
 
 interface ProfileActivtyProps {
 
@@ -17,12 +19,20 @@ const TAB_TYPE = {
 
 class ProfileActivity extends React.Component {
   renderActivitys = (list) => {
-
+    return (
+      <div>
+        {list.map((act) => {
+          return (
+            <ActivityCard activity={act} />
+          )
+        })}
+      </div>
+    )
   }
   public render() {
     return (
       <div className={styles.container}>
-        <div className={styles.countContainer}>
+        <div className={classnames(styles.countContainer, styles.cardContainer)}>
           <div className={styles.left}>
             <div className={styles.item}>
               <div>0</div>
@@ -37,14 +47,14 @@ class ProfileActivity extends React.Component {
               <div className={styles.label}>总参与人数</div>
             </div>
           </div>
-          <div className={styles.right}>
+          <div className={styles.item}>
             <Button type="primary">创建活动</Button>
           </div>
         </div>
-        <div className={styles.activityContainer}>
-          <Tabs>
-            <TabPane tab="我参加的" key={TAB_TYPE.JOIN}>{this.renderActivitys()}</TabPane>
-            <TabPane tab="我创建的" key={TAB_TYPE.CREATE}></TabPane>
+        <div className={classnames(styles.activityContainer, styles.cardContainer)}>
+          <Tabs defaultActiveKey={TAB_TYPE.CREATE}>
+            <TabPane tab="我参加的" key={TAB_TYPE.JOIN}>{this.renderActivitys(ACTIVITY_LIST)}</TabPane>
+            <TabPane tab="我创建的" key={TAB_TYPE.CREATE}>{this.renderActivitys(ACTIVITY_LIST)}</TabPane>
           </Tabs>
         </div>
       </div>
