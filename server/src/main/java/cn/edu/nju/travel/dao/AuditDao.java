@@ -17,16 +17,18 @@ public interface AuditDao extends PagingAndSortingRepository<AuditEntity, Intege
 
     //todo
     @Modifying
-    @Query(value = "UPDATE audit a SET a.state = 3 " +
-            "where a.activity_id = :activityId and a.join_user_id = :joinUserId " +
-            "and a.state <> 2", nativeQuery = true)
+    @Query("update AuditEntity a SET a.state = 3 " +
+            "where a.activityId = :activityId and a.joinUserId = :joinUserId " +
+            "and a.state <> 2")
     int updateAuditDelete(@Param("activityId") Integer activityId, @Param("joinUserId") Integer joinUserId);
 
-//    @Modifying
-//    @Query("update AuditEntity a SET a.state = :state " +
-//            "where a.activity_id = :activityId and a.join_user_id = : joinUserId " +
-//            "and a.state = 0")
-//    int updateAuditApproveOrRefuse(@Param("activityId") Integer activityId,
-//                                   @Param("joinUserId") Integer joinUserId,
-//                                   @Param("state") Integer state);
+    @Modifying
+    @Query("update AuditEntity a SET a.state = :state " +
+            "where a.activityId = :activityId and a.joinUserId = :joinUserId " +
+            "and a.state = 0")
+    int updateAuditApproveOrRefuse(@Param("activityId") Integer activityId,
+                                   @Param("joinUserId") Integer joinUserId,
+                                   @Param("state") Integer state);
+
+    List<AuditEntity> findAllByActivityCreateId(Integer activityCreateId);
 }

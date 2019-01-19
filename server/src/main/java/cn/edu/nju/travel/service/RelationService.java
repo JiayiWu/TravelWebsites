@@ -1,6 +1,7 @@
 package cn.edu.nju.travel.service;
 
 import cn.edu.nju.travel.entity.RelationEntity;
+import cn.edu.nju.travel.vo.AuthenticationInfoListVO;
 
 import java.util.List;
 
@@ -41,4 +42,6 @@ public interface RelationService {
     int quitActivity(Integer activityId, Integer user) throws Exception;
 
     int auditAttendActivity(Integer activityId, Integer userId, Integer result) throws Exception;
+
+    List<AuthenticationInfoListVO> getAuditInfoList(Integer creatorId, Integer state);
 }

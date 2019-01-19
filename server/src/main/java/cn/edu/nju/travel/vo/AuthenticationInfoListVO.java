@@ -14,6 +14,8 @@ import java.sql.Timestamp;
 public class AuthenticationInfoListVO {
 
     private Integer id;
+    @ApiModelProperty(notes = "申请者所申请的活动信息")
+    private ActivityInfoVO activity;
     @ApiModelProperty(notes = "申请者用户信息")
     private UserInfoVO applyUserInfo;
     @ApiModelProperty(notes = "申请时间")

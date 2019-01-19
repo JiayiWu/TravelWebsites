@@ -12,6 +12,8 @@ import cn.edu.nju.travel.entity.RelationEntity;
 import cn.edu.nju.travel.form.ResponseCode;
 import cn.edu.nju.travel.service.RelationService;
 import cn.edu.nju.travel.utils.ServerException;
+import cn.edu.nju.travel.vo.ActivityInfoVO;
+import cn.edu.nju.travel.vo.AuthenticationInfoListVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -100,7 +102,7 @@ public class RelationServiceImpl implements RelationService {
 //
 //        }
 
-//        relationDao.updateStateDelete(activityId,userId);
+        relationDao.updateStateDelete(activityId,userId);
         auditDao.updateAuditDelete(activityId,userId);
 
         return 0;
@@ -109,13 +111,26 @@ public class RelationServiceImpl implements RelationService {
     @Override
     public int auditAttendActivity(Integer activityId, Integer userId, Integer result) throws Exception {
 
-//        auditDao.updateAuditApproveOrRefuse(activityId, userId, result);
+        auditDao.updateAuditApproveOrRefuse(activityId, userId, result);
 
         if(result.equals(RelationStateCode.VALID.getIndex())){
             //通过申请
-//            relationDao.updateStateValid(activityId, userId);
+            relationDao.updateStateValid(activityId, userId);
         }
         //不批准的话原本就是INVALID，不需要修改state
         return 0;
+    }
+
+    @Override
+    public List<AuthenticationInfoListVO> getAuditInfoList(Integer creatorId, Integer state) {
+
+        List<AuditEntity> auditEntityList = auditDao.findAllByActivityCreateId(creatorId);
+        List<AuthenticationInfoListVO> authenticationInfoListVOList = new ArrayList<>();
+
+        for(AuditEntity auditEntity : auditEntityList){
+            ActivityInfoVO activityInfoVO =
+        }
+
+        return null;
     }
 }
