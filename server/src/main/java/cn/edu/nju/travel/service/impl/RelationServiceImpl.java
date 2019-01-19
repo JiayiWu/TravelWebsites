@@ -10,12 +10,16 @@ import cn.edu.nju.travel.entity.ActivityEntity;
 import cn.edu.nju.travel.entity.AuditEntity;
 import cn.edu.nju.travel.entity.RelationEntity;
 import cn.edu.nju.travel.form.ResponseCode;
+import cn.edu.nju.travel.service.ActivityService;
 import cn.edu.nju.travel.service.RelationService;
+import cn.edu.nju.travel.service.UserService;
 import cn.edu.nju.travel.utils.ServerException;
 import cn.edu.nju.travel.vo.ActivityInfoVO;
 import cn.edu.nju.travel.vo.AuthenticationInfoListVO;
+import cn.edu.nju.travel.vo.UserInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,6 +29,7 @@ import java.util.List;
  * Created by yuhqqq on 2019/1/16.
  */
 @Service
+@Transactional
 public class RelationServiceImpl implements RelationService {
 
     @Autowired
@@ -35,6 +40,12 @@ public class RelationServiceImpl implements RelationService {
 
     @Autowired
     AuditDao auditDao;
+
+    @Autowired
+    ActivityService activityService;
+
+    @Autowired
+    UserService userService;
 
     @Override
     public List<RelationEntity> findAllRelationByActivityId(Integer activityId) throws Exception{
@@ -113,7 +124,7 @@ public class RelationServiceImpl implements RelationService {
 
         auditDao.updateAuditApproveOrRefuse(activityId, userId, result);
 
-        if(result.equals(RelationStateCode.VALID.getIndex())){
+        if(result.equals(1)){
             //通过申请
             relationDao.updateStateValid(activityId, userId);
         }
@@ -122,15 +133,60 @@ public class RelationServiceImpl implements RelationService {
     }
 
     @Override
-    public List<AuthenticationInfoListVO> getAuditInfoList(Integer creatorId, Integer state) {
+    public List<AuthenticationInfoListVO> getAuditInfoList(Integer creatorId, Integer state) throws Exception{
 
         List<AuditEntity> auditEntityList = auditDao.findAllByActivityCreateId(creatorId);
         List<AuthenticationInfoListVO> authenticationInfoListVOList = new ArrayList<>();
 
         for(AuditEntity auditEntity : auditEntityList){
-            ActivityInfoVO activityInfoVO =
+            AuthenticationInfoListVO authenticationInfoListVO = new AuthenticationInfoListVO();
+            ActivityInfoVO activityInfoVO = activityService.findActivityById(auditEntity.getActivityId());
+            authenticationInfoListVO.setActivity(activityInfoVO);
+
+            UserInfoVO userInfoVO = userService.findById(auditEntity.getJoinUserId());
+            authenticationInfoListVO.setApplyUserInfo(userInfoVO);
+            authenticationInfoListVO.setCreateTime(auditEntity.getCreateTime().getTime());
+            authenticationInfoListVO.setModifyTime(auditEntity.getModifyTime().getTime());
+            authenticationInfoListVO.setState(auditEntity.getState());
+            //todo
+            //attachment = null
+            authenticationInfoListVO.setAttachmentUrl(null);
+            authenticationInfoListVO.setContext(auditEntity.getContext());
+            authenticationInfoListVO.setId(auditEntity.getId());
+
+            authenticationInfoListVOList.add(authenticationInfoListVO);
         }
 
-        return null;
+        switch (state){
+            case -1:
+                //state -1获取该用户可以看见的所有审批，0 查看待处审批 1 查看审批通过申请  2  查看审批拒绝的申请
+                return authenticationInfoListVOList;
+            case 0:
+                for(AuthenticationInfoListVO authenticationInfoListVO : authenticationInfoListVOList){
+                    if(!authenticationInfoListVO.getState().equals(ApproveStateCode.NEW.getIndex())){
+                        authenticationInfoListVOList.remove(authenticationInfoListVO);
+                    }
+                }
+                return  authenticationInfoListVOList;
+            case 1:
+                List<AuthenticationInfoListVO> result = new ArrayList<>();
+                for(AuthenticationInfoListVO authenticationInfoListVO : authenticationInfoListVOList){
+                    if(authenticationInfoListVO.getState().equals(ApproveStateCode.ACCEPT.getIndex())){
+                        result.add(authenticationInfoListVO);
+                    }
+                }
+                return  result;
+            case 2:
+                List<AuthenticationInfoListVO> result2 = new ArrayList<>();
+                for(AuthenticationInfoListVO authenticationInfoListVO : authenticationInfoListVOList){
+                    if(authenticationInfoListVO.getState().equals(ApproveStateCode.REJECT.getIndex())){
+                        result2.add(authenticationInfoListVO);
+                    }
+                }
+                return  result2;
+            default:
+                throw new ServerException(ResponseCode.Error,"错误的state");
+        }
+
     }
 }

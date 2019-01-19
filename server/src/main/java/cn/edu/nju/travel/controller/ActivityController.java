@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * 该审批用AuditEntity表
@@ -63,7 +65,14 @@ public class ActivityController {
     @ApiOperation(value = "查看活动列表", response = ActivityInfoVO.class,notes = "返回List<ActivityInfoVO>")
     @RequestMapping(value = "list", method = RequestMethod.POST)
     public SimpleResponse ActivityInfoList(HttpSession httpSession, @RequestBody ActivityListForm activityListForm){
-        return null;
+        try{
+            List<ActivityInfoVO> activityInfoVOList =
+                    activityService.getActivityList(new Timestamp(activityListForm.getLastTimestamp()),
+                    activityListForm.getSize());
+            return SimpleResponse.ok(activityInfoVOList);
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
+        }
     }
 
 
@@ -105,7 +114,12 @@ public class ActivityController {
     @ApiOperation(value = "更新某个活动", response = ActivityInfoVO.class)
     @RequestMapping(value = "update", method = RequestMethod.POST)
     public SimpleResponse updateActivity(HttpSession httpSession, @RequestBody ActivityForm activityCreateForm){
-        return null;
+        try{
+            activityService.updateActivityInfo(activityCreateForm);
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
+        }
+        return SimpleResponse.ok(0);
     }
 
     @ApiOperation(value = "审批用户加入申请", response = SimpleResponse.class,notes = "需要校验当前登录用户是否有审批权限 0 新申请审批，还未处理 1 审批通过  2  审批拒绝")
@@ -115,6 +129,7 @@ public class ActivityController {
 
         try {
             Integer creatorId = (Integer) httpSession.getAttribute("userId");
+//            Integer creatorId = 3;
             if (activityService.isCreator(activityId,creatorId)){
                 relationService.auditAttendActivity(activityId,userId,result);
             }else {
@@ -126,11 +141,17 @@ public class ActivityController {
         }
     }
 
-    @ApiOperation(value = "审批列表", response = AuthenticationInfoListVO.class,notes = "state -1获取该用户可以看见的所有审批，0 查看待处审批 1 查看审批通过申请  2  查看审批拒绝的申请")
+    @ApiOperation(value = "审批列表", response = AuthenticationInfoListVO.class,notes = "返回List<AuthenticationInfoListVO>; state -1获取该用户可以看见的所有审批，0 查看待处审批 1 查看审批通过申请  2  查看审批拒绝的申请")
     @RequestMapping(value = "application/list/{state}", method = RequestMethod.GET)
     public SimpleResponse applicationList(HttpSession httpSession,@PathVariable int state){
-        Integer creatorId = (Integer) httpSession.getAttribute("userId");
-//        a
-        return null;
+        try {
+            Integer creatorId = (Integer) httpSession.getAttribute("userId");
+//            Integer creatorId = 3;
+            List<AuthenticationInfoListVO> authenticationInfoListVOList = relationService.getAuditInfoList(creatorId,state);
+            return SimpleResponse.ok(authenticationInfoListVOList);
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
+        }
+
     }
 }

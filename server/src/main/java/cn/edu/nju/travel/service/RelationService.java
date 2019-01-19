@@ -43,5 +43,7 @@ public interface RelationService {
 
     int auditAttendActivity(Integer activityId, Integer userId, Integer result) throws Exception;
 
-    List<AuthenticationInfoListVO> getAuditInfoList(Integer creatorId, Integer state);
+    List<AuthenticationInfoListVO> getAuditInfoList(Integer creatorId, Integer state) throws Exception;
+
+
 }
