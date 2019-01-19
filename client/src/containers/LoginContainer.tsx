@@ -3,6 +3,8 @@ import { Input, Form, Button } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
 import styles from './LoginContainer.module.scss'
 import Background from '@utils/image/background.jpg'
+import API from '../utils/API'
+import messageHandler from '../utils/messageHandler'
 
 interface LoginProps {
 
@@ -16,6 +18,7 @@ const FORM_TYPE = {
 }
 
 const FORM_NAMES = ['登录', '注册']
+
 
 class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
   state = {
@@ -35,6 +38,22 @@ class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
       validateFields((err, value) => {
         if (err) {
           return
+        }
+        console.log(err, value)
+        if (type === FORM_TYPE.REGISTER) {
+          API.query('/account/register', {
+            options: {
+              method: 'POST',
+              body: JSON.stringify({
+                value
+              })
+            }
+            
+          }).then((json) => {
+            if (json.code === 0) {
+              console.log('regist success')
+            }
+          })
         }
         // TODO 登录
       })
@@ -60,10 +79,46 @@ class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
       }]
     })
   }
+  renderRegister = () => {
+    const { getFieldDecorator, getFieldValue } = this.props.form
+    return [
+      <FormItem key="password">
+        {this.getRePasswordDecorator()(<Input placeholder="请重新输入您的密码" type="password"/>)}
+      </FormItem>,
+      <FormItem key="phone">
+        {getFieldDecorator('phone', {
+          rules: [{
+            validator: (rules, value, callback) => {
+              const mail = getFieldValue('mail')
+              if (!value && !mail) {
+                callback('请至少填写手机或邮箱中的一种')
+              } else {
+                callback()
+              }
+            }
+          }]
+        })(<Input placeholder="请输入您的手机号码" />)}
+      </FormItem>,
+      <FormItem key="mail">
+        {getFieldDecorator('mail', {
+          rules: [{
+            validator: (rules, value, callback) => {
+              const phone = getFieldDecorator('phone')
+              if (!value && !phone) {
+                callback('请至少填写手机或邮箱中的一种')
+              } else {
+                callback()
+              }
+            }
+          }]
+        })(<Input placeholder="请输入您的邮箱号" />)}
+      </FormItem>,
+    ]
+  }
   public render() {
     const { type } = this.state
     const { getFieldDecorator, validateFields, getFieldValue } = this.props.form
-    const nameDecorator = getFieldDecorator('username', {
+    const nameDecorator = getFieldDecorator(type === FORM_TYPE.REGISTER ? 'name' : 'username', {
       rules: [{
         required: true,
         message: '请填写用户名'
@@ -95,13 +150,9 @@ class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
             <FormItem>
               {passwordDecorator(<Input placeholder="请填写密码" type="password"/>)}
             </FormItem>
-            {type === FORM_TYPE.REGISTER &&
-              <FormItem>
-                {this.getRePasswordDecorator()(<Input placeholder="请重新输入您的密码" type="password"/>)}
-              </FormItem>
-            }
+            {type === FORM_TYPE.REGISTER && this.renderRegister()}
             <FormItem>
-              <Button type="primary" style={{ width: '100%' }} onClick={() => this.handleSubmit}>{FORM_NAMES[this.state.type]}</Button>
+              <Button type="primary" style={{ width: '100%' }} onClick={() => this.handleSubmit()}>{FORM_NAMES[this.state.type]}</Button>
             </FormItem>
           </Form>
         </div>

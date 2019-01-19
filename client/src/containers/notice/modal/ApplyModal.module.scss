@@ -1,0 +1,14 @@
+:local(.applyModal) {
+  :local(.container) {
+    display: flex;
+    flex-direction: column;
+    // align-items: center;
+    
+    :local(.item) {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      
+    }
+  }
+}

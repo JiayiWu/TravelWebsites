@@ -1,0 +1,28 @@
+@import '~@utils/constant.module.scss';
+:local(.container) {
+  width: 100%;
+  height: 38px;
+  position: relative;
+  border-bottom: 1px solid #e9e9e9;
+  
+  :local(.notice) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    line-height: 32px;
+    overflow: hidden;
+    white-space: nowrap;
+    height: 100%;
+    :local(.info) {
+      flex-grow: 1;
+      :local(.text) {
+        font-weight: 500;
+      }
+    }
+    :local(.operation) {
+      flex-shrink: 0;
+      color: $primary-color;
+      cursor: pointer;
+    }
+  }
+}
