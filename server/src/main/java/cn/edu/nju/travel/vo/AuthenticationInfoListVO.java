@@ -9,6 +9,8 @@ import java.sql.Timestamp;
  * Created by Jiayiwu on 19/1/13.
  * Mail:wujiayi@lgdreamer.com
  * Change everywhere
+ *
+ * 这个类是用户申请参加某个活动的申请类
  */
 @Data
 public class AuthenticationInfoListVO {

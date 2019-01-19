@@ -16,6 +16,8 @@ import cn.edu.nju.travel.service.RelationService;
 import cn.edu.nju.travel.service.UserService;
 import cn.edu.nju.travel.utils.ServerException;
 import cn.edu.nju.travel.vo.ActivityInfoVO;
+import cn.edu.nju.travel.vo.AuthActivityInfoVO;
+import cn.edu.nju.travel.vo.AuthenticationActivityInfoListVO;
 import cn.edu.nju.travel.vo.UserInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,7 +58,7 @@ public class AcitivityServiceImpl implements ActivityService{
         entity.setLocation(location);
         entity.setStartTime(new Timestamp(startTime));
         entity.setEndTime(new Timestamp(endTime));
-        entity.setState(ActivityStateCode.VALID.getIndex());
+        entity.setState(ActivityStateCode.NEW.getIndex());
         entity.setJoinType(joinType);
         entity.setCoverUrl(coverUrl);
         entity.setDescription(description);
@@ -105,9 +107,87 @@ public class AcitivityServiceImpl implements ActivityService{
 
         List<ActivityInfoVO> activityInfoVOList = new ArrayList<>();
         for(ActivityEntity activityEntity : activityEntityList){
+            if(activityEntity.getState().equals(ActivityStateCode.VALID.getIndex()))
             activityInfoVOList.add(getActivityInfoVO(activityEntity));
         }
         return activityInfoVOList;
+    }
+
+    @Override
+    public int checkActivityState(Integer activityId, Integer result) throws Exception {
+        activityDao.updateActivityStateValidOrInvalid(activityId, result);
+        return 0;
+    }
+
+    @Override
+    public List<AuthenticationActivityInfoListVO> getAuthActivityList(Integer state) throws Exception {
+        Iterable<ActivityEntity> activityEntityList = activityDao.findAll();
+        List<AuthenticationActivityInfoListVO> authenticationActivityInfoListVOList = new ArrayList<>();
+
+        for(ActivityEntity activityEntity : activityEntityList){
+            AuthenticationActivityInfoListVO authenticationActivityInfoListVO = new AuthenticationActivityInfoListVO();
+            authenticationActivityInfoListVO.setId(activityEntity.getId());
+            authenticationActivityInfoListVO.setCreateTime(activityEntity.getCreateTime().getTime());
+            authenticationActivityInfoListVO.setModifyTime(activityEntity.getModifyTime().getTime());
+            switch (activityEntity.getState()){
+                case 0:
+                    authenticationActivityInfoListVO.setState(ApproveStateCode.NEW.getIndex());
+                    break;
+                case 1://审批已通过
+                case 4://活动结束表明当时已通过审批
+                    authenticationActivityInfoListVO.setState(ApproveStateCode.ACCEPT.getIndex());
+                    break;
+                case 2:
+                    authenticationActivityInfoListVO.setState(ApproveStateCode.REJECT.getIndex());
+                    break;
+                case 3://活动被删除,跳过
+                    continue;
+                default:
+                    throw new ServerException(ResponseCode.Error,"错误的活动的状态");
+            }
+            AuthActivityInfoVO authActivityInfoVO = new AuthActivityInfoVO();
+            authActivityInfoVO.setCreator(userService.findById(activityEntity.getCreateId()));
+            authActivityInfoVO.setLocation(activityEntity.getLocation());
+            authActivityInfoVO.setStartTime(activityEntity.getStartTime().getTime());
+            authActivityInfoVO.setEndTime(activityEntity.getEndTime().getTime());
+            authActivityInfoVO.setJoinType(JoinTypeCode.values()[activityEntity.getJoinType()].getValue());
+            authActivityInfoVO.setCoverUrl(activityEntity.getCoverUrl());
+            authActivityInfoVO.setDescription(activityEntity.getDescription());
+
+            authenticationActivityInfoListVO.setAuthActivityInfoVO(authActivityInfoVO);
+
+            authenticationActivityInfoListVOList.add(authenticationActivityInfoListVO);
+        }
+
+        List<AuthenticationActivityInfoListVO> result = new ArrayList<>();
+        switch (state){
+            case -1:
+                return authenticationActivityInfoListVOList;
+            case 0:
+                for (AuthenticationActivityInfoListVO authenticationActivityInfoListVO : authenticationActivityInfoListVOList){
+                    if(authenticationActivityInfoListVO.getState().equals(ApproveStateCode.NEW.getIndex())){
+                        result.add(authenticationActivityInfoListVO);
+                    }
+                }
+                return result;
+            case 1:
+                for (AuthenticationActivityInfoListVO authenticationActivityInfoListVO : authenticationActivityInfoListVOList){
+                    if(authenticationActivityInfoListVO.getState().equals(ApproveStateCode.ACCEPT.getIndex())){
+                        result.add(authenticationActivityInfoListVO);
+                    }
+                }
+                return result;
+            case 2:
+                for (AuthenticationActivityInfoListVO authenticationActivityInfoListVO : authenticationActivityInfoListVOList){
+                    if(authenticationActivityInfoListVO.getState().equals(ApproveStateCode.REJECT.getIndex())){
+                        result.add(authenticationActivityInfoListVO);
+                    }
+                }
+                return result;
+            default:
+                throw new ServerException(ResponseCode.Error,"错误的state参数");
+        }
+
     }
 
     private ActivityInfoVO getActivityInfoVO(ActivityEntity activityEntity) throws Exception{

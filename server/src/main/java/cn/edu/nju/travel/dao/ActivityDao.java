@@ -29,4 +29,9 @@ public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, 
     @Modifying
     @Query(nativeQuery = true, value = "select * from activity a where a.start_time > :lastTimestamp limit :thesize")
     List<ActivityEntity> getActivityList(@Param("lastTimestamp") Timestamp lastTimeStamp, @Param("thesize") Integer thesize);
+
+    @Modifying
+    @Query("update ActivityEntity a set a.state = :result where a.id = :activityId")
+    void updateActivityStateValidOrInvalid(@Param("activityId") Integer activityId,
+                                           @Param("result") Integer result);
 }

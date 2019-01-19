@@ -2,6 +2,7 @@ package cn.edu.nju.travel.service;
 
 import cn.edu.nju.travel.form.ActivityForm;
 import cn.edu.nju.travel.vo.ActivityInfoVO;
+import cn.edu.nju.travel.vo.AuthenticationActivityInfoListVO;
 
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -25,4 +26,8 @@ public interface ActivityService {
     int updateActivityInfo(ActivityForm activityForm) throws Exception;
 
     List<ActivityInfoVO> getActivityList(Timestamp lastTimestamp, Integer size) throws Exception;
+
+    int checkActivityState(Integer activityId, Integer result) throws Exception;
+
+    List<AuthenticationActivityInfoListVO> getAuthActivityList(Integer state) throws Exception;
 }

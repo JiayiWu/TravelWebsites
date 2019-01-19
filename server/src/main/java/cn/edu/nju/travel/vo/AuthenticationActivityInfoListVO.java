@@ -7,6 +7,8 @@ import lombok.Data;
  * Created by Jiayiwu on 19/1/13.
  * Mail:wujiayi@lgdreamer.com
  * Change everywhere
+ *
+ * 这个类是创建活动的审批申请
  */
 @Data
 public class AuthenticationActivityInfoListVO {

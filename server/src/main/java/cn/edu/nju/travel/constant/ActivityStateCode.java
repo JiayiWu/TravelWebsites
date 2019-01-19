@@ -6,7 +6,7 @@ package cn.edu.nju.travel.constant;
  * Change everywhere
  */
 public enum  ActivityStateCode {
-    VALID(0,"新申请审批，还未处理"),INVALID(1,"审批通过"),DELETE(2,"审批拒绝"),DETELE(3,"逻辑删除"),END(4,"活动结束");
+    NEW(0,"新申请审批，还未处理"),VALID(1,"审批通过"),INVALID(2,"审批拒绝"),DETELE(3,"逻辑删除"),END(4,"活动结束");
     private final String value;
     private final int index;
 

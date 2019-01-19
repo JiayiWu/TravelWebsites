@@ -2,8 +2,10 @@ package cn.edu.nju.travel.controller;
 
 import cn.edu.nju.travel.constant.ApproveStateCode;
 import cn.edu.nju.travel.form.SimpleResponse;
+import cn.edu.nju.travel.service.ActivityService;
 import cn.edu.nju.travel.service.AuthService;
 import cn.edu.nju.travel.service.UserService;
+import cn.edu.nju.travel.vo.ActivityInfoVO;
 import cn.edu.nju.travel.vo.AuthenticationActivityInfoListVO;
 import cn.edu.nju.travel.vo.AuthenticationInfoListVO;
 import cn.edu.nju.travel.vo.UserAuthVO;
@@ -37,18 +39,37 @@ public class AdminController {
     @Autowired
     AuthService authService;
 
-    @ApiOperation(value = "审批用户加入申请", response = SimpleResponse.class,notes = "需要校验当前登录用户是否有审批权限 0 新申请审批，还未处理 1 审批通过  2  审批拒绝")
-    @RequestMapping(value = "application/check/{activityId}/user/{userId}/result/{result}", method = RequestMethod.POST)
-    public SimpleResponse checkApplication(HttpSession httpSession, @PathVariable int activityId, @PathVariable int userId, @PathVariable int result){
-        //todo
-        return null;
+    @Autowired
+    ActivityService activityService;
+
+    @ApiOperation(value = "审批活动创建申请", response = SimpleResponse.class,notes = "需要校验当前登录用户是否有审批权限 0 新申请审批，还未处理 1 审批通过  2  审批拒绝")
+    @RequestMapping(value = "application/check/{activityId}/result/{result}", method = RequestMethod.POST)
+    public SimpleResponse checkApplication(HttpSession httpSession, @PathVariable int activityId, @PathVariable int result){
+        Integer userId = (Integer)httpSession.getAttribute("userId");
+        if(userId == null){
+            return SimpleResponse.error("请先登录");
+        }
+        if(!userService.isAdmin(userId)){
+            return SimpleResponse.error("非管理员无权认证用户");
+        }
+        try{
+            activityService.checkActivityState(activityId,result);
+            return SimpleResponse.ok(0);
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
+        }
     }
 
-    @ApiOperation(value = "新申请活动审批列表", response = AuthenticationActivityInfoListVO.class,notes = "state -1获取该用户可以看见的所有审批，0 查看待处审批 1 查看审批通过申请  2  查看审批拒绝的申请")
+    @ApiOperation(value = "新创建活动审批列表", response = AuthenticationActivityInfoListVO.class,notes = "返回list<AuthenticationActivityInfoListVO>;  state -1获取所有审批，0 查看待处审批 1 查看审批通过申请  2  查看审批拒绝的申请")
     @RequestMapping(value = "application/list/{state}", method = RequestMethod.GET)
     public SimpleResponse applicationList(HttpSession httpSession,@PathVariable int state){
         //todo
-        return null;
+        try {
+            List<AuthenticationActivityInfoListVO> authenticationActivityInfoListVOList = activityService.getAuthActivityList(state);
+            return SimpleResponse.ok(authenticationActivityInfoListVOList);
+        } catch (Exception e) {
+            return SimpleResponse.exception(e);
+        }
     }
 
     @ApiOperation(value = "认证用户", response = UserAuthVO.class,notes = "进行用户认证, state: 1 通过 2 "

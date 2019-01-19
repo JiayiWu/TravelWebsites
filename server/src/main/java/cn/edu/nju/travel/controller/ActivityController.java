@@ -62,7 +62,7 @@ public class ActivityController {
      * @param activityListForm
      * @return
      */
-    @ApiOperation(value = "查看活动列表", response = ActivityInfoVO.class,notes = "返回List<ActivityInfoVO>")
+    @ApiOperation(value = "查看活动列表", response = ActivityInfoVO.class,notes = "返回List<ActivityInfoVO>,只返回审批通过的、尚未结束的活动")
     @RequestMapping(value = "list", method = RequestMethod.POST)
     public SimpleResponse ActivityInfoList(HttpSession httpSession, @RequestBody ActivityListForm activityListForm){
         try{
