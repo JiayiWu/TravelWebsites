@@ -23,7 +23,7 @@ public class CORSConfig {
                         //是否发送Cookie信息
                         .allowCredentials(true)
                         //放行哪些原始域(请求方式)
-                        .allowedMethods("GET","POST", "PUT", "DELETE")
+                        .allowedMethods("*")
                         //放行哪些原始域(头部信息)
                         .allowedHeaders("*");
             }
