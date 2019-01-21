@@ -48,12 +48,15 @@ public class AccountController {
     @PostMapping("register")
     public SimpleResponse register(HttpSession httpSession, @RequestBody UserForm userForm){
         try{
-            Integer id = userService.register(userForm.getName(),
+            UserInfoVO userInfoVO = userService.register(userForm.getName(),
                     userForm.getMobile(),
                     userForm.getMail(),
                     userForm.getPassword(),
                     userForm.getLogoUrl());
-            return SimpleResponse.ok(id);
+            httpSession.setAttribute("userId",userInfoVO.getId());
+            httpSession.setAttribute("userType",userInfoVO.getType());
+            httpSession.setAttribute("username",userInfoVO.getName());
+            return SimpleResponse.ok(userInfoVO.getId());
         }catch (Exception e){
             return SimpleResponse.exception(e);
         }
