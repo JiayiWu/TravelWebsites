@@ -48,16 +48,16 @@ public class AccountController {
     @PostMapping("register")
     public SimpleResponse register(HttpSession httpSession, @RequestBody UserForm userForm){
         try{
-            userService.register(userForm.getName(),
+            Integer id = userService.register(userForm.getName(),
                     userForm.getMobile(),
                     userForm.getMail(),
                     userForm.getPassword(),
                     userForm.getLogoUrl());
+            return SimpleResponse.ok(id);
         }catch (Exception e){
             return SimpleResponse.exception(e);
         }
 
-        return new SimpleResponse(ResponseCode.OK);
     }
 
     @ApiOperation(value = "退出登录", response = SimpleResponse.class, notes = "用户退出登录")
