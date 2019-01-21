@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface UserService {
 
-    void register(String name, String mobile, String mail, String password, String logoUrl)
+    Integer register(String name, String mobile, String mail, String password, String logoUrl)
             throws Exception;
 
     UserInfoVO modifyInfo(int userId, String mobile, String mail, String logoUrl) throws Exception;
