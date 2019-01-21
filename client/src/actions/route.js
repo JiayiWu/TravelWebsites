@@ -1,8 +1,8 @@
 
-export const ROUTER_CHANGE = 'ROUTER_CHANTE'
-export const pushURL = (dispatch) => (url) => {
-  return dispatch({
+export const ROUTER_CHANGE = 'ROUTER_CHANGE'
+export const pushURL = (url) => {
+  return {
     type: ROUTER_CHANGE,
     payload: url
-  })
+  }
 }

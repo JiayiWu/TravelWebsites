@@ -9,11 +9,11 @@ interface paramProps {
   }
 }
 
-const serverOrigin = 'http://119.29.157.178:8181'
+const serverOrigin = 'http://192.168.31.139:8181'
+// const serverOrigin = 'http://119.29.157.178:8181' // 线上地址
 
 const query = (url, params: paramProps) => {
   const { searchParams, options } = params
-  console.log(options, url)
   // if (!url) {
   //   return null
   // }
@@ -26,7 +26,6 @@ const query = (url, params: paramProps) => {
     }
   }, url) : url
   if (options && options.method === 'POST') {
-    console.log(options)
     // POST 请求
     return fetch(serverOrigin + realUrl, { 
       method: 'POST',

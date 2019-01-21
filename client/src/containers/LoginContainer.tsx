@@ -8,9 +8,11 @@ import Background from '@utils/image/background.jpg'
 import API from '../utils/API'
 import messageHandler from '../utils/messageHandler'
 import { setUserInfo } from '../actions/auth'
+import { pushURL } from '../actions/route'
 
 interface LoginProps {
-  setUserInfo: Function,
+  setUserInfo: Function, // redux
+  pushURL: Function, // redux
 }
 
 const FormItem = Form.Item
@@ -38,7 +40,7 @@ class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
   handleSubmit = () => {
     const { type } = this.state
     const { validateFields } = this.props.form
-    const { setUserInfo } = this.props
+    const { setUserInfo, pushURL } = this.props
     // if (type === FORM_TYPE.LOGIN) {
       validateFields((err, value) => {
         if (err) {
@@ -55,7 +57,8 @@ class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
             
           }).then(messageHandler).then((json) => {
             if (json.code === 0) {
-              
+              setUserInfo(json.data)
+              pushURL('/workspace/activity')
             }
           })
         } else {
@@ -70,6 +73,7 @@ class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
           }).then(messageHandler).then((json) => {
             if (json.code === 0) {
               setUserInfo(json.data)
+              pushURL('/workspace/activity')
             }
           })
         }
@@ -206,6 +210,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     setUserInfo: bindActionCreators(setUserInfo, dispatch),
+    pushURL: bindActionCreators(pushURL, dispatch)
   }
 }
 

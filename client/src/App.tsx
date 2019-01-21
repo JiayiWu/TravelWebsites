@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import history from './utils/history'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { Router, Route } from 'react-router-dom'
 import Loadable from 'react-loadable'
 import styles from './App.module.scss'
 
