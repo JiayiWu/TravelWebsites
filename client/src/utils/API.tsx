@@ -9,7 +9,7 @@ interface paramProps {
   }
 }
 
-const serverOrigin = 'http://localhost:8181'
+const serverOrigin = 'http://119.29.157.178:8181'
 
 const query = (url, params: paramProps) => {
   const { searchParams, options } = params

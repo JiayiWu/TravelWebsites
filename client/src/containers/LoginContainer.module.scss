@@ -19,6 +19,15 @@
 
     
   }
+  :local(.linkWrapper) {
+    margin-bottom: 10px;
+  }
+  :local(.link) {
+    color: #ffa800;
+    cursor: pointer;
+    // display: inline-block;
+    float: right;
+  }
   :local(.bottom) {
     background-color: rgba(0,0,0,.4);
     border-radius: 20px;
