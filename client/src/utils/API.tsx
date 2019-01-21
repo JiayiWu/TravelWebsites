@@ -30,7 +30,7 @@ const query = (url, params: paramProps) => {
     // POST 请求
     return fetch(serverOrigin + realUrl, { 
       method: 'POST',
-      // credentials: 
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
       },

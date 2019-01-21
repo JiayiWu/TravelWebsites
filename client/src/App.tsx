@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import logo from './logo.svg'
-import { Button } from 'antd'
+import history from './utils/history'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import Loadable from 'react-loadable'
 import styles from './App.module.scss'
@@ -19,7 +18,7 @@ const HeaderContainer = Loadable({
 class App extends Component {
   render() {
     return (
-      <Router>
+      <Router history={history}>
         <div style={{ width: '100%', height: '100%', color: '#666' }}>
           <Route path="/login" component={LoginContainer} />
           <Route path="/workspace" component={HeaderContainer} />

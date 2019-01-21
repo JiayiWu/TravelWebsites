@@ -39,19 +39,18 @@ class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
         if (err) {
           return
         }
-        console.log(err, value)
         if (type === FORM_TYPE.REGISTER) {
           API.query('/account/register', {
             options: {
               method: 'POST',
               body: JSON.stringify({
-                value
+                ...value
               })
             }
             
           }).then((json) => {
             if (json.code === 0) {
-              console.log('regist success')
+              
             }
           })
         }
