@@ -2,9 +2,12 @@ import API from '../utils/API'
 import messageHandler from '../utils/messageHandler'
 export const SET_BASIC = 'SET_BASIC'
 export const setUserInfo = (basicInfo) => (dispatch) => {
-  dispatch({
-    type: SET_BASIC,
-    payload: basicInfo,
+  return Promise.resolve().then(() => {
+    localStorage.setItem('userid', basicInfo.id)
+    dispatch({
+      type: SET_BASIC,
+      payload: basicInfo,
+    })
   })
 }
 

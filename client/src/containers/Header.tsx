@@ -47,11 +47,23 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
   }
   componentDidMount() {
     const { userId } = this.state
-    if (userId) {
+    console.log(userId, this.props.user.toJS())
+    if (userId && userId !== this.props.user.get('id')) {
       API.query('/user/info', {}).then(messageHandler).then((json) => {
         if (json.code === 0) {
           this.props.setUserInfo(json.data)
-        }
+        } 
+      })
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    console.log(nextProps)
+    const userId = localStorage.getItem('userid')
+    if (userId && userId !== nextProps.user.get('id')) {
+      API.query('/user/info', {}).then(messageHandler).then((json) => {
+        if (json.code === 0) {
+          this.props.setUserInfo(json.data)
+        } 
       })
     }
   }
@@ -86,12 +98,12 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
                 <Popover
                   placement="bottom"
                   content={(
-                    <div className={styles.logout}>
+                    <div className={styles.logout} onClick={() => logout()}>
                       退出登录
                     </div>
                   )}
                 >
-                  <div className={styles.user} style={{ backgroundImage: `url(${user.get('logoUrl')})` }}/>
+                  <div className={styles.user} style={{ backgroundImage: `url(${user.get('logoUrl') || Logo})` }}/>
                 </Popover>
                 
               </div>

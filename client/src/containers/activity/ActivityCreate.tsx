@@ -4,6 +4,8 @@ import { Form, Input, Upload, Icon, DatePicker, Radio, Button } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
 import styles from './ActivityCreate.module.scss'
 import MyEditor from '../../components/MyEditor'
+import API, { serverOrigin } from '../../utils/API'
+import messageHandler from '../../utils/messageHandler'
 
 interface ActivityCreateProps extends FormComponentProps {
 
@@ -13,6 +15,27 @@ const Dragger = Upload.Dragger
 const FormItem = Form.Item
 const RadioGroup = Radio.Group
 class ActivityCreate extends React.Component<ActivityCreateProps, any> {
+  state = {
+    coverUrl: ''
+  }
+
+  handleUploadFile = (options) => {
+    const { file } = options
+    let formData = new FormData()
+    formData.append('file', file)
+    API.query('/file/upload', {
+      options: {
+        method: 'POST',
+        body: formData
+      }
+    }).then((json) => {
+      if (json.code === 0) {
+        this.setState({
+          coverUrl: serverOrigin + '/' + json.data
+        })
+      }
+    })
+  }
 
   handleCreate = () => {
     const { validateFields } = this.props.form
@@ -21,6 +44,19 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
         return
       }
       // 创建发布
+      API.query('/activity/check', {
+        options: {
+          method: 'POST',
+          body: JSON.stringify({
+            ...value,
+            coverUrl: this.state.coverUrl,
+          })
+        }
+      }).then(messageHandler).then((json) => {
+        if (json.code === 0) {
+
+        }
+      })
     })
   }
 
@@ -61,12 +97,32 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
         <Form>
           <FormItem {...formItemLayout} label="上传封面图片">
             {coverDecorator(
-              <Dragger>
+              <Dragger
+                accept="image/*"
+                customRequest={this.handleUploadFile}
+                // action={(file) => {
+                //   const formData = new FormData()
+                //   formData.append('file', file.response);
+                //   (window as any).f = file
+                //   return API.query('/file/upload', {
+                //     options: {
+                //       method: 'POST',
+                //       body: formData,
+                //     },
+                //   }).then((json) => {
+                //     if (json.code === 0) {
+                //       this.setState({
+                //         coverUrl: serverOrigin + '/' + json.data
+                //       })
+                //     }
+                //   })
+                // }}
+              >
                 <p className="ant-upload-drag-icon">
                   <Icon type="inbox" />
                 </p>
                 <p className="ant-upload-text">点击或拖拽文件到这里进行上传</p>
-                <p className="ant-upload-hint">Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files</p>
+                {/* <p className="ant-upload-hint">Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files</p> */}
               </Dragger>
             )}
           </FormItem>

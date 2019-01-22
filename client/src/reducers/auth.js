@@ -14,7 +14,6 @@ const initialState = fromJS({
 const UserReducer = (state = initialState, action) => {
   switch(action.type) {
     case SET_BASIC:
-      localStorage.setItem('userid', action.payload.id)
       return state.merge(fromJS(action.payload))
     case LOGOUT:
       localStorage.clear()

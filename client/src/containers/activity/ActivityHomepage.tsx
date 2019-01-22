@@ -1,8 +1,14 @@
 import * as React from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { Carousel, Icon, Button } from 'antd'
 import LinesEllipsis from 'react-lines-ellipsis'
 import moment from 'moment'
 import styles from './ActivityHomepage.module.scss'
+import API from '../../utils/API'
+import messageHandler from '../../utils/messageHandler'
+import { UserBasicProps } from '../profile/ProfileHomepage'
+import { pushURL } from '../../actions/route'
 import C1 from '@utils/image/homepage/carousel1.jpg'
 import C2 from '@utils/image/homepage/carousel2.jpg'
 import C3 from '@utils/image/homepage/carousel3.jpg'
@@ -13,9 +19,24 @@ import A2 from '@utils/image/activity/a2.jpg'
 import A3 from '@utils/image/activity/a3.jpg'
 import A4 from '@utils/image/activity/a4.jpg'
 import A5 from '@utils/image/activity/a5.jpg'
+import { fromJS } from 'immutable';
 
 interface ActivityHomepageProps {
+  user: any, // redux
+  pushURL: Function, // redux
+}
 
+interface ActivityItemProps {
+  coverUrl: string,
+  creator: UserBasicProps,
+  description: string,
+  endTime: number,
+  id: number,
+  joinType: string,
+  location: string,
+  startTime: number,
+  attendList: Array<UserBasicProps>,
+  name: string,
 }
 
 const CAROUSEL_LIST = [{
@@ -82,8 +103,29 @@ const WEEK_DAYS = ['日', '一', '二', '三', '四', '五', '六']
 
 class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
   state = {
-    recomendList: CAROUSEL_LIST,
-    activityList: ACTIVITY_LIST,
+    recomendList: [] as Array<ActivityItemProps>,
+    activityList: [] as Array<ActivityItemProps>,
+  }
+  componentDidMount() {
+    this.fetchActivityList().then((json) => {
+      if (json.code === 0) {
+        this.setState({
+          activityList: json.data,
+          recomendList: json.data && (json.data.length > 5 ? json.data.slice(0, 5) : json.data)
+        })
+      }
+    })
+  }
+  fetchActivityList = () => {
+    return API.query('/activity/list', {
+      options: {
+        method: 'POST',
+        body: JSON.stringify({
+          lastTimestamp: this.state.activityList.length > 0 ? this.state.activityList[0].startTime : 0,
+          size: 10,
+        })
+      }
+    }).then(messageHandler)
   }
   renderHeader = () => {
     const { recomendList } = this.state
@@ -91,14 +133,14 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
       <Carousel effect="fade" vertical autoplay>
         {recomendList.map((act, index) => {
           return (
-            <div key={index}>
-              <div className={styles.item} style={{ backgroundImage: `url(${act.image})`}}>
+            <div key={index} style={{ height: '382px'}}>
+              <div className={styles.item} style={{ backgroundImage: `url(${act.coverUrl})`}}>
                 <div className={styles.time}>
                   <div className={styles.month}>
-                    {moment(act.time).format('D')}
+                    {moment(act.endTime).format('D')}
                   </div>
                   <div>
-                    {moment(act.time).format('/MMM.YYYY')}
+                    {moment(act.endTime).format('/MMM.YYYY')}
                   </div>
                 </div>
                 <div className={styles.title}>{act.name}</div>
@@ -112,14 +154,20 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
     )
   }
   renderActCard = (act) => {
-    const actTime = moment(act.time)
+    const { user } = this.props
+    const actTime = moment(act.endTime)
     return (
       <div className={styles.actCard} key={act.id}>
-        <div style={{ backgroundImage: `url(${act.image})`}} />
+        <div style={{ backgroundImage: `url(${act.coverUrl})`}} />
         <div className={styles.right}>
           <div className={styles.titleWrapper}>
             <span className={styles.title}>{act.name}</span>
-            <Button type="default">立即参加</Button>
+            {act.creator && user && act.creator.id != user.get('id') ? 
+              <Button type="default">立即参加</Button>
+              :
+              <Button type="default">查看详情</Button>
+            }
+            
           </div>
           <div className={styles.infoLine}>
             <div className={styles.infoItem}>
@@ -128,7 +176,7 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
             </div>
             <div className={styles.infoItem}>
               <Icon type="team" />
-              {act.partiCount}人参加
+              {act.attendList.length}人参加
             </div>
             <div className={styles.inforItem}>
               <Icon type="calendar" />
@@ -155,7 +203,7 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
         <div className={styles.listContainer} >
           <div className={styles.listHeader}>
             <h3>活动列表</h3>
-            <Button type="primary" className={styles.createBtn}>创建活动</Button>
+            <Button type="primary" className={styles.createBtn} onClick={() => this.props.pushURL('/workspace/activity/create')}>创建活动</Button>
           </div>
           {activityList.map((act) => {
             return this.renderActCard(act)
@@ -166,4 +214,16 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
   }
 }
 
-export default ActivityHomepage
+function mapStateToProps(state) {
+  return {
+    user: fromJS(state).get('user')
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    pushURL: bindActionCreators(pushURL, dispatch)
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ActivityHomepage)

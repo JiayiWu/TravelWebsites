@@ -59,8 +59,9 @@ class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
             
           }).then(messageHandler).then((json) => {
             if (json.code === 0) {
-              setUserInfo(json.data)
-              pushURL('/workspace/activity')
+              setUserInfo(json.data).then(() => {
+                pushURL('/workspace/activity')
+              })
             }
           })
         } else {
@@ -74,8 +75,9 @@ class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
             }
           }).then(messageHandler).then((json) => {
             if (json.code === 0) {
-              setUserInfo(json.data)
-              pushURL('/workspace/activity')
+              setUserInfo(json.data).then(() => {
+                pushURL('/workspace/activity')
+              })
             }
           })
         }

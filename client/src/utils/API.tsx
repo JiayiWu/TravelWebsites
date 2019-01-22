@@ -10,7 +10,7 @@ interface paramProps {
 }
 
 // const serverOrigin = 'http://192.168.31.139:8181'
-const serverOrigin = 'http://119.29.157.178:8181' // 线上地址
+export const serverOrigin = 'http://119.29.157.178:8181' // 线上地址
 
 const query = (url, params: paramProps) => {
   const { searchParams, options } = params
@@ -35,12 +35,11 @@ const query = (url, params: paramProps) => {
       },
       body: options.body
     }).then((res) => res.json()).then((res) => {
-      console.log(res)
       return res
     })
   } else {
     // 默认GET请求
-    return fetch(serverOrigin + realUrl).then((res) => res.json())
+    return fetch(serverOrigin + realUrl, { credentials: 'include' }).then((res) => res.json())
   }
 }
 

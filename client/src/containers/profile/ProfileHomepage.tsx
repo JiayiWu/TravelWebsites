@@ -4,7 +4,6 @@ import { FormComponentProps } from 'antd/lib/form/Form'
 import VerifyImage from '@utils/image/profile/header.jpeg'
 import styles from './ProfileHomepage.module.scss'
 
-console.log(VerifyImage)
 interface HomepageProps extends FormComponentProps {
 
 }
@@ -13,6 +12,15 @@ interface InputProps {
   value: string,
   onChange: (e: any) => void,
   placeholder?: string,
+}
+
+export interface UserBasicProps {
+  id: number,
+  logoUrl: string,
+  mail: string,
+  mobile: string,
+  name: string,
+  type: number,
 }
 
 
