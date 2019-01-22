@@ -9,8 +9,11 @@ const initialState = fromJS({
 const routeReducer = (state = initialState, action) => {
   switch (action.type) {
     case ROUTER_CHANGE:
-      history.push(action.payload)
-      return state.set('url', action.payload)
+      history.push(action.payload.url, action.payload.state)
+      // if (action.payload.state) {
+      //   history.pushState(action.payload.state, 'activity')
+      // }
+      return state.set('url', action.payload.url).set('state', action.payload.state)
     default:
       return state
   }

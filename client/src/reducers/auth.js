@@ -1,4 +1,7 @@
-import { SET_BASIC } from '../actions/auth'
+import { 
+  SET_BASIC,
+  LOGOUT
+} from '../actions/auth'
 import { fromJS } from 'immutable'
 const initialState = fromJS({
   mail: '',
@@ -11,7 +14,11 @@ const initialState = fromJS({
 const UserReducer = (state = initialState, action) => {
   switch(action.type) {
     case SET_BASIC:
+      localStorage.setItem('userid', action.payload.id)
       return state.merge(fromJS(action.payload))
+    case LOGOUT:
+      localStorage.clear()
+      return state.merge(initialState)
     default:
       return state
   }

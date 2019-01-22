@@ -1,23 +1,26 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { fromJS } from 'immutable'
 import { Input, Form, Button } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
 import styles from './LoginContainer.module.scss'
 import Background from '@utils/image/background.jpg'
 import API from '../utils/API'
 import messageHandler from '../utils/messageHandler'
+import history from '../utils/history'
 import { setUserInfo } from '../actions/auth'
 import { pushURL } from '../actions/route'
 
 interface LoginProps {
   setUserInfo: Function, // redux
   pushURL: Function, // redux
+  route: any, // redux
 }
 
 const FormItem = Form.Item
 
-const FORM_TYPE = {
+export const FORM_TYPE = {
   USER_LOGIN: 0,
   ADMIN_LOGIN: 1,
   REGISTER: 2,
@@ -25,10 +28,9 @@ const FORM_TYPE = {
 
 const FORM_NAMES = ['登录', '管理员登录', '注册']
 
-
 class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
   state = {
-    type: FORM_TYPE.USER_LOGIN,
+    type: (this.props.route || fromJS({})).getIn(['state', 'type']) || FORM_TYPE.USER_LOGIN,
   }
   handleChangeType = (type) => {
     const { resetFields } = this.props.form
@@ -205,7 +207,9 @@ class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
 }
 
 function mapStateToProps(state) {
-  return null
+  return {
+    route: fromJS(state).get('route')
+  }
 }
 function mapDispatchToProps(dispatch) {
   return {

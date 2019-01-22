@@ -1,8 +1,11 @@
 
 export const ROUTER_CHANGE = 'ROUTER_CHANGE'
-export const pushURL = (url) => {
+export const pushURL = (url, state={}) => {
   return {
     type: ROUTER_CHANGE,
-    payload: url
+    payload: {
+      url,
+      state
+    }
   }
 }

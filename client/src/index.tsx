@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { fromJS } from 'immutable'
 import './index.css';
 import App from './App';
 import { Provider } from 'react-redux'
@@ -7,7 +8,11 @@ import reducers from './reducers/index'
 import createStore from './store'
 import * as serviceWorker from './serviceWorker';
 
-let store = createStore(reducers)
+let store = createStore(reducers);
+
+(window as any).logStore = () => {
+  console.log(fromJS(store.getState()).toJS())
+}
 
 ReactDOM.render(
   <Provider store={store}>

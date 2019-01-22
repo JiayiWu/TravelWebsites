@@ -9,8 +9,8 @@ interface paramProps {
   }
 }
 
-const serverOrigin = 'http://192.168.31.139:8181'
-// const serverOrigin = 'http://119.29.157.178:8181' // 线上地址
+// const serverOrigin = 'http://192.168.31.139:8181'
+const serverOrigin = 'http://119.29.157.178:8181' // 线上地址
 
 const query = (url, params: paramProps) => {
   const { searchParams, options } = params
@@ -18,11 +18,11 @@ const query = (url, params: paramProps) => {
   //   return null
   // }
 
-  const realUrl = searchParams ? searchParams.keys().reduce((str, key) => {
+  const realUrl = searchParams ? Object.keys(searchParams).reduce((str, key) => {
     if (str === url) {
-      return str + '?' + searchParams[key]
+      return str + '?' + key + '=' + searchParams[key]
     } else {
-      return str + '&' + searchParams[key]
+      return str + '&' + key + '=' + searchParams[key]
     }
   }, url) : url
   if (options && options.method === 'POST') {
@@ -40,7 +40,7 @@ const query = (url, params: paramProps) => {
     })
   } else {
     // 默认GET请求
-    return fetch(realUrl).then((res) => res.json())
+    return fetch(serverOrigin + realUrl).then((res) => res.json())
   }
 }
 
