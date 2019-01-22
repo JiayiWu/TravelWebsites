@@ -2,6 +2,10 @@ import React, { Component } from 'react'
 import history from './utils/history'
 import { Router, Route } from 'react-router-dom'
 import Loadable from 'react-loadable'
+import { LocaleProvider } from 'antd'
+import zhCN from 'antd/lib/locale-provider/zh_CN'
+import moment from 'moment'
+import 'moment/locale/zh-cn'
 import styles from './App.module.scss'
 
 
@@ -16,33 +20,39 @@ const HeaderContainer = Loadable({
 })
 
 class App extends Component {
+  componentWillMount() {
+    moment.locale('zh-cn')
+  }
   render() {
     return (
-      <Router history={history}>
-        <div style={{ width: '100%', height: '100%', color: '#666' }}>
-          <Route path="/login" component={LoginContainer} />
-          <Route path="/workspace" component={HeaderContainer} />
-        </div>
-        
-        {/* <div className={styles.app}>
-          <header className={styles.header}>
-            <img src={logo} className={styles.logo} alt="logo" />
-            <p>
-              Edit <code>src/App.js</code> and save to reload.
-              
-            </p>
-            <a
-              className={styles.link}
-              href="https://reactjs.org"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn React
-            </a>
-          </header>
-          <Button type="primary">确定</Button>
-        </div> */}
-      </Router>
+      <LocaleProvider locale={zhCN}>
+        <Router history={history}>
+          <div style={{ width: '100%', height: '100%', color: '#666' }}>
+            <Route path="/login" component={LoginContainer} />
+            <Route path="/workspace" component={HeaderContainer} />
+          </div>
+          
+          {/* <div className={styles.app}>
+            <header className={styles.header}>
+              <img src={logo} className={styles.logo} alt="logo" />
+              <p>
+                Edit <code>src/App.js</code> and save to reload.
+                
+              </p>
+              <a
+                className={styles.link}
+                href="https://reactjs.org"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn React
+              </a>
+            </header>
+            <Button type="primary">确定</Button>
+          </div> */}
+        </Router>
+      </LocaleProvider>
+      
       
     );
   }

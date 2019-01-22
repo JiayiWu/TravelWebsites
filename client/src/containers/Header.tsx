@@ -47,7 +47,6 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
   }
   componentDidMount() {
     const { userId } = this.state
-    console.log(userId, this.props.user.toJS())
     if (userId && userId !== this.props.user.get('id')) {
       API.query('/user/info', {}).then(messageHandler).then((json) => {
         if (json.code === 0) {
@@ -57,7 +56,6 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
     }
   }
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps)
     const userId = localStorage.getItem('userid')
     if (userId && userId !== nextProps.user.get('id')) {
       API.query('/user/info', {}).then(messageHandler).then((json) => {

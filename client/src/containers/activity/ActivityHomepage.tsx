@@ -9,6 +9,7 @@ import API from '../../utils/API'
 import messageHandler from '../../utils/messageHandler'
 import { UserBasicProps } from '../profile/ProfileHomepage'
 import { pushURL } from '../../actions/route'
+import JoinModal from './modal/JoinModal'
 import C1 from '@utils/image/homepage/carousel1.jpg'
 import C2 from '@utils/image/homepage/carousel2.jpg'
 import C3 from '@utils/image/homepage/carousel3.jpg'
@@ -26,7 +27,7 @@ interface ActivityHomepageProps {
   pushURL: Function, // redux
 }
 
-interface ActivityItemProps {
+export interface ActivityItemProps {
   coverUrl: string,
   creator: UserBasicProps,
   description: string,
@@ -105,6 +106,10 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
   state = {
     recomendList: [] as Array<ActivityItemProps>,
     activityList: [] as Array<ActivityItemProps>,
+    joinModal: {
+      show: false,
+      joinAct: null,
+    }
   }
   componentDidMount() {
     this.fetchActivityList().then((json) => {
@@ -126,6 +131,9 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
         })
       }
     }).then(messageHandler)
+  }
+  jumpToAct = (activity) => {
+    this.props.pushURL(`/workspace/activity/detail/${activity.id}`)
   }
   renderHeader = () => {
     const { recomendList } = this.state
@@ -157,15 +165,23 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
     const { user } = this.props
     const actTime = moment(act.endTime)
     return (
-      <div className={styles.actCard} key={act.id}>
+      <div className={styles.actCard} key={act.id} onClick={() => this.jumpToAct(act)}>
         <div style={{ backgroundImage: `url(${act.coverUrl})`}} />
         <div className={styles.right}>
           <div className={styles.titleWrapper}>
             <span className={styles.title}>{act.name}</span>
             {act.creator && user && act.creator.id != user.get('id') ? 
-              <Button type="default">立即参加</Button>
+              <Button type="default" onClick={(e) => {
+                e.stopPropagation()
+                this.setState({
+                  joinModal: {
+                    show: true,
+                    joinAct: act,
+                  }
+                })
+              }}>立即参加</Button>
               :
-              <Button type="default">查看详情</Button>
+              <Button type="default" onClick={() => this.jumpToAct(act)}>查看详情</Button>
             }
             
           </div>
@@ -194,7 +210,7 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
     )
   }
   public render() {
-    const { activityList } = this.state
+    const { activityList, joinModal } = this.state
     return (
       <div className={styles.container}>
         <div className={styles.headerWrapper}>
@@ -209,6 +225,26 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
             return this.renderActCard(act)
           })}
         </div>
+        {joinModal.show && joinModal.joinAct &&
+          <JoinModal 
+            onOk={() => {
+              // TODO 刷新列表
+              this.setState({
+                joinModal: {
+                  show: false,
+                  joinAct: null,
+                }
+              })
+            }}
+            activity={joinModal.joinAct}
+            onCancel={() => this.setState({
+              joinModal: {
+                show: false,
+                joinAct: null,
+              }
+            })}
+          />
+        }
       </div>
     )
   }

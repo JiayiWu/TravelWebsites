@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { connect } from 'react-redux'
 // import { RouteComponentProps } from 'react-router'
 import { Form, Input, Upload, Icon, DatePicker, Radio, Button } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
@@ -6,9 +7,10 @@ import styles from './ActivityCreate.module.scss'
 import MyEditor from '../../components/MyEditor'
 import API, { serverOrigin } from '../../utils/API'
 import messageHandler from '../../utils/messageHandler'
-
+import moment from 'moment'
+import { fromJS } from 'immutable'
 interface ActivityCreateProps extends FormComponentProps {
-
+  user: any, // redux
 }
 
 const Dragger = Upload.Dragger
@@ -22,23 +24,40 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
   handleUploadFile = (options) => {
     const { file } = options
     let formData = new FormData()
+    console.log(options)
     formData.append('file', file)
-    API.query('/file/upload', {
-      options: {
-        method: 'POST',
-        body: formData
-      }
-    }).then((json) => {
+    fetch(serverOrigin + '/file/upload', {
+      method: 'POST',
+      body: formData,
+      credentials: 'include',
+    }).then((res) => res.json()).then((json) => {
       if (json.code === 0) {
         this.setState({
           coverUrl: serverOrigin + '/' + json.data
         })
       }
     })
+    // API.query('/file/upload', {
+    //   options: {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data; boundary=2333'
+    //     },
+    //     body: formData
+    //   }
+    // }).then((json) => {
+    //   if (json.code === 0) {
+    //     this.setState({
+    //       coverUrl: serverOrigin + '/' + json.data
+    //     })
+    //   }
+    // })
   }
 
   handleCreate = () => {
     const { validateFields } = this.props.form
+    const { user } = this.props
+    console.log(user.toJS())
     validateFields((err, value) => {
       if (err) {
         return
@@ -50,11 +69,14 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
           body: JSON.stringify({
             ...value,
             coverUrl: this.state.coverUrl,
+            endTime: moment(value.endTime).valueOf(),
+            startTime: moment(value.startTime).valueOf(),
+            createId: user && user.get('id')
           })
         }
       }).then(messageHandler).then((json) => {
         if (json.code === 0) {
-
+          
         }
       })
     })
@@ -62,6 +84,7 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
 
   public render() {
     const { getFieldDecorator, getFieldValue } = this.props.form
+    const { coverUrl } = this.state
     const coverDecorator = getFieldDecorator('coverUrl', {
       rules: [{
         required: true,
@@ -92,6 +115,7 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
       }
     }
     const descriptionDecorator = getFieldDecorator('description', {})
+    const coverTmp = coverUrl.split('/')
     return (
       <div className={styles.container}>
         <Form>
@@ -100,6 +124,21 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
               <Dragger
                 accept="image/*"
                 customRequest={this.handleUploadFile}
+                fileList={coverUrl ? [{
+                  name: coverTmp[coverTmp.length - 1],
+                  uid: 'uid',
+                  status: 'done',
+                  url: coverUrl,
+                  size: 0,
+                  type: 'image'
+                }] : []}
+                onRemove={(file) => {
+                  console.log(file)
+                  this.setState({
+                    coverUrl: ''
+                  })
+                  return true
+                }}
                 // action={(file) => {
                 //   const formData = new FormData()
                 //   formData.append('file', file.response);
@@ -178,7 +217,7 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
           </FormItem>
           <FormItem className={styles.btnGroup}>
             <Button type="default">取消编辑</Button>
-            <Button type="primary" onClick={() => this.handleCreate}>立即创建</Button>
+            <Button type="primary" onClick={() => this.handleCreate()}>立即创建</Button>
           </FormItem>
         </Form>
       </div>
@@ -186,4 +225,10 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
   }
 }
 
-export default Form.create()(ActivityCreate)
+function mapStateToProps(state) {
+  return {
+    user: fromJS(state).get('user')
+  }
+}
+
+export default connect(mapStateToProps)(Form.create()(ActivityCreate))

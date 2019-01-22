@@ -6,6 +6,7 @@ interface paramProps {
   options?: {
     method?: string, // GET / POST, default GET
     body?: any, // POST
+    headers?: any, 
   }
 }
 
@@ -33,7 +34,7 @@ const query = (url, params: paramProps) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: options.body
+      ...options
     }).then((res) => res.json()).then((res) => {
       return res
     })
