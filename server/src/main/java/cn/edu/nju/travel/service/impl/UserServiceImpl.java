@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     FileService fileService;
 
     @Override
-    public Integer register(String name, String mobile, String mail, String password, String logoUrl)
+    public UserInfoVO register(String name, String mobile, String mail, String password, String logoUrl)
             throws Exception {
         if(userDao.findByName(name) != null){
             throw new ServerException(ResponseCode.Error, "用户名已存在");
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
         userEntity.setPassword(MD5Encryption.encrypt(password));
         userEntity.setLogoUrl(logoUrl);
         UserEntity entity = userDao.save(userEntity);
-        return userEntity.getId();
+        return new UserInfoVO(entity);
     }
 
     @Override

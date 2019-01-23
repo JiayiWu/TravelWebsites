@@ -6,10 +6,11 @@
 
   :local(.headerWrapper) {
     width: 100%;
+    height: 382px;
     margin-bottom: 20px;
     :local(.item) {
       background-image: url();
-      background-size: cover;
+      background-size: contain;
       background-position: center center;
       height: 382px;
       position: relative;

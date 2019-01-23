@@ -1,39 +1,48 @@
 import * as React from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { fromJS } from 'immutable'
 import { Input, Form, Button } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
 import styles from './LoginContainer.module.scss'
 import Background from '@utils/image/background.jpg'
 import API from '../utils/API'
 import messageHandler from '../utils/messageHandler'
+import history from '../utils/history'
+import { setUserInfo } from '../actions/auth'
+import { pushURL } from '../actions/route'
 
 interface LoginProps {
-
+  setUserInfo: Function, // redux
+  pushURL: Function, // redux
+  route: any, // redux
 }
 
 const FormItem = Form.Item
 
-const FORM_TYPE = {
-  LOGIN: 0,
-  REGISTER: 1,
+export const FORM_TYPE = {
+  USER_LOGIN: 0,
+  ADMIN_LOGIN: 1,
+  REGISTER: 2,
 }
 
-const FORM_NAMES = ['登录', '注册']
-
+const FORM_NAMES = ['登录', '管理员登录', '注册']
 
 class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
   state = {
-    type: FORM_TYPE.LOGIN,
+    type: (this.props.route || fromJS({})).getIn(['state', 'type']) || FORM_TYPE.USER_LOGIN,
   }
-  handleChangeType = () => {
+  handleChangeType = (type) => {
     const { resetFields } = this.props.form
     this.setState({
-      type: this.state.type === FORM_TYPE.LOGIN ? FORM_TYPE.REGISTER : FORM_TYPE.LOGIN
+      type,
     })
     resetFields()
   }
   handleSubmit = () => {
     const { type } = this.state
     const { validateFields } = this.props.form
+    const { setUserInfo, pushURL } = this.props
     // if (type === FORM_TYPE.LOGIN) {
       validateFields((err, value) => {
         if (err) {
@@ -48,9 +57,27 @@ class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
               })
             }
             
-          }).then((json) => {
+          }).then(messageHandler).then((json) => {
             if (json.code === 0) {
-              
+              setUserInfo(json.data).then(() => {
+                pushURL('/workspace/activity')
+              })
+            }
+          })
+        } else {
+          API.query('/account/login', {
+            options: {
+              method: 'POST',
+              body: JSON.stringify({
+                ...value,
+                type,
+              })
+            }
+          }).then(messageHandler).then((json) => {
+            if (json.code === 0) {
+              setUserInfo(json.data).then(() => {
+                pushURL('/workspace/activity')
+              })
             }
           })
         }
@@ -85,7 +112,7 @@ class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
         {this.getRePasswordDecorator()(<Input placeholder="请重新输入您的密码" type="password"/>)}
       </FormItem>,
       <FormItem key="phone">
-        {getFieldDecorator('phone', {
+        {getFieldDecorator('mobile', {
           rules: [{
             validator: (rules, value, callback) => {
               const mail = getFieldValue('mail')
@@ -149,26 +176,48 @@ class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
             <FormItem>
               {passwordDecorator(<Input placeholder="请填写密码" type="password"/>)}
             </FormItem>
+            {(type === FORM_TYPE.USER_LOGIN || type === FORM_TYPE.ADMIN_LOGIN) &&
+              <FormItem className={styles.linkWrapper}>
+                {type === FORM_TYPE.USER_LOGIN ? 
+                  <div className={styles.link} onClick={() => this.handleChangeType(FORM_TYPE.ADMIN_LOGIN)}>管理员入口</div>
+                  :
+                  <div className={styles.link} onClick={() => this.handleChangeType(FORM_TYPE.USER_LOGIN)}>普通用户入口</div>
+                }
+              </FormItem>
+            }
             {type === FORM_TYPE.REGISTER && this.renderRegister()}
             <FormItem>
               <Button type="primary" style={{ width: '100%' }} onClick={() => this.handleSubmit()}>{FORM_NAMES[this.state.type]}</Button>
             </FormItem>
           </Form>
         </div>
-        {type === FORM_TYPE.LOGIN ? 
+        {type === FORM_TYPE.REGISTER ? 
           <div className={styles.bottom}>
-            还没有账号？
-            <div className={styles.link} onClick={() => this.handleChangeType()}>马上注册</div>
+            已经有账号？
+            <div className={styles.link} onClick={() => this.handleChangeType(FORM_TYPE.USER_LOGIN)}>马上登录</div>
           </div>
           :
           <div className={styles.bottom}>
-            已经有账号？
-            <div className={styles.link} onClick={() => this.handleChangeType()}>马上登录</div>
+            还没有账号？
+            <div className={styles.link} onClick={() => this.handleChangeType(FORM_TYPE.REGISTER)}>马上注册</div>
           </div>
+          
         }
       </div>
     )
   }
 }
 
-export default Form.create()(LoginContainer)
+function mapStateToProps(state) {
+  return {
+    route: fromJS(state).get('route')
+  }
+}
+function mapDispatchToProps(dispatch) {
+  return {
+    setUserInfo: bindActionCreators(setUserInfo, dispatch),
+    pushURL: bindActionCreators(pushURL, dispatch)
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(LoginContainer))

@@ -1,14 +1,28 @@
 import * as React from 'react'
+import { connect } from 'react-redux'
+import { fromJS } from 'immutable'
+import { bindActionCreators } from 'redux'
 import Loadable from 'react-loadable'
 import { RouteComponentProps } from 'react-router'
 import { Route, Switch } from 'react-router-dom'
-import { Icon } from 'antd'
+import { Icon, Popover } from 'antd'
 import styles from './Header.module.scss'
+import API from '../utils/API'
+import messageHandler from '../utils/messageHandler'
 import Logo from '@utils/image/logo.png'
+import { pushURL } from '../actions/route'
+import { 
+  setUserInfo,
+  logout, 
+} from '../actions/auth'
 import NoticeIndex from './notice/NoticeIndex'
+import { FORM_TYPE } from './LoginContainer'
 
 interface HeaderProps {
-
+  user: any, // redux
+  pushURL: Function, // redux
+  setUserInfo: Function, // redux
+  logout: Function, // redux
 }
 
 const TYPE = {
@@ -26,15 +40,38 @@ const ProfileIndex = Loadable({
   loading: () => <div>loading...</div>
 })
 
-class Header extends React.Component<RouteComponentProps &HeaderProps, any> {
+class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
   state = {
-    showNoticePanel: false
+    showNoticePanel: false,
+    userId: localStorage.getItem('userid')
   }
+  componentDidMount() {
+    const { userId } = this.state
+    if (userId && userId !== this.props.user.get('id')) {
+      API.query('/user/info', {}).then(messageHandler).then((json) => {
+        if (json.code === 0) {
+          this.props.setUserInfo(json.data)
+        } 
+      })
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    const userId = localStorage.getItem('userid')
+    if (userId && userId !== nextProps.user.get('id')) {
+      API.query('/user/info', {}).then(messageHandler).then((json) => {
+        if (json.code === 0) {
+          this.props.setUserInfo(json.data)
+        } 
+      })
+    }
+  }
+ 
   public render() {
     const { showNoticePanel } = this.state
-    const { match, location } = this.props
+    const { match, location, user, pushURL, logout } = this.props
     const url = match.path
     const type = (location.pathname.split('/')[2] || 'homepage').toLowerCase()
+    const userId = localStorage.getItem('userid')
     return (
       <div className={styles.container}>
         <div className={styles.headerContainer}>
@@ -53,19 +90,34 @@ class Header extends React.Component<RouteComponentProps &HeaderProps, any> {
                 </div>
               </div>
             </div>
-            <div className={styles.right}>
-              {/* <div className={styles.link}>登录</div>
-              |
-              <div className={styles.link}>注册</div> */}
-              <Icon type="bell" onClick={() => this.setState({ showNoticePanel: !showNoticePanel })}/>
-              <div className={styles.user} style={{ backgroundImage: `url(${Logo}` }}/>
-            </div>
+            {userId && user && user.get('id') ? 
+              <div className={styles.right}>
+                <Icon type="bell" onClick={() => this.setState({ showNoticePanel: !showNoticePanel })}/>
+                <Popover
+                  placement="bottom"
+                  content={(
+                    <div className={styles.logout} onClick={() => logout()}>
+                      退出登录
+                    </div>
+                  )}
+                >
+                  <div className={styles.user} style={{ backgroundImage: `url(${user.get('logoUrl') || Logo})` }}/>
+                </Popover>
+                
+              </div>
+              :
+              <div className={styles.right}>
+                <div className={styles.link} onClick={() => pushURL('/login', { type: FORM_TYPE.USER_LOGIN })}>登录</div>
+                |
+                <div className={styles.link} onClick={() => pushURL('/login', { type: FORM_TYPE.REGISTER })}>注册</div>
+              </div> 
+            }
           </div>
           
         </div>
         <div className={styles.content} style={{ overflow: showNoticePanel ? 'hidden' : 'auto', height: showNoticePanel ? 'calc(100% - 58px)' : 'auto'}}>
           <Switch>
-            {/* <Route path={`${url}`} component={ActivityIndex}/> */}
+            <Route path={`${url}/activity`} component={ActivityIndex}/>
             <Route path={`${url}/my`} component={ProfileIndex} />
           </Switch>
         </div>
@@ -78,4 +130,19 @@ class Header extends React.Component<RouteComponentProps &HeaderProps, any> {
   }
 }
 
-export default Header
+function mapStateToProps(state) {
+  return {
+    user: fromJS(state).get('user')
+    // user: fromJS(state).get('user')
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    pushURL: bindActionCreators(pushURL, dispatch),
+    setUserInfo: bindActionCreators(setUserInfo, dispatch),
+    logout: bindActionCreators(logout, dispatch),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header)

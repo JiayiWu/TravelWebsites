@@ -1,14 +1,27 @@
 import * as React from 'react'
+import { RouteComponentProps } from 'react-router'
 import { Icon } from 'antd'
 import styles from './ActivityDetail.module.scss'
+import API from '../../utils/API'
+import messageHandler from '../../utils/messageHandler'
 import Logo from '@utils/image/activity/a1.jpg'
 import COVER from '@utils/image/activity/a2.jpg'
 import CREATOR from '@utils/image/activity/a4.jpg'
 
 import ActivityDetailContent from './components/ActivityDetailContent'
+import { UserBasicProps } from '../profile/ProfileHomepage'
 
-interface ActivityDetailProps {
-
+export interface ActivityDetailProps {
+  coverUrl: string,
+  creator: UserBasicProps,
+  description: string,
+  endTime: number,
+  id: number,
+  joinType: string,
+  location: string,
+  startTime: number,
+  attendList: Array<UserBasicProps>,
+  title: string,
 }
 
 const USER = {
@@ -33,13 +46,26 @@ const DETAIL = {
   title: '烎潮音发布夜烎潮音发布夜烎潮音发布夜烎潮音发布夜烎潮音发布夜烎潮音发布夜'
 }
 
-class ActivityDetail extends React.Component<ActivityDetailProps, any> {
-  state = {
-    detail: DETAIL
+class ActivityDetail extends React.Component<RouteComponentProps, { detail: ActivityDetailProps | null }> {
+  state : { detail: ActivityDetailProps | null } = {
+    detail: null
   }
+  
+  componentDidMount() {
+    const { match } = this.props
+    const params = match.params as any
+    API.query(`/activity/info/${params.id}`, {}).then((messageHandler)).then((json) => {
+      if (json.code === 0) {
+        this.setState({
+          detail: json.data
+        })
+      }
+    })
+  }
+
   public render() {
     const { detail } = this.state
-    return (
+    return detail && (
       <div className={styles.container}>
         <div className={styles.headerContainer} style={{ backgroundImage: `url(${detail.coverUrl})`}}>
           <h1 className={styles.titleWrapper}>

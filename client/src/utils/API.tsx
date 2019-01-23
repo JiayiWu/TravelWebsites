@@ -6,27 +6,27 @@ interface paramProps {
   options?: {
     method?: string, // GET / POST, default GET
     body?: any, // POST
+    headers?: any, 
   }
 }
 
-const serverOrigin = 'http://localhost:8181'
+// const serverOrigin = 'http://192.168.31.139:8181'
+export const serverOrigin = 'http://119.29.157.178:8181' // 线上地址
 
 const query = (url, params: paramProps) => {
   const { searchParams, options } = params
-  console.log(options, url)
   // if (!url) {
   //   return null
   // }
 
-  const realUrl = searchParams ? searchParams.keys().reduce((str, key) => {
+  const realUrl = searchParams ? Object.keys(searchParams).reduce((str, key) => {
     if (str === url) {
-      return str + '?' + searchParams[key]
+      return str + '?' + key + '=' + searchParams[key]
     } else {
-      return str + '&' + searchParams[key]
+      return str + '&' + key + '=' + searchParams[key]
     }
   }, url) : url
   if (options && options.method === 'POST') {
-    console.log(options)
     // POST 请求
     return fetch(serverOrigin + realUrl, { 
       method: 'POST',
@@ -34,14 +34,13 @@ const query = (url, params: paramProps) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: options.body
+      ...options
     }).then((res) => res.json()).then((res) => {
-      console.log(res)
       return res
     })
   } else {
     // 默认GET请求
-    return fetch(realUrl).then((res) => res.json())
+    return fetch(serverOrigin + realUrl, { credentials: 'include' }).then((res) => res.json())
   }
 }
 

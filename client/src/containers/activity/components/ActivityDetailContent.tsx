@@ -2,29 +2,11 @@ import * as React from 'react'
 import moment from 'moment'
 import { Icon, Tabs } from 'antd'
 import styles from './ActivityDetailContent.module.scss'
-
-interface UserProps {
-  id: number,
-  logoUrl: string,
-  mail: string,
-  mobile: string,
-  name: string,
-  type: number
-}
+import { UserBasicProps } from '../../profile/ProfileHomepage'
+import { ActivityDetailProps } from '../ActivityDetail'
 
 interface DetailContentProps {
-  detail: {
-    attendList: Array<UserProps>,
-    coverUrl: string,
-    creator: UserProps,
-    description: string,
-    endTime: number,
-    id: number,
-    joinType: number,
-    location: string,
-    startTime: number,
-    title: string
-  },
+  detail: ActivityDetailProps,
 }
 
 const TabPane = Tabs.TabPane
