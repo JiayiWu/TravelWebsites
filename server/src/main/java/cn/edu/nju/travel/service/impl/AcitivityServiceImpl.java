@@ -192,6 +192,17 @@ public class AcitivityServiceImpl implements ActivityService{
 
     }
 
+    @Override
+    public List<ActivityInfoVO> getRecommendationActivities(Integer size) throws Exception {
+        List<ActivityEntity> activityEntityList = activityDao.getRandomActivityList(size);
+        List<ActivityInfoVO> activityInfoVOList = new ArrayList<>();
+
+        for (ActivityEntity activityEntity : activityEntityList){
+            activityInfoVOList.add(getActivityInfoVO(activityEntity));
+        }
+        return activityInfoVOList;
+    }
+
     private ActivityInfoVO getActivityInfoVO(ActivityEntity activityEntity) throws Exception{
         UserInfoVO creator = userService.findById(activityEntity.getCreateId());
 

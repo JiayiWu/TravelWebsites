@@ -35,4 +35,8 @@ public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, 
     @Query("update ActivityEntity a set a.state = :result where a.id = :activityId")
     void updateActivityStateValidOrInvalid(@Param("activityId") Integer activityId,
                                            @Param("result") Integer result);
+
+    @Modifying
+    @Query(nativeQuery = true, value = "select * from activity a where a.state = 1 order by rand() limit :thesize ")
+    List<ActivityEntity> getRandomActivityList(@Param("thesize") Integer thesize);
 }

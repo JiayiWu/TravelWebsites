@@ -155,4 +155,23 @@ public class ActivityController {
         }
 
     }
+
+
+    /**
+     *
+     * @param httpSession
+     * @param size
+     * @return
+     */
+    @ApiOperation(value = "查看推荐活动列表", response = ActivityInfoVO.class,notes = "返回List<ActivityInfoVO>,只返回审批通过的、尚未结束的活动")
+    @RequestMapping(value = "recommendation/{size}", method = RequestMethod.GET)
+    public SimpleResponse RecommendActivityInfoList(HttpSession httpSession, @PathVariable int size){
+        try{
+            List<ActivityInfoVO> activityInfoVOList =
+                    activityService.getRecommendationActivities(size);
+            return SimpleResponse.ok(activityInfoVOList);
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
+        }
+    }
 }
