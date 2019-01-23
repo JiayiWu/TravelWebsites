@@ -18,7 +18,7 @@ public class ActivityForm {
 
     private Integer createId;
 
-
+    private String title;
 
     private String location;
     /**

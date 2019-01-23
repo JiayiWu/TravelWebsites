@@ -15,11 +15,12 @@ import java.util.List;
 public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, Integer>{
 
     @Modifying
-    @Query(nativeQuery = true,value = "update activity a set a.location = :location, a.start_time = :startTime, a.end_time = :endTime," +
+    @Query(nativeQuery = true,value = "update activity a set a.location = :location, a.title = :title, a.start_time = :startTime, a.end_time = :endTime," +
             " a.cover_url = :coverUrl, a.join_type = :joinType, a.description = :description " +
             "where a.id = :id")
     void updateActivityInfo(@Param("id") Integer id,
                            @Param("location") String location,
+                           @Param("title") String title,
                            @Param("startTime") Timestamp startTime,
                            @Param("endTime") Timestamp endTime,
                            @Param("joinType") Integer joinType,
@@ -27,7 +28,7 @@ public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, 
                            @Param("description") String description);
 
     @Modifying
-    @Query(nativeQuery = true, value = "select * from activity a where a.start_time > :lastTimestamp limit :thesize")
+    @Query(nativeQuery = true, value = "select * from activity a where a.start_time > :lastTimestamp and a.state = 1 order by start_time,id limit :thesize ")
     List<ActivityEntity> getActivityList(@Param("lastTimestamp") Timestamp lastTimeStamp, @Param("thesize") Integer thesize);
 
     @Modifying

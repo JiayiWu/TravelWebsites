@@ -47,7 +47,7 @@ public class AcitivityServiceImpl implements ActivityService{
     RelationService relationService;
 
     @Override
-    public int createActivity(Integer createId, String location, Long startTime, Long endTime, Integer joinType, String coverUrl, String description) {
+    public int createActivity(Integer createId, String title, String location, Long startTime, Long endTime, Integer joinType, String coverUrl, String description) {
         if(startTime == null){
             throw new ServerException(ResponseCode.Error,"开始时间不能为空");
         }
@@ -55,6 +55,7 @@ public class AcitivityServiceImpl implements ActivityService{
         //检查creatorid是否是一个用户的id
         ActivityEntity entity = new ActivityEntity();
         entity.setCreateId(createId);
+        entity.setTitle(title);
         entity.setLocation(location);
         entity.setStartTime(new Timestamp(startTime));
         entity.setEndTime(new Timestamp(endTime));
@@ -94,7 +95,7 @@ public class AcitivityServiceImpl implements ActivityService{
 
     @Override
     public int updateActivityInfo(ActivityForm activityForm) throws Exception {
-        activityDao.updateActivityInfo(activityForm.getId(),activityForm.getLocation(),
+        activityDao.updateActivityInfo(activityForm.getId(), activityForm.getTitle(), activityForm.getLocation(),
                 new Timestamp(activityForm.getStartTime()),
                 new Timestamp(activityForm.getEndTime()),
                 activityForm.getJoinType(), activityForm.getCoverUrl(), activityForm.getDescription());
@@ -147,10 +148,11 @@ public class AcitivityServiceImpl implements ActivityService{
             }
             AuthActivityInfoVO authActivityInfoVO = new AuthActivityInfoVO();
             authActivityInfoVO.setCreator(userService.findById(activityEntity.getCreateId()));
+            authActivityInfoVO.setTitle(activityEntity.getTitle());
             authActivityInfoVO.setLocation(activityEntity.getLocation());
             authActivityInfoVO.setStartTime(activityEntity.getStartTime().getTime());
             authActivityInfoVO.setEndTime(activityEntity.getEndTime().getTime());
-            authActivityInfoVO.setJoinType(JoinTypeCode.values()[activityEntity.getJoinType()].getValue());
+            authActivityInfoVO.setJoinType(activityEntity.getJoinType());
             authActivityInfoVO.setCoverUrl(activityEntity.getCoverUrl());
             authActivityInfoVO.setDescription(activityEntity.getDescription());
 
@@ -216,13 +218,14 @@ public class AcitivityServiceImpl implements ActivityService{
         }
 
         ActivityInfoVO activityInfoVO = new ActivityInfoVO();
+        activityInfoVO.setTitle(activityEntity.getTitle());
         activityInfoVO.setLocation(activityEntity.getLocation());
         activityInfoVO.setDescription(activityEntity.getDescription());
         activityInfoVO.setCoverUrl(activityEntity.getCoverUrl());
         activityInfoVO.setEndTime(activityEntity.getEndTime().getTime());
         activityInfoVO.setStartTime(activityEntity.getStartTime().getTime());
         activityInfoVO.setId(activityEntity.getId());
-        activityInfoVO.setJoinType(JoinTypeCode.values()[activityEntity.getJoinType()].getValue());
+        activityInfoVO.setJoinType(activityEntity.getJoinType());
         activityInfoVO.setCreator(creator);
         activityInfoVO.setAttendList(attendList);
 

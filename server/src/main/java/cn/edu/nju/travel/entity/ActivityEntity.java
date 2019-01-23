@@ -24,6 +24,9 @@ public class ActivityEntity  {
     @Column(name = "create_id")
     private Integer createId;
 
+    @Column(name = "title")
+    private String title;
+
     @Column(name = "create_time")
     @CreationTimestamp
     private Timestamp createTime;

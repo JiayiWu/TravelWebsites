@@ -37,6 +37,7 @@ public class ActivityServiceTest {
     @Test
     public void testCreateActivity(){
         String location = "it's test for sonarqube";
+        String title = "titleee";
         String coverUrl = "it's test for sonarqube";
         String description = "it's test for sonarqube";
 
@@ -46,7 +47,7 @@ public class ActivityServiceTest {
         Integer joinType = JoinTypeCode.AUTH.getIndex();//need to apply
 
         try {
-            activityService.createActivity(createId, location, startTime, endTime, joinType, coverUrl, description);
+            activityService.createActivity(createId, title,     location, startTime, endTime, joinType, coverUrl, description);
         } catch (Exception e) {
             e.printStackTrace();
         }

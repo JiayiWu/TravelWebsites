@@ -37,6 +37,7 @@ public class ActivityController {
         try{
             //id?
             activityService.createActivity(activityCreateForm.getCreateId(),
+                    activityCreateForm.getTitle(),
                     activityCreateForm.getLocation(),
                     activityCreateForm.getStartTime(),
                     activityCreateForm.getEndTime(),

@@ -14,6 +14,8 @@ public class AuthActivityInfoVO {
     @ApiModelProperty(notes = "创建人信息")
     private UserInfoVO creator;
 
+    private String title;
+
     private String location;
     /**
      * 活动开始时间，必填
@@ -31,7 +33,7 @@ public class AuthActivityInfoVO {
     /**
      * {@link JoinTypeCode}
      */
-    private String joinType;
+    private Integer joinType;
 
     private String coverUrl;
 

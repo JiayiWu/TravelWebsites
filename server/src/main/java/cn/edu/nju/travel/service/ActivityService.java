@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface ActivityService {
 
-    int createActivity(Integer createId, String location, Long startTime,
+    int createActivity(Integer createId, String title, String location, Long startTime,
                        Long endTime, Integer joinType,
                               String coverUrl, String description) throws Exception;
 
