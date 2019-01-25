@@ -64,12 +64,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(int userId, String password) throws Exception {
+    public void changePassword(int userId,String oldPassword, String newPassword) throws
+            Exception {
         UserEntity entity = userDao.findById(userId);
         if(entity == null){
             throw new ServerException(ResponseCode.Error,"此用户不存在");
         }
-        entity.setPassword(MD5Encryption.encrypt(password));
+        if(!MD5Encryption.encrypt(oldPassword).equals(entity.getPassword())){
+            throw new ServerException(ResponseCode.Error,"旧密码错误");
+        }
+        entity.setPassword(MD5Encryption.encrypt(newPassword));
+        userDao.save(entity);
     }
 
     @Override
@@ -91,6 +96,15 @@ public class UserServiceImpl implements UserService {
                 return new UserInfoVO(adminEntity);
             default:
                 throw new ServerException(ResponseCode.Error, "用户类型错误");
+        }
+    }
+
+    @Override
+    public UserInfoVO findUser(int id, RoleTypeCode type) {
+        switch (type){
+            case USER: return new UserInfoVO(userDao.findById(id));
+            case ADMIN: return new UserInfoVO(adminDao.findById(id));
+            default: throw new ServerException(ResponseCode.Error,"无此类型用户");
         }
     }
 

@@ -32,4 +32,8 @@ public interface ActivityService {
     List<AuthenticationActivityInfoListVO> getAuthActivityList(Integer state) throws Exception;
 
     List<ActivityInfoVO> getRecommendationActivities(Integer size) throws Exception;
+
+    void cancelActivity(Integer activityId) throws Exception;
+
+    void endActivity(Integer activityId) throws Exception;
 }

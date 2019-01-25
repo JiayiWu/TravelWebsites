@@ -17,9 +17,11 @@ public interface UserService {
 
     UserInfoVO modifyInfo(int userId, String mobile, String mail, String logoUrl) throws Exception;
 
-    void changePassword(int userId, String password) throws Exception;
+    void changePassword(int userId,String oldPassword, String newPassword) throws Exception;
 
     UserInfoVO login(String name, String password, RoleTypeCode code) throws Exception;
+
+    UserInfoVO findUser(int id, RoleTypeCode type);
 
     UserInfoVO findById(Integer id) throws Exception;
 

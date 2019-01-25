@@ -3,6 +3,7 @@ package cn.edu.nju.travel.controller;
 import cn.edu.nju.travel.form.*;
 import cn.edu.nju.travel.service.ActivityService;
 import cn.edu.nju.travel.service.RelationService;
+import cn.edu.nju.travel.service.UserService;
 import cn.edu.nju.travel.utils.ServerException;
 import cn.edu.nju.travel.vo.ActivityInfoVO;
 import cn.edu.nju.travel.vo.AuthenticationInfoListVO;
@@ -26,6 +27,9 @@ public class ActivityController {
 
     @Autowired
     ActivityService activityService;
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     RelationService relationService;
@@ -112,6 +116,47 @@ public class ActivityController {
         return null;
     }
 
+    @ApiOperation(value = "取消某个活动", response = SimpleResponse.class , notes = "需要验证当前登录用户是否有权限删除；管理员或者创建者有权限")
+    @RequestMapping(value = "cancel/{activityId}", method = RequestMethod.POST)
+    public SimpleResponse cancelActivity(HttpSession httpSession, @PathVariable int activityId){
+        try {
+            if(httpSession.getAttribute("userId") == null ){
+                return SimpleResponse.exception(new ServerException(ResponseCode.Error, "没有登录"));
+            }
+            Integer id = (Integer) httpSession.getAttribute("userId");
+
+            if(userService.isAdmin(id) || activityService.isCreator(activityId, id)){
+                activityService.cancelActivity(activityId);
+            } else {
+                return SimpleResponse.exception(new ServerException(ResponseCode.Error, "没有权限"));
+            }
+        } catch (Exception e) {
+            return SimpleResponse.exception(e);
+        }
+        return null;
+    }
+
+    @ApiOperation(value = "结束某个活动", response = SimpleResponse.class, notes = "只有活动的创建者可以结束活动")
+    @RequestMapping(value = "end/{activityId}/user/{userId}", method = RequestMethod.POST)
+    public SimpleResponse qendActivity(HttpSession httpSession, @PathVariable int activityId,@PathVariable int userId){
+        try {
+            if(httpSession.getAttribute("userId") == null ){
+                return SimpleResponse.exception(new ServerException(ResponseCode.Error, "没有登录"));
+            }
+            Integer id = (Integer) httpSession.getAttribute("userId");
+
+            if(activityService.isCreator(activityId, id)){
+                activityService.cancelActivity(activityId);
+            } else {
+                return SimpleResponse.exception(new ServerException(ResponseCode.Error, "没有权限"));
+            }
+        } catch (Exception e) {
+            return SimpleResponse.exception(e);
+        }
+        return null;
+    }
+
+
     @ApiOperation(value = "更新某个活动", response = ActivityInfoVO.class)
     @RequestMapping(value = "update", method = RequestMethod.POST)
     public SimpleResponse updateActivity(HttpSession httpSession, @RequestBody ActivityForm activityCreateForm){
@@ -122,6 +167,8 @@ public class ActivityController {
         }
         return SimpleResponse.ok(0);
     }
+
+
 
     @ApiOperation(value = "审批用户加入申请", response = SimpleResponse.class,notes = "需要校验当前登录用户是否有审批权限 0 新申请审批，还未处理 1 审批通过  2  审批拒绝")
     @RequestMapping(value = "application/check/{activityId}/user/{userId}/result/{result}", method = RequestMethod.POST)
