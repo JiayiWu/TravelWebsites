@@ -3,10 +3,10 @@ import moment from 'moment'
 import { Icon, Tabs } from 'antd'
 import styles from './ActivityDetailContent.module.scss'
 import { UserBasicProps } from '../../profile/ProfileHomepage'
-import { ActivityDetailProps } from '../ActivityDetail'
+import { ActivityItemProps } from '../ActivityDetail'
 
 interface DetailContentProps {
-  detail: ActivityDetailProps,
+  detail: ActivityItemProps,
 }
 
 const TabPane = Tabs.TabPane
@@ -33,21 +33,24 @@ class ActivityDetailCnontent extends React.Component<DetailContentProps, any> {
             <div className={styles.content}>{detail.description}</div>
             {/* 评论 */}
           </TabPane>
-          <TabPane key="member" tab="成员" className={styles.tabPane}>
-            <div className={styles.memberContainer}>
-              {detail.attendList.map((attend) => {
-                return (
-                  <div className={styles.memberItem}>
-                    <img src={attend.logoUrl} />
-                    <div className={styles.infoWrapper}>
-                      {attend.name}
+          {detail.attendList && detail.attendList.length > 0 &&
+            <TabPane key="member" tab="成员" className={styles.tabPane}>
+              <div className={styles.memberContainer}>
+                {detail.attendList.map((attend) => {
+                  return (
+                    <div className={styles.memberItem}>
+                      <img src={attend.logoUrl} />
+                      <div className={styles.infoWrapper}>
+                        {attend.name}
+                      </div>
                     </div>
-                  </div>
-                )
-              })}
-            </div>
+                  )
+                })}
+              </div>
             
-          </TabPane>
+            </TabPane>
+          }
+         
         </Tabs>
         {/* <div className={styles.left}> */}
           

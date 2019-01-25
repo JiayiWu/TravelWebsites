@@ -1,8 +1,37 @@
+@import '~@utils/constant.module.scss';
 :local(.container) {
   width: 100%;
   height: 100%;
   background-color: white;
+  position: relative;
+  .ant-tabs {
+    height: 100% !important;
+  }
   :local(.tabPane) {
     padding: 20px 10px;
+    height: 100%;
+    overflow: auto;
+
+    :local(.header) {
+      display: flex;
+      align-items: center;
+      
+      :local(.item) {
+        padding: 5px 10px;
+        border-radius: 5px;
+        color: $font-color;
+        border: 1px solid #e9e9e9;
+        cursor: pointer;
+        margin-right: 10px;
+        &[data-active = true] {
+          color: white;
+          background-color: $primary-color;
+        }
+        &:hover {
+          color: $primary-color;
+          border-color: $primary-color;
+        }
+      }
+    }
   }
 }

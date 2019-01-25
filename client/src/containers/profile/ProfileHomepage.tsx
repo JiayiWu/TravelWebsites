@@ -1,11 +1,18 @@
 import * as React from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import { Icon, Button, Form, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
 import VerifyImage from '@utils/image/profile/header.jpeg'
+import { serverOrigin } from '../../utils/API'
+import oss from '../../utils/file'
 import styles from './ProfileHomepage.module.scss'
 
 interface HomepageProps extends FormComponentProps {
-
+  user: any,
+  updateBasic: Function,
+  updateApply: Function,
+  uploadFile: Function, // dispatch
 }
 
 interface InputProps {
@@ -23,12 +30,15 @@ export interface UserBasicProps {
   type: number,
 }
 
-
-
 const INFO_EDIT_TYPE = {
   BASIC: 0,
   APPLY: 1,
   NONE: -1
+}
+
+export const USER_TYPE = {
+  NORMAL: 0,
+  ADMIN: 1,
 }
 
 const FormItem = Form.Item
@@ -47,25 +57,58 @@ class ProfileHomepage extends React.Component<HomepageProps, any> {
   }
   state = {
     editType: INFO_EDIT_TYPE.NONE,
-    basicInfo: BASIC_INFO
+    // basicInfo: BASIC_INFO
+    attachmentUrl: this.props.user ? this.props.user.get('attachmentUrl') : ''
   }
   
   onUploadVerifyImage = (props) => {
-    console.log(props)
+    const files = (this.uploader as any).current.files
+    oss.uploadFile(files[0]).then((json) => {
+      if (json.code === 0) {
+        this.setState({
+          attachmentUrl: serverOrigin + '/' + json.data
+        })
+      }
+    })
+   
   }
 
   handleSaveBasic = () => {
     // TODO 掉修改个人信息的接口
-    this.setState({
-      editType: INFO_EDIT_TYPE.NONE
+    const { validateFields }  = this.props.form
+    validateFields(['mobile', 'mail', 'name'], (err, value) => {
+      if (err) {
+        return
+      }
+      this.props.updateBasic(value).then((json) => {
+        if (json.code === 0) {
+          this.setState({
+            editType: INFO_EDIT_TYPE.NONE
+          })
+        }
+      })
+      
     })
+    
   }
 
   handleSaveApply = () => {
     // TODO 修改审批认证信息
-    this.setState({
-      editType: INFO_EDIT_TYPE.NONE
+    const { validateFields } = this.props.form
+    const { attachmentUrl } = this.state
+    validateFields(['attachmentUrl', 'context'], (err, value) => {
+      if (err) {
+        return
+      }
+      this.props.updateApply({...value, attachmentUrl}).then((json) => {
+        if (json.code === 0) {
+          this.setState({
+            editType: INFO_EDIT_TYPE.NONE
+          })
+        }
+      })
     })
+    
   }
 
   /** component: 可编辑时的组件类型
@@ -83,6 +126,7 @@ class ProfileHomepage extends React.Component<HomepageProps, any> {
   public render() {
     const { editType } = this.state
     const { getFieldDecorator } = this.props.form
+    const { user } = this.props
     const formItemLayout = {
       labelCol: {
         span: 4,
@@ -109,13 +153,13 @@ class ProfileHomepage extends React.Component<HomepageProps, any> {
             <Form>
               <FormItem {...formItemLayout} label="手机号">
                 {
-                  getFieldDecorator('phone', {
-                    initialValue: '123123123',
+                  getFieldDecorator('mobile', {
+                    initialValue: user.get('mobile'),
                   })(
                     this.renderEditArea({
                       type: INFO_EDIT_TYPE.BASIC, 
                       component: <Input placeholder="请输入手机号码"/>, 
-                      name: 'phone'
+                      name: 'mobile'
                     })
                   )
                 }
@@ -124,7 +168,7 @@ class ProfileHomepage extends React.Component<HomepageProps, any> {
               <FormItem {...formItemLayout} label="邮箱">
                 {
                   getFieldDecorator('mail', {
-                    initialValue: '592710057@qq.com'
+                    initialValue: user.get('mail')
                   })(
                     this.renderEditArea({
                       type: INFO_EDIT_TYPE.BASIC,
@@ -134,6 +178,18 @@ class ProfileHomepage extends React.Component<HomepageProps, any> {
                   )
                 }
               </FormItem>
+              <FormItem {...formItemLayout} label="用户名">
+                {getFieldDecorator('name', {
+                  initialValue: user.get('name')
+                })(
+                  this.renderEditArea({
+                    type: INFO_EDIT_TYPE.BASIC,
+                    component: <Input placeholder="请输入用户名"/>,
+                    name: 'name'
+                  })
+                )}
+              </FormItem>
+              
             </Form>
           </div>
         </div>
@@ -153,7 +209,7 @@ class ProfileHomepage extends React.Component<HomepageProps, any> {
             <Form>
               <FormItem {...formItemLayout} label="学生认证照片">
                 {/* <div> */}
-                  <div className={styles.imageWrapper} style={{ backgroundImage: `url(${VerifyImage})` }}>
+                  <div className={styles.imageWrapper} style={{ backgroundImage: `url(${this.state.attachmentUrl})` }}>
                     {editType === INFO_EDIT_TYPE.APPLY &&
                       <div className={styles.uploadField} onClick={() => this.uploader.current ? this.uploader.current.click() : null}/>
                     }
@@ -163,7 +219,9 @@ class ProfileHomepage extends React.Component<HomepageProps, any> {
               </FormItem>
               <FormItem {...formItemLayout} label="备注">
                 {
-                  getFieldDecorator('context', {})(
+                  getFieldDecorator('context', {
+                    initialValue: user.get('context'),
+                  })(
                     this.renderEditArea({
                       type: INFO_EDIT_TYPE.APPLY,
                       component: <Input.TextArea placeholder="请输入审批备注信息" />,
@@ -176,10 +234,20 @@ class ProfileHomepage extends React.Component<HomepageProps, any> {
           </div>
         </div>
 
-        <input style={{ display: 'none' }} type="file" ref={this.uploader} onSelect={this.onUploadVerifyImage} />
+        <input style={{ display: 'none' }} type="file" ref={this.uploader} onChange={this.onUploadVerifyImage} />
       </div>
     )
   }
 }
 
-export default Form.create()(ProfileHomepage)
+function mapStateToProps(state) {
+  return {}
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    // uploadFile: bindActionCreators(uploadFile, dispatch)
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(ProfileHomepage))

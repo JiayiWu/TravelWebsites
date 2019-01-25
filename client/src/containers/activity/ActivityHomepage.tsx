@@ -37,7 +37,12 @@ export interface ActivityItemProps {
   location: string,
   startTime: number,
   attendList: Array<UserBasicProps>,
-  name: string,
+  title: string,
+}
+
+const JOIN_TYPE = {
+  DIRECT: 0,
+  APPLY: 1,
 }
 
 const CAROUSEL_LIST = [{
@@ -151,7 +156,7 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
                     {moment(act.endTime).format('/MMM.YYYY')}
                   </div>
                 </div>
-                <div className={styles.title}>{act.name}</div>
+                <div className={styles.title}>{act.title}</div>
               </div>
               {/* <img src={act.image} style={{ width: '100%'}}/> */}
               
@@ -169,16 +174,33 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
         <div style={{ backgroundImage: `url(${act.coverUrl})`}} />
         <div className={styles.right}>
           <div className={styles.titleWrapper}>
-            <span className={styles.title}>{act.name}</span>
+            <span className={styles.title}>{act.title}</span>
             {act.creator && user && act.creator.id != user.get('id') ? 
               <Button type="default" onClick={(e) => {
                 e.stopPropagation()
-                this.setState({
-                  joinModal: {
-                    show: true,
-                    joinAct: act,
-                  }
-                })
+                if (act.joinType === JOIN_TYPE.DIRECT) {
+                  API.query('/activity/attend', {
+                    options: {
+                      method: 'POST',
+                      body: JSON.stringify({
+                        userId: localStorage.getItem('userid'),
+                        activityId: act.id
+                      })
+                    }
+                  }).then(messageHandler).then((json) => {
+                    if (json.code === 0) {
+                      this.props.pushURL(`/workspace/activity/detail/${act.id}`)
+                    }
+                  })
+                } else {
+                  this.setState({
+                    joinModal: {
+                      show: true,
+                      joinAct: act,
+                    }
+                  })
+                }
+                
               }}>立即参加</Button>
               :
               <Button type="default" onClick={() => this.jumpToAct(act)}>查看详情</Button>
