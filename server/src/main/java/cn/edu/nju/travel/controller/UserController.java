@@ -1,7 +1,9 @@
 package cn.edu.nju.travel.controller;
 
+import cn.edu.nju.travel.constant.RoleTypeCode;
 import cn.edu.nju.travel.form.AccountApproveForm;
 import cn.edu.nju.travel.form.AttendActivityForm;
+import cn.edu.nju.travel.form.ResponseCode;
 import cn.edu.nju.travel.form.SimpleResponse;
 import cn.edu.nju.travel.form.UserForm;
 import cn.edu.nju.travel.service.AuthService;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
@@ -87,15 +90,32 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "获取用户基本信息", response = SimpleResponse.class, notes = "获取用户基本信息")
-    @GetMapping("info")
-    public SimpleResponse getInfo(HttpSession httpSession){
+    @ApiOperation(value = "修改密码", response = SimpleResponse.class, notes = "修改密码")
+    @PostMapping("changePassword")
+    public SimpleResponse updatePwd(HttpSession httpSession, @RequestParam String oldPassword,
+            @RequestParam String newPassword){
         Integer userId = (Integer)httpSession.getAttribute("userId");
         if(userId == null){
             return SimpleResponse.error("请先登录");
         }
         try{
-            UserInfoVO vo = userService.findById(userId);
+            userService.changePassword(userId,oldPassword,newPassword);
+            return new SimpleResponse(ResponseCode.OK);
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
+        }
+    }
+
+    @ApiOperation(value = "获取用户基本信息", response = SimpleResponse.class, notes = "获取用户基本信息")
+    @GetMapping("info")
+    public SimpleResponse getInfo(HttpSession httpSession){
+        Integer userId = (Integer)httpSession.getAttribute("userId");
+        int type = (int)httpSession.getAttribute("userType");
+        if(userId == null){
+            return SimpleResponse.error("请先登录");
+        }
+        try{
+            UserInfoVO vo = userService.findUser(userId, RoleTypeCode.getTypeByIndex(type));
             return SimpleResponse.ok(vo);
         }catch (Exception e){
             return SimpleResponse.exception(e);
