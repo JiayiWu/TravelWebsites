@@ -203,6 +203,16 @@ public class AcitivityServiceImpl implements ActivityService{
         return activityInfoVOList;
     }
 
+    @Override
+    public void cancelActivity(Integer activityId) throws Exception {
+        activityDao.updateActivityDelete(activityId);
+    }
+
+    @Override
+    public void endActivity(Integer activityId) throws Exception {
+        activityDao.updateActivityEnd(activityId);
+    }
+
     private ActivityInfoVO getActivityInfoVO(ActivityEntity activityEntity) throws Exception{
         UserInfoVO creator = userService.findById(activityEntity.getCreateId());
 
