@@ -80,6 +80,8 @@ public class ActivityController {
         }
     }
 
+    //todo
+    //获取某个人创建的活动
 
 
     @ApiOperation(value = "查看活动详细信息", response = ActivityInfoVO.class)
@@ -92,6 +94,23 @@ public class ActivityController {
             return SimpleResponse.exception(e);
         }
     }
+
+    @ApiOperation(value = "查看用户创建的所有活动的列表", response = ActivityInfoVO.class)
+    @RequestMapping(value = "list/{creatorid}", method = RequestMethod.GET)
+    public SimpleResponse getActivityListByCreate(HttpSession httpSession, @PathVariable int creatorid){
+
+        try{
+            List<ActivityInfoVO> activityInfoVOList = activityService.getActivitiesByCreatorId(creatorid);
+
+            return SimpleResponse.ok(activityInfoVOList);
+        }catch (Exception e){
+
+            return SimpleResponse.exception(e);
+
+        }
+
+    }
+
 
     @ApiOperation(value = "参加活动", response = SimpleResponse.class)
     @RequestMapping(value = "attend", method = RequestMethod.POST)
@@ -125,6 +144,8 @@ public class ActivityController {
             }
             Integer id = (Integer) httpSession.getAttribute("userId");
 
+//            Integer id = 3;
+
             if(userService.isAdmin(id) || activityService.isCreator(activityId, id)){
                 activityService.cancelActivity(activityId);
             } else {
@@ -137,16 +158,16 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "结束某个活动", response = SimpleResponse.class, notes = "只有活动的创建者可以结束活动")
-    @RequestMapping(value = "end/{activityId}/user/{userId}", method = RequestMethod.POST)
-    public SimpleResponse qendActivity(HttpSession httpSession, @PathVariable int activityId,@PathVariable int userId){
+    @RequestMapping(value = "end/{activityId}", method = RequestMethod.POST)
+    public SimpleResponse qendActivity(HttpSession httpSession, @PathVariable int activityId){
         try {
             if(httpSession.getAttribute("userId") == null ){
                 return SimpleResponse.exception(new ServerException(ResponseCode.Error, "没有登录"));
             }
             Integer id = (Integer) httpSession.getAttribute("userId");
-
+//            Integer id = 3;
             if(activityService.isCreator(activityId, id)){
-                activityService.cancelActivity(activityId);
+                activityService.endActivity(activityId);
             } else {
                 return SimpleResponse.exception(new ServerException(ResponseCode.Error, "没有权限"));
             }
@@ -193,6 +214,8 @@ public class ActivityController {
     @RequestMapping(value = "application/list/{state}", method = RequestMethod.GET)
     public SimpleResponse applicationList(HttpSession httpSession,@PathVariable int state){
         try {
+            //todo
+            //分页
             Integer creatorId = (Integer) httpSession.getAttribute("userId");
 //            Integer creatorId = 3;
             List<AuthenticationInfoListVO> authenticationInfoListVOList = relationService.getAuditInfoList(creatorId,state);

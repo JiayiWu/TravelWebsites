@@ -122,6 +122,9 @@ public class AcitivityServiceImpl implements ActivityService{
 
     @Override
     public List<AuthenticationActivityInfoListVO> getAuthActivityList(Integer state) throws Exception {
+
+        //todo
+        //如果要分页的话，可以根据state来写几个Dao的方法，将判断逻辑丢到SQL语句里
         Iterable<ActivityEntity> activityEntityList = activityDao.findAll();
         List<AuthenticationActivityInfoListVO> authenticationActivityInfoListVOList = new ArrayList<>();
 
@@ -213,6 +216,24 @@ public class AcitivityServiceImpl implements ActivityService{
         activityDao.updateActivityEnd(activityId);
     }
 
+    @Override
+    public List<ActivityInfoVO> getActivityListPage(Integer state, Integer lastId, Integer size) {
+        List<ActivityEntity> activityEntityList = activityDao.getActivityPage(lastId,size);
+        //todo
+        //关于state的判断，如果在service层做，那么size会不对，应该丢到Dao做
+        return null;
+    }
+
+    @Override
+    public List<ActivityInfoVO> getActivitiesByCreatorId(Integer createId) throws Exception {
+        List<ActivityInfoVO> activityInfoVOList = new ArrayList<>();
+        List<ActivityEntity> activityEntityList = activityDao.findAllByCreateId(createId);
+        for (ActivityEntity activityEntity:activityEntityList){
+            activityInfoVOList.add(getActivityInfoVO(activityEntity));
+        }
+        return activityInfoVOList;
+    }
+
     private ActivityInfoVO getActivityInfoVO(ActivityEntity activityEntity) throws Exception{
         UserInfoVO creator = userService.findById(activityEntity.getCreateId());
 
@@ -249,7 +270,7 @@ public class AcitivityServiceImpl implements ActivityService{
         activityInfoVO.setJoinType(activityEntity.getJoinType());
         activityInfoVO.setCreator(creator);
         activityInfoVO.setAttendList(attendList);
-
+        activityInfoVO.setState(activityEntity.getState());
         return activityInfoVO;
     }
 }
