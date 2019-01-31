@@ -42,6 +42,9 @@ public class ActivityInfoVO {
 
     private String coverUrl;
 
+    //todo
+    private Integer state;
+
     private String description;
 
     /**

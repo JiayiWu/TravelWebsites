@@ -48,4 +48,11 @@ public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, 
     @Query(nativeQuery = true, value = "update activity a set a.state = 4 where a.id = :activityId")
     void updateActivityEnd(@Param("activityId") Integer activityId);
 
+
+    @Modifying
+    @Query(nativeQuery = true, value = "select * from activity a where a.state = 0 and a.id > :lastId order by id limit :thesize")
+    List<ActivityEntity> getActivityPage(@Param("lastId") Integer Id, @Param("thesize") Integer thesize);
+
+
+    List<ActivityEntity> findAllByCreateId(Integer createId);
 }

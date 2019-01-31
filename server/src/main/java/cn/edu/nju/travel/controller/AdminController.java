@@ -63,6 +63,18 @@ public class AdminController {
     @ApiOperation(value = "新创建活动审批列表", response = AuthenticationActivityInfoListVO.class,notes = "返回list<AuthenticationActivityInfoListVO>;  state -1获取所有审批，0 查看待处审批 1 查看审批通过申请  2  查看审批拒绝的申请")
     @RequestMapping(value = "application/list/{state}", method = RequestMethod.GET)
     public SimpleResponse applicationList(HttpSession httpSession,@PathVariable int state){
+        try {
+            List<AuthenticationActivityInfoListVO> authenticationActivityInfoListVOList = activityService.getAuthActivityList(state);
+            return SimpleResponse.ok(authenticationActivityInfoListVOList);
+        } catch (Exception e) {
+            return SimpleResponse.exception(e);
+        }
+    }
+
+    @ApiOperation(value = "新创建活动审批列表分页", response = AuthenticationActivityInfoListVO.class,notes = "返回list<AuthenticationActivityInfoListVO>;  state -1获取所有审批，0 查看待处审批 1 查看审批通过申请  2  查看审批拒绝的申请")
+    @PostMapping("application/listpage")
+    public SimpleResponse applicationListWithPage(HttpSession httpSession,@RequestParam("state") int state,
+                                                  @RequestParam("lastId") Integer id, @RequestParam("size") Integer size){
         //todo
         try {
             List<AuthenticationActivityInfoListVO> authenticationActivityInfoListVOList = activityService.getAuthActivityList(state);

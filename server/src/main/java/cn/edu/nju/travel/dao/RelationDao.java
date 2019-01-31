@@ -15,7 +15,6 @@ public interface RelationDao extends PagingAndSortingRepository<RelationEntity, 
 
     Iterable<RelationEntity> findAllByActivityIdAndUserId(Integer activityId, Integer userId);
 
-    //todo
     @Modifying
     @Query("UPDATE RelationEntity a SET a.state = 2 " +
             "where a.activityId = :activityId and a.userId = :userId " +

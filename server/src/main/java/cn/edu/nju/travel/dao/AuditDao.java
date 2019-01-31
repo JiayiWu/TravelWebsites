@@ -15,7 +15,6 @@ public interface AuditDao extends PagingAndSortingRepository<AuditEntity, Intege
 
     Iterable<AuditEntity> findAllByActivityIdAndJoinUserId(Integer activityId, Integer userId);
 
-    //todo
     @Modifying
     @Query("update AuditEntity a SET a.state = 3 " +
             "where a.activityId = :activityId and a.joinUserId = :joinUserId " +

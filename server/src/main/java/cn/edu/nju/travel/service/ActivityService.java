@@ -36,4 +36,10 @@ public interface ActivityService {
     void cancelActivity(Integer activityId) throws Exception;
 
     void endActivity(Integer activityId) throws Exception;
+
+    List<ActivityInfoVO> getActivityListPage(Integer state, Integer lastId, Integer size);
+
+    List<ActivityInfoVO> getActivitiesByCreatorId(Integer createId) throws Exception;
+
+
 }
