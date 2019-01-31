@@ -1,5 +1,5 @@
 import API from '../utils/API'
-export const attendAct = (body: { activityId: number, attachmentUrl?: string, context?: string, userId: number}) => {
+export const attendAct = (body: { activityId: number, attachmentUrl?: string, context?: string, userId: number}) => (dispatch) => {
   return API.query('/activity/attend', {
     options: {
       method: 'POST',
@@ -8,8 +8,32 @@ export const attendAct = (body: { activityId: number, attachmentUrl?: string, co
   })
 }
 
-export const quitAct = (activityId, userId) => {
+export const quitAct = (activityId, userId) => (dispatch) => {
   return API.query(`/activity/quit${activityId}/user/${userId}`, {
+    options: {
+      method: 'POST'
+    }
+  })
+}
+
+export const applyAct = (activityId, result) => (dispatch) => {
+  return API.query(`/admin/application/check/${activityId}/result/${result}`, {
+    options: {
+      method: 'POST',
+    }
+  })
+}
+
+export const cancelAct = (activityId) => (dispatch) => {
+  return API.query(`/activity/cancel/${activityId}`, {
+    options: {
+      method: 'POST',
+    }
+  })
+}
+
+export const endAct = (activityId, userId) => (dispatch) => {
+  return API.query(`/activity/end/${activityId}/user/${userId}`, {
     options: {
       method: 'POST'
     }

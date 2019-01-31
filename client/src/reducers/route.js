@@ -14,7 +14,7 @@ const routeReducer = (state = initialState, action) => {
       // if (action.payload.state) {
       //   history.pushState(action.payload.state, 'activity')
       // }
-      return state.set('url', action.payload.url).set('state', action.payload.state)
+      return state.set('url', action.payload.url).set('state', fromJS(action.payload.state))
     case LOGOUT:
       history.push('/login')
       return state.set('url', '/login')

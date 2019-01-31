@@ -5,6 +5,7 @@ import styles from './ProfileIndex.module.scss'
 import HeaderImage from '@utils/image/profile/header.jpeg'
 import ProfileHomepage from './ProfileHomepage'
 import ProfileActivity from './ProfileActivity'
+import ProfilePasswd from './ProfilePasswd'
 import { setUserInfo, updateBasic, fetchBasicInfo, fetchApplyInfo, updateApply } from '../../actions/auth'
 // import { updateBasic, fetchBasicInfo, fetchApplyInfo } from '../../actions/user'
 import { fromJS } from 'immutable';
@@ -21,10 +22,10 @@ interface ProfileProps {
 const CONTENT_TYPE = {
   HOMEPAGE: 0,
   ACTIVITY: 1,
-  NEWS: 2,
+  SECURITY: 2,
 }
 
-const CONTENT_LIST = ['我的窝', '我的活动', '我的消息']
+const CONTENT_LIST = ['我的窝', '我的活动', '账号安全']
 
 class ProfileIndex extends React.Component<ProfileProps, any> {
   state = {
@@ -93,6 +94,9 @@ class ProfileIndex extends React.Component<ProfileProps, any> {
             }
             {contentType === CONTENT_TYPE.ACTIVITY &&
               <ProfileActivity />
+            }
+            {contentType === CONTENT_TYPE.SECURITY &&
+              <ProfilePasswd />
             }
           </div>
         </div>

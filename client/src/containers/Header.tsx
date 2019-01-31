@@ -17,6 +17,7 @@ import {
 } from '../actions/auth'
 import NoticeIndex from './notice/NoticeIndex'
 import { FORM_TYPE } from './LoginContainer'
+import { USER_TYPE } from './profile/ProfileHomepage';
 
 interface HeaderProps {
   user: any, // redux
@@ -82,7 +83,7 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
                 活动家
               </div>  
               <div className={styles.menu}>
-                <div className={styles.menuItem} data-active={type === TYPE.HOMEPAGE}>
+                <div className={styles.menuItem} data-active={type === TYPE.HOMEPAGE} onClick={() => this.props.pushURL('/workspace/activity')}>
                   首页
                 </div>
                 <div className={styles.menuItem} data-active={type === TYPE.NEWS}>
@@ -101,7 +102,7 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
                     </div>
                   )}
                 >
-                  <div className={styles.user} onClick={() => pushURL('/workspace/my')} style={{ backgroundImage: `url(${user.get('logoUrl') || Logo})` }}/>
+                  <div className={styles.user} onClick={() => user.get('type') === USER_TYPE.NORMAL && pushURL('/workspace/my')} style={{ backgroundImage: `url(${user.get('logoUrl') || Logo})` }}/>
                 </Popover>
                 
               </div>
@@ -118,12 +119,17 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
         <div className={styles.content} style={{ overflow: showNoticePanel ? 'hidden' : 'auto', height: showNoticePanel ? 'calc(100% - 58px)' : 'auto'}}>
           <Switch>
             <Route path={`${url}/activity`} component={ActivityIndex}/>
-            <Route path={`${url}/my`} component={ProfileIndex} />
+            {user.get('type') === USER_TYPE.NORMAL &&
+              <Route path={`${url}/my`} component={ProfileIndex} />
+            }
+            
           </Switch>
         </div>
         
         <div className={styles.noticePanel} style={{ top: showNoticePanel ? '58px' :'-100%' }}>
-          <NoticeIndex />
+          <NoticeIndex 
+            hide={() => this.setState({ showNoticePanel: false })}
+          />
         </div>
       </div>
     )

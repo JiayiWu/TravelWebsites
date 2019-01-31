@@ -209,10 +209,17 @@ class ProfileHomepage extends React.Component<HomepageProps, any> {
             <Form>
               <FormItem {...formItemLayout} label="学生认证照片">
                 {/* <div> */}
-                  <div className={styles.imageWrapper} style={{ backgroundImage: `url(${this.state.attachmentUrl})` }}>
-                    {editType === INFO_EDIT_TYPE.APPLY &&
+                  <div className={styles.imageWrapper} style={{ backgroundImage: `url(${this.state.attachmentUrl})`, height: !this.state.attachmentUrl && editType !== INFO_EDIT_TYPE.APPLY ? 'auto' : '300px' }}>
+                    {editType === INFO_EDIT_TYPE.APPLY ?
                       <div className={styles.uploadField} onClick={() => this.uploader.current ? this.uploader.current.click() : null}/>
+                    :
+                      !this.state.attachmentUrl && 
+                        <span style={{ color: 'gray' }}>
+                          未上传学生认证照片
+                        </span>
+                        
                     }
+                    
                   </div>
                 {/* </div> */}
                 

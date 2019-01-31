@@ -64,6 +64,10 @@
         padding-top: 20px;
         font-size: 14px;
       }
+      :local(.right) {
+        display: inline-flex;
+        align-items: center;
+      }
 
       :local(.headerBtn) {
         width: 120px;

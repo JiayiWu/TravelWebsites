@@ -2,7 +2,7 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux' 
-import { Icon } from 'antd'
+import { Icon, message } from 'antd'
 import styles from './ActivityDetail.module.scss'
 import API from '../../utils/API'
 import messageHandler from '../../utils/messageHandler'
@@ -11,10 +11,11 @@ import messageHandler from '../../utils/messageHandler'
 // import CREATOR from '@utils/image/activity/a4.jpg'
 
 import ActivityDetailContent from './components/ActivityDetailContent'
-import { UserBasicProps } from '../profile/ProfileHomepage'
+import { UserBasicProps, USER_TYPE } from '../profile/ProfileHomepage'
 import { fromJS } from 'immutable';
 
-import { attendAct, quitAct } from '../../actions/activity'
+import { attendAct, quitAct, applyAct, cancelAct, endAct } from '../../actions/activity'
+import { pushURL } from '../../actions/route'
 
 export interface ActivityItemProps {
   coverUrl: string,
@@ -33,7 +34,16 @@ interface ActivityDetailProps {
   user: any, // redux
   attendAct: Function, // redux
   quitAct: Function, // redux
+  applyAct: Function, // redux
+  pushURL: Function, // redux
+  cancelAct: Function, // redux
+  endAct: Function, // redux
   route: any, // redux
+}
+
+const APPLY_TYPE = {
+  AGREE: 0,
+  REFUSE: 1,
 }
 
 // const USER = {
@@ -64,15 +74,30 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
   }
   
   componentDidMount() {
-    const { route } = this.props
-    if (route.get('detail')) {
-      this.setState({
-        detail: route.get('detail')
-      })
+    const { route, match } = this.props
+    // console.log(route)
+    if (match.path.indexOf('apply') >= 0) {
+      if (route.getIn(['state', 'detail'])) {
+        this.setState({
+          detail: route.getIn(['state', 'detail']).toJS()
+        })
+      } else {
+        this.fetchActivityDetail()
+      }
     } else {
       this.fetchActivityDetail()
     }
-  } 
+  }
+  componentWillReceiveProps(nextProps) {
+    // TODO 之后加上id之后需要判断两次id是否相同，是否需要重新获取
+    if (nextProps.match.path.indexOf('apply') && nextProps.route.getIn(['state', 'detail'])) {
+      this.setState({
+        detail: nextProps.route.getIn(['state', 'detail']).toJS()
+      })
+    } else {
+      this.fetchActivityDetail(nextProps)
+    }
+  }
 
   fetchActivityDetail = (props = this.props) => {
     const { match } = props
@@ -112,14 +137,54 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
     })
   }
 
-  public render() {
+  handleApplyAct = (type) => {
+    const { detail } = this.state
+    if (!detail) {
+      return 
+    }
+    this.props.applyAct(detail.id, type).then(messageHandler).then((json) => {
+      if (json.code === 0) {
+        message.success(type === APPLY_TYPE.AGREE ? '同意' : '拒绝' + '成功')
+        this.props.pushURL('/workspace/activity/detail/'+detail.id)
+      }
+    })
+  }
+
+  handleCancelAct = () => {
+    const { detail } = this.state
+    if (!detail) {
+      return
+    }
+    this.props.cancelAct(detail.id).then(messageHandler).then((json) => {
+      if (json.code === 0) {
+        message.success('取消活动成功')
+        this.props.pushURL('/workspace/activity')
+      }
+    })
+  }
+
+  handleEndAct = () => {
     const { detail } = this.state
     const { user } = this.props
+    if (!detail) {
+      return
+    } 
+    this.props.endAct(detail.id, user.get('id')).then(messageHandler).then((json) => {
+      if (json.code === 0) {
+        message.success('结束活动成功')
+        this.props.pushURL('/workspace/activity')
+      }
+    })
+  }
+
+  public render() {
+    const { detail } = this.state
+    const { user, match } = this.props
     if (!detail) {
       return null
     }
     const isAttender = detail.attendList ? detail.attendList.find((attend) => attend.id === user.id) : false
-    const isCreator = detail.creator.id === user.id
+    // const isCreator = detail.creator.id === user.id
     return detail && (
       <div className={styles.container}>
         <div className={styles.headerContainer} style={{ backgroundImage: `url(${detail.coverUrl})`}}>
@@ -137,19 +202,46 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
               {detail.creator.name}
             </div>
             <div className={styles.right}>
-              {isAttender ? 
+              {user.get('type') === USER_TYPE.ADMIN ? 
+                (match.path.indexOf('apply') >= 0 ? 
+                  [
+                    <div className={styles.headerBtn} onClick={() => this.handleApplyAct(APPLY_TYPE.AGREE)}>
+                      <Icon type="check-circle" />
+                      <br />
+                      同意创建
+                    </div>,
+                    <div className={styles.headerBtn} onClick={() => this.handleApplyAct(APPLY_TYPE.REFUSE)}>
+                      <Icon type="close-circle" />
+                      <br />
+                      拒绝创建
+                    </div>
+                  ]
+                  : 
+                  <div className={styles.headerBtn} onClick={() => this.handleCancelAct()}>
+                    <Icon type="minus-circle" />
+                    <br />
+                    取消
+                  </div>
+                ) : 
+                isAttender ? 
                 <div className={styles.headerBtn} onClick={this.handleQuitAct}>
                   <Icon type="export" />
                   <br />
                   退出
                 </div>
                 :
-                (isCreator ? 
-                  <div className={styles.headerBtn}>
+                (detail.creator.id === user.get('id') ? 
+                  [<div className={styles.headerBtn} onClick={this.handleCancelAct}>
                     <Icon type="minus-circle" />
                     <br />
                     取消
+                  </div>,
+                  <div className={styles.headerBtn} onClick={this.handleEndAct}>
+                    <Icon type="poweroff" />
+                    <br />
+                    结束
                   </div>
+                  ]
                   :
                   <div className={styles.headerBtn} onClick={this.handleAttendAct}>
                     <Icon type="plus-circle" />
@@ -182,6 +274,10 @@ function mapDispatchToProps(dispatch) {
   return {
     attendAct: bindActionCreators(attendAct, dispatch),
     quitAct: bindActionCreators(quitAct, dispatch),
+    applyAct: bindActionCreators(applyAct, dispatch),
+    cancelAct: bindActionCreators(cancelAct, dispatch),
+    endAct: bindActionCreators(endAct, dispatch),
+    pushURL: bindActionCreators(pushURL, dispatch),
   }
 }
 

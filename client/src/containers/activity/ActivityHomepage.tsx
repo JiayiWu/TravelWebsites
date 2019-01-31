@@ -109,7 +109,7 @@ const WEEK_DAYS = ['日', '一', '二', '三', '四', '五', '六']
 
 class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
   state = {
-    recomendList: [] as Array<ActivityItemProps>,
+    recommendList: [] as Array<ActivityItemProps>,
     activityList: [] as Array<ActivityItemProps>,
     joinModal: {
       show: false,
@@ -121,7 +121,13 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
       if (json.code === 0) {
         this.setState({
           activityList: json.data,
-          recomendList: json.data && (json.data.length > 5 ? json.data.slice(0, 5) : json.data)
+        })
+      }
+    })
+    this.fetchRecommendList().then((json) => {
+      if (json.code === 0) {
+        this.setState({
+          recommendList: json.data,
         })
       }
     })
@@ -137,14 +143,17 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
       }
     }).then(messageHandler)
   }
+  fetchRecommendList = () => {
+    return API.query('/activity/recommendation/5', {}).then(messageHandler)
+  }
   jumpToAct = (activity) => {
     this.props.pushURL(`/workspace/activity/detail/${activity.id}`)
   }
   renderHeader = () => {
-    const { recomendList } = this.state
+    const { recommendList } = this.state
     return (
       <Carousel effect="fade" vertical autoplay>
-        {recomendList.map((act, index) => {
+        {recommendList.map((act, index) => {
           return (
             <div key={index} style={{ height: '382px'}}>
               <div className={styles.item} style={{ backgroundImage: `url(${act.coverUrl})`}}>

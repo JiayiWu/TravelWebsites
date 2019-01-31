@@ -59,9 +59,8 @@ class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
             
           }).then(messageHandler).then((json) => {
             if (json.code === 0) {
-              setUserInfo(json.data).then(() => {
-                pushURL('/workspace/activity')
-              })
+              localStorage.setItem('userid', json.data)
+              pushURL('/workspace/activity')
             }
           })
         } else {

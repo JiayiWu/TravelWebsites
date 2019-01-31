@@ -1,4 +1,27 @@
 :local(.applyModal) {
+  :local(.applyInfo) {
+    // position: absolute;
+    // bottom: 0;
+    height: 54px;
+    padding: 20px;
+    width: 100%;
+    border-radius: 3px;
+    border: 1px solid #91d5ff;
+    background-color: #e6f7ff;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    i {
+      color: #1890ff;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+    :local(.time) {
+      margin-left: 10px;
+    }
+  }
+
+  
   :local(.container) {
     display: flex;
     flex-direction: column;
@@ -10,5 +33,14 @@
       align-items: center;
       
     }
+
+    :local(.attachment) {
+      width: 300px;
+      height: 300px;
+      background-size: cover;
+      background-position: center center;
+    }
+    
   }
+  
 }

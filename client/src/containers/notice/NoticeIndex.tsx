@@ -6,11 +6,13 @@ import API from '../../utils/API'
 import styles from './NoticeIndex.module.scss'
 import NoticeItem, { ITEM_TYPE } from './NoticeItem'
 import { USER_TYPE } from '../profile/ProfileHomepage'
+import messageHandler from '../../utils/messageHandler'
 
 const { TabPane } = Tabs
 
 interface NoticeIndexProps {
   user: any, // redux
+  hide: () => void,
 }
 
 const TAB_TYPE = {
@@ -19,6 +21,18 @@ const TAB_TYPE = {
   PERSON_APPLY: "2", // 学生认证
 }
 
+const getStateType = (stateStr) => {
+  switch(stateStr) {
+    case 'all':
+      return -1
+    case 'waiting':
+      return 0
+    case 'accept':
+      return 1
+    case 'reject':
+      return 2
+  }
+}
 class NoticeIndex extends React.Component<NoticeIndexProps, any> {
   state = {
     applyNotice: {
@@ -70,7 +84,7 @@ class NoticeIndex extends React.Component<NoticeIndexProps, any> {
       }
     })
   }
-  fetchVerifyNotice = (lastId, state = 0) => {
+  fetchVerifyNotice = (lastId, state = -1) => {
     // const { verifyNotice } = this.state
     return API.query('/admin/application/userList', {
       searchParams: {
@@ -90,14 +104,37 @@ class NoticeIndex extends React.Component<NoticeIndexProps, any> {
       API.query(`/admin/application/list/${state}`, {})
   }
   setNoticeState = (type, state = 'all') => {
+    const { applyNotice, verifyNotice } = this.state
     if (type === TAB_TYPE.ACT_APPLY) {
-      this.setState({
-        applyNotice: {
-          ...this.state.applyNotice,
-          current: state,
+      // this.setState({
+      //   applyNotice: {
+      //     ...this.state.applyNotice,
+      //     current: state,
+      //   }
+      // })
+
+      this.fetchApplyNotice(getStateType(state)).then(messageHandler).then((json) => {
+        if (json.code === 0) {
+          let newList = applyNotice
+          newList[state] = json.data
+          newList.current = state
+          this.setState({
+            applyNotice: newList
+          })
         }
       })
     } else if (type === TAB_TYPE.PERSON_APPLY) {
+      const list = verifyNotice[state]
+      this.fetchVerifyNotice(list.length > 0 ? list[list.length - 1].id : 0, getStateType(state)).then(messageHandler).then((json) => {
+        if (json.code === 0) {
+          let newList = verifyNotice
+          newList[state] = verifyNotice[state].concat(json.data)
+          newList.current = state
+          this.setState({
+            verifyNotice: newList,
+          })
+        }
+      })
       this.setState({
         verifyNotice: {
           ...this.state.verifyNotice,
@@ -148,6 +185,7 @@ class NoticeIndex extends React.Component<NoticeIndexProps, any> {
                   notice={notice}
                   applyCreateNotice={notice}
                   key={index}
+                  onHide={this.props.hide}
                 />
               ) : (
                 <NoticeItem
@@ -163,10 +201,14 @@ class NoticeIndex extends React.Component<NoticeIndexProps, any> {
             })} */}
           </TabPane>
           <TabPane tab="学生认证" key={TAB_TYPE.PERSON_APPLY} className={styles.tabPane}>
-            {this.renderHeader(TAB_TYPE.ACT_APPLY)}
+            {this.renderHeader(TAB_TYPE.PERSON_APPLY)}
             {verifyNotice[verifyNotice.current].map((notice, index) => {
               return (
-                <NoticeItem type={ITEM_TYPE.PERSON_VERIFY} notice={notice}/>
+                <NoticeItem 
+                  type={ITEM_TYPE.PERSON_VERIFY} 
+                  notice={notice}
+                  verifyNotice={notice}
+                />
               )
             })}
             {/* {[0, 1, 2].map((notice, index) => {

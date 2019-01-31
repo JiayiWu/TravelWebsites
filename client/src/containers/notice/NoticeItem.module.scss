@@ -14,15 +14,22 @@
     white-space: nowrap;
     height: 100%;
     :local(.info) {
+      display: inline-flex;
+
       flex-grow: 1;
       :local(.text) {
         font-weight: 500;
       }
+      :local(.operation) {
+        // flex-shrink: 0;
+        margin-left: 10px;
+        color: $primary-color;
+        cursor: pointer;
+      }
     }
-    :local(.operation) {
+    :local(.time) {
       flex-shrink: 0;
-      color: $primary-color;
-      cursor: pointer;
     }
+    
   }
 }

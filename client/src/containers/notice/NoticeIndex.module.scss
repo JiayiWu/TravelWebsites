@@ -4,8 +4,12 @@
   height: 100%;
   background-color: white;
   position: relative;
-  .ant-tabs {
+  :global(.ant-tabs) {
     height: 100% !important;
+    // position: relative !important;
+    :global(.ant-tabs-content) {
+      height: 100% !important;
+    }
   }
   :local(.tabPane) {
     padding: 20px 10px;
