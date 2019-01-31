@@ -71,6 +71,8 @@ public class ActivityController {
     @RequestMapping(value = "list", method = RequestMethod.POST)
     public SimpleResponse ActivityInfoList(HttpSession httpSession, @RequestBody ActivityListForm activityListForm){
         try{
+            //todo
+            //you bug
             List<ActivityInfoVO> activityInfoVOList =
                     activityService.getActivityList(new Timestamp(activityListForm.getLastTimestamp()),
                     activityListForm.getSize());
@@ -79,9 +81,6 @@ public class ActivityController {
             return SimpleResponse.exception(e);
         }
     }
-
-    //todo
-    //获取某个人创建的活动
 
 
     @ApiOperation(value = "查看活动详细信息", response = ActivityInfoVO.class)
@@ -129,10 +128,10 @@ public class ActivityController {
     public SimpleResponse quitActivity(HttpSession httpSession, @PathVariable int activityId,@PathVariable int userId){
         try {
             relationService.quitActivity(activityId,userId);
+            return SimpleResponse.ok(0);
         } catch (Exception e) {
             return SimpleResponse.exception(e);
         }
-        return null;
     }
 
     @ApiOperation(value = "取消某个活动", response = SimpleResponse.class , notes = "需要验证当前登录用户是否有权限删除；管理员或者创建者有权限")
@@ -148,13 +147,13 @@ public class ActivityController {
 
             if(userService.isAdmin(id) || activityService.isCreator(activityId, id)){
                 activityService.cancelActivity(activityId);
+                return SimpleResponse.ok(0);
             } else {
                 return SimpleResponse.exception(new ServerException(ResponseCode.Error, "没有权限"));
             }
         } catch (Exception e) {
             return SimpleResponse.exception(e);
         }
-        return null;
     }
 
     @ApiOperation(value = "结束某个活动", response = SimpleResponse.class, notes = "只有活动的创建者可以结束活动")
@@ -168,13 +167,13 @@ public class ActivityController {
 //            Integer id = 3;
             if(activityService.isCreator(activityId, id)){
                 activityService.endActivity(activityId);
+                return SimpleResponse.ok(0);
             } else {
                 return SimpleResponse.exception(new ServerException(ResponseCode.Error, "没有权限"));
             }
         } catch (Exception e) {
             return SimpleResponse.exception(e);
         }
-        return null;
     }
 
 
