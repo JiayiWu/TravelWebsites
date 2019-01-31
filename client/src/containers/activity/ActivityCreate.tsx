@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 // import { RouteComponentProps } from 'react-router'
-import { Form, Input, Upload, Icon, DatePicker, Radio, Button } from 'antd'
+import { Form, Input, Upload, Icon, DatePicker, Radio, Button, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
 import styles from './ActivityCreate.module.scss'
 import MyEditor from '../../components/MyEditor'
@@ -11,6 +11,7 @@ import moment from 'moment'
 import { fromJS } from 'immutable'
 interface ActivityCreateProps extends FormComponentProps {
   user: any, // redux
+  route: any, // redux
 }
 
 const Dragger = Upload.Dragger
@@ -24,7 +25,6 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
   handleUploadFile = (options) => {
     const { file } = options
     let formData = new FormData()
-    console.log(options)
     formData.append('file', file)
     fetch(serverOrigin + '/file/upload', {
       method: 'POST',
@@ -57,7 +57,6 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
   handleCreate = () => {
     const { validateFields } = this.props.form
     const { user } = this.props
-    console.log(user.toJS())
     validateFields((err, value) => {
       if (err) {
         return
@@ -76,7 +75,7 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
         }
       }).then(messageHandler).then((json) => {
         if (json.code === 0) {
-          
+          message.info('创建成功，请耐心等待审批')
         }
       })
     })
@@ -84,6 +83,7 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
 
   public render() {
     const { getFieldDecorator, getFieldValue } = this.props.form
+    const { route } = this.props
     const { coverUrl } = this.state
     const coverDecorator = getFieldDecorator('coverUrl', {
       rules: [{
@@ -227,7 +227,8 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
 
 function mapStateToProps(state) {
   return {
-    user: fromJS(state).get('user')
+    user: fromJS(state).get('user'),
+    route: fromJS(state).get('route')
   }
 }
 

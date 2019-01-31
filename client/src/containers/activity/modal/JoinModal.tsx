@@ -85,7 +85,7 @@ class JoinModal extends React.Component<JoinModalProps, any> {
       >
         <Form>
           <FormItem {...formItemLayout} label="活动">
-            {activity && activity.name}
+            {activity && activity.title}
           </FormItem>
           <FormItem {...formItemLayout} label="申请理由">
             {getFieldDecorator('context', {

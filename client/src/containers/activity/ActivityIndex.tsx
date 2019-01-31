@@ -32,6 +32,7 @@ class ActivityIndex extends React.Component<ActivityIndexProps, any> {
           <Route exact path={`${match.path}/`} component={Homepage}/>
           <Route path={`${match.path}/create`} component={Create}/>
           <Route path={`${match.path}/detail/:id`} component={Detail} />
+          <Route path={`${match.path}/detail/apply`} component={Detail} />
           {/* <Route render={() => <div>no corresponding...</div>} /> */}
         </Switch>
         

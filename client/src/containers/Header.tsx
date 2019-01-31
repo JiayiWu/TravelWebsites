@@ -101,7 +101,7 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
                     </div>
                   )}
                 >
-                  <div className={styles.user} style={{ backgroundImage: `url(${user.get('logoUrl') || Logo})` }}/>
+                  <div className={styles.user} onClick={() => pushURL('/workspace/my')} style={{ backgroundImage: `url(${user.get('logoUrl') || Logo})` }}/>
                 </Popover>
                 
               </div>

@@ -1,10 +1,43 @@
 import * as React from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { pushURL } from '../../actions/route'
 import styles from './NoticeItem.module.scss'
 // import JoinModal from '../activity/modal/JoinModal'
 import ApplyModal, { APPLY_TYPE } from './modal/ApplyModal'
+import { ActivityItemProps } from '../activity/ActivityDetail'
+import { UserBasicProps } from '../profile/ProfileHomepage'
+
+interface VeirfyItemProps {
+ 
+}
+
+interface ApplyCreateItemProps {
+  authActivityInfoVO: ActivityItemProps,
+  createTime: number,
+  id: number,
+  modifyTime: number,
+  state: number,
+}
+
+interface ApplyJoinItemProps {
+  activity: ActivityItemProps,
+  applyUserInfo: UserBasicProps,
+  attachmentUrl: string,
+  context: string,
+  createTime: number,
+  id: number,
+  modifyTime: number,
+  state: number,
+}
 
 interface NoticeItemProps {
   type: number,
+  notice: ApplyCreateItemProps | any,
+  applyCreateNotice?: ApplyCreateItemProps,
+  applyJoinNotice?: ApplyJoinItemProps,
+
+  pushURL: Function, // redux
 }
 
 export const ITEM_TYPE = {
@@ -21,9 +54,9 @@ class NoticeItem extends React.Component<NoticeItemProps, any> {
     showApplyModal: ITEM_TYPE.NULL
   }
   handleNotice = () => {
-    const { type } = this.props
-    if (type === ITEM_TYPE.ACT_CREATE) {
-
+    const { type, applyCreateNotice } = this.props
+    if (type === ITEM_TYPE.ACT_CREATE && applyCreateNotice) {
+      this.props.pushURL('/workspace/activity/detail/apply', { detail: applyCreateNotice.authActivityInfoVO })
     } else if (type === ITEM_TYPE.ACT_JOIN) {
       this.setState({
         showApplyModal: type
@@ -34,14 +67,29 @@ class NoticeItem extends React.Component<NoticeItemProps, any> {
       })
     }
   }
+  getApplyer = () => {
+    const { type, notice } = this.props
+    if (!notice) {
+      return null
+    }
+    switch(type) {
+      case ITEM_TYPE.ACT_CREATE:
+        return notice.authActivityInfoVO.creator
+      default:
+        return null
+    }
+  }
 
   renderTypeInfo = () => {
-    const { type } = this.props
+    const { type, applyCreateNotice } = this.props
+    if (!applyCreateNotice) {
+      return null
+    }
     if (type === ITEM_TYPE.ACT_CREATE) {
       return (
         <span className={styles.typeInfo}>
           申请创建活动&nbsp;
-          <span className={styles.text}>烎潮音发布夜</span>
+          <span className={styles.text}>{applyCreateNotice.authActivityInfoVO.title}</span>
         </span>
       )
     } else if (type === ITEM_TYPE.ACT_JOIN) {
@@ -62,12 +110,13 @@ class NoticeItem extends React.Component<NoticeItemProps, any> {
   public render() {
     const { type } = this.props
     const { showApplyModal } = this.state
+    const applyer = this.getApplyer()
     return (
       <div className={styles.container}>
         <div className={styles.notice}>
           <div className={styles.info}>
             用户&nbsp;
-            <span className={styles.text}>张文玘</span>
+            <span className={styles.text}>{applyer && applyer.name}</span>
             &nbsp;
             {this.renderTypeInfo()}
           </div>
@@ -88,4 +137,13 @@ class NoticeItem extends React.Component<NoticeItemProps, any> {
   }
 }
 
-export default NoticeItem
+function mapStateToProps(state) {
+  return {}
+}
+function mapDispatchToProps(dispatch) {
+  return {
+    pushURL: bindActionCreators(pushURL, dispatch)
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(NoticeItem)
