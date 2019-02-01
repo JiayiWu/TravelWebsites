@@ -39,3 +39,11 @@ export const endAct = (activityId, userId) => (dispatch) => {
     }
   })
 }
+
+export const applyJoinAct = (activityId, userId, result) => (dispatch) => {
+  return API.query(`/activity/application/check/${activityId}/user/${userId}/result/${result}`, {
+    options: {
+      method: 'POST'
+    }
+  })
+}

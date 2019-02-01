@@ -10,6 +10,7 @@ import messageHandler from '../../utils/messageHandler'
 import { UserBasicProps } from '../profile/ProfileHomepage'
 import { pushURL } from '../../actions/route'
 import JoinModal from './modal/JoinModal'
+import DefaultCover from '../../utils/image/ActivityCover.jpg'
 import C1 from '@utils/image/homepage/carousel1.jpg'
 import C2 from '@utils/image/homepage/carousel2.jpg'
 import C3 from '@utils/image/homepage/carousel3.jpg'
@@ -156,7 +157,7 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
         {recommendList.map((act, index) => {
           return (
             <div key={index} style={{ height: '382px'}}>
-              <div className={styles.item} style={{ backgroundImage: `url(${act.coverUrl})`}}>
+              <div className={styles.item} style={{ backgroundImage: `url(${act.coverUrl || DefaultCover})`}}>
                 <div className={styles.time}>
                   <div className={styles.month}>
                     {moment(act.endTime).format('D')}
@@ -177,10 +178,10 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
   }
   renderActCard = (act) => {
     const { user } = this.props
-    const actTime = moment(act.endTime)
+    const actTime = moment(act.startTime)
     return (
       <div className={styles.actCard} key={act.id} onClick={() => this.jumpToAct(act)}>
-        <div style={{ backgroundImage: `url(${act.coverUrl})`}} />
+        <div style={{ backgroundImage: `url(${act.coverUrl || DefaultCover})`}} />
         <div className={styles.right}>
           <div className={styles.titleWrapper}>
             <span className={styles.title}>{act.title}</span>

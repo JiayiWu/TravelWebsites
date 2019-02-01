@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Modal, Form, Input, Upload, Button, Icon } from 'antd'
+import { Modal, Form, Input, Upload, Button, Icon, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
 import styles from './JoinModal.module.scss'
 import API, { serverOrigin } from '../../../utils/API'
@@ -53,6 +53,7 @@ class JoinModal extends React.Component<JoinModalProps, any> {
         }
       }).then(messageHandler).then((json) => {
         if (json.code === 0) {
+          message.success('申请成功，请耐心等待负责人审批')
           this.props.onOk()
         }
       })

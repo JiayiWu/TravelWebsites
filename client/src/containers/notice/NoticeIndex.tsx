@@ -72,7 +72,7 @@ class NoticeIndex extends React.Component<NoticeIndexProps, any> {
         }
       })
     }
-    this.fetchApplyNotice().then((json) => {
+    this.fetchApplyNotice(-1, props).then((json) => {
       console.log('fetch apply notice')
       if (json.code === 0) {
         this.setState({
@@ -97,8 +97,9 @@ class NoticeIndex extends React.Component<NoticeIndexProps, any> {
       }
     })
   }
-  fetchApplyNotice = (state = -1) => {
-    const { user } = this.props
+  fetchApplyNotice = (state = -1, props = this.props) => {
+    const { user } = props
+    console.log(user.toJS())
     return user.get('type') === USER_TYPE.NORMAL ?  API.query(`/activity/application/list/${state}`, {})
       :
       API.query(`/admin/application/list/${state}`, {})
@@ -200,21 +201,24 @@ class NoticeIndex extends React.Component<NoticeIndexProps, any> {
               return <NoticeItem type={ITEM_TYPE.ACT_JOIN}/>
             })} */}
           </TabPane>
-          <TabPane tab="学生认证" key={TAB_TYPE.PERSON_APPLY} className={styles.tabPane}>
-            {this.renderHeader(TAB_TYPE.PERSON_APPLY)}
-            {verifyNotice[verifyNotice.current].map((notice, index) => {
-              return (
-                <NoticeItem 
-                  type={ITEM_TYPE.PERSON_VERIFY} 
-                  notice={notice}
-                  verifyNotice={notice}
-                />
-              )
-            })}
-            {/* {[0, 1, 2].map((notice, index) => {
-              return <NoticeItem type={ITEM_TYPE.PERSON_VERIFY}/>
-            })} */}
-          </TabPane>
+          {user.get('type') === USER_TYPE.ADMIN &&
+            <TabPane tab="学生认证" key={TAB_TYPE.PERSON_APPLY} className={styles.tabPane}>
+              {this.renderHeader(TAB_TYPE.PERSON_APPLY)}
+              {verifyNotice[verifyNotice.current].map((notice, index) => {
+                return (
+                  <NoticeItem 
+                    type={ITEM_TYPE.PERSON_VERIFY} 
+                    notice={notice}
+                    verifyNotice={notice}
+                  />
+                )
+              })}
+              {/* {[0, 1, 2].map((notice, index) => {
+                return <NoticeItem type={ITEM_TYPE.PERSON_VERIFY}/>
+              })} */}
+            </TabPane>
+          }
+          
         </Tabs>
       </div>
     )

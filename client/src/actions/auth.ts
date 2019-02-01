@@ -85,3 +85,15 @@ export const fetchApplyInfo = () => (dispatch) => {
     }
   })
 }
+
+export const applyVerify = (applierId, state) => (dispatch) => {
+  return API.query(`/admin/application/authUser`, {
+    searchParams: {
+      applierId,
+      state,
+    },
+    options: {
+      method: 'POST',
+    }
+  })
+}

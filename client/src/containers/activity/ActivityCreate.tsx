@@ -1,25 +1,65 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-// import { RouteComponentProps } from 'react-router'
+import { bindActionCreators } from 'redux'
+import moment from 'moment'
+import { fromJS } from 'immutable'
+import { RouteComponentProps } from 'react-router'
 import { Form, Input, Upload, Icon, DatePicker, Radio, Button, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
+import DefaultCoverURL from '../../utils/image/ActivityCover.jpg'
 import styles from './ActivityCreate.module.scss'
 import MyEditor from '../../components/MyEditor'
 import API, { serverOrigin } from '../../utils/API'
 import messageHandler from '../../utils/messageHandler'
-import moment from 'moment'
-import { fromJS } from 'immutable'
+
+import { pushURL } from '../../actions/route'
+
 interface ActivityCreateProps extends FormComponentProps {
   user: any, // redux
   route: any, // redux
+  pushURL: Function, // redux
 }
 
 const Dragger = Upload.Dragger
 const FormItem = Form.Item
 const RadioGroup = Radio.Group
-class ActivityCreate extends React.Component<ActivityCreateProps, any> {
+class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponentProps, any> {
+
   state = {
-    coverUrl: ''
+    coverUrl: '',
+  }
+
+  componentDidMount() {
+    const { route, match } = this.props
+    if (match.path.indexOf('update') >= 0) {
+      const detail = route.getIn(['state', 'detail'])
+      if (!detail) {
+        const params = match.params as any
+        API.query(`/activity/info/${params.id}`, {}).then((messageHandler)).then((json) => {
+          if (json.code === 0) {
+            // this.setState({
+            //   coverUrl: json.data.coverUrl
+            // })
+            this.props.pushURL(route.path, { detail: json.data })
+          }
+        })
+      } else {
+        this.setState({
+          coverUrl: detail.get('coverUrl')
+        })
+      }
+      
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { route, match } = nextProps
+    if (match.path.indexOf('update') >= 0 && nextProps.route.getIn(['state', 'detail']) && !this.props.route.getIn(['state', 'detail'])) {
+      const detail = nextProps.route.getIn(['state', 'detail'])
+      this.setState({
+        coverUrl: detail.get('coverUrl')
+      })
+    }
   }
 
   handleUploadFile = (options) => {
@@ -35,6 +75,16 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
         this.setState({
           coverUrl: serverOrigin + '/' + json.data
         })
+        // const coverUrl = serverOrigin + '/' + json.data
+        // const coverTmp = coverUrl.split('/')
+        // return [{
+        //   name: coverTmp[coverTmp.length - 1],
+        //   uid: 'uid',
+        //   status: 'done',
+        //   url: coverUrl,
+        //   size: 0,
+        //   type: 'image'
+        // }]
       }
     })
     // API.query('/file/upload', {
@@ -54,30 +104,54 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
     // })
   }
 
-  handleCreate = () => {
+  handleOk = () => {
     const { validateFields } = this.props.form
-    const { user } = this.props
+    const { user, route } = this.props
     validateFields((err, value) => {
       if (err) {
         return
       }
-      // 创建发布
-      API.query('/activity/check', {
-        options: {
-          method: 'POST',
-          body: JSON.stringify({
-            ...value,
-            coverUrl: this.state.coverUrl,
-            endTime: moment(value.endTime).valueOf(),
-            startTime: moment(value.startTime).valueOf(),
-            createId: user && user.get('id')
-          })
-        }
-      }).then(messageHandler).then((json) => {
-        if (json.code === 0) {
-          message.info('创建成功，请耐心等待审批')
-        }
-      })
+      const detail = route.getIn(['state', 'detail'])
+      if (detail) {
+        // 编辑活动
+        API.query('/activity/update', {
+          options: {
+            method: 'POST',
+            body: JSON.stringify({
+              ...detail.toJS(),
+              ...value,
+              coverUrl: this.state.coverUrl,
+              endTime: moment(value.endTime).valueOf(),
+              startTime: moment(value.startTime).valueOf(),
+              
+            })
+          }
+        }).then(messageHandler).then((json) => {
+          if (json.code === 0) {
+            message.success('修改成功')
+            this.props.pushURL(`/workspace/activity/detail/${detail.get('id')}`)
+          }
+        })
+      } else {
+        // 创建活动
+        API.query('/activity/check', {
+          options: {
+            method: 'POST',
+            body: JSON.stringify({
+              ...value,
+              coverUrl: this.state.coverUrl,
+              endTime: moment(value.endTime).valueOf(),
+              startTime: moment(value.startTime).valueOf(),
+              createId: user && user.get('id')
+            })
+          }
+        }).then(messageHandler).then((json) => {
+          if (json.code === 0) {
+            message.info('创建成功，请耐心等待审批')
+          }
+        })
+      }
+      
     })
   }
 
@@ -85,21 +159,43 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
     const { getFieldDecorator, getFieldValue } = this.props.form
     const { route } = this.props
     const { coverUrl } = this.state
+    const detail = route.getIn(['state', 'detail'])
+    const coverTmp = coverUrl.split('/')
     const coverDecorator = getFieldDecorator('coverUrl', {
-      rules: [{
-        required: true,
-        message: '请上传封面头图'
-      }]
+      // valuePropName: 'fileList',
+      // initialValue: coverUrl ? [{
+      //   name: coverTmp[coverTmp.length - 1],
+      //   uid: 'uid',
+      //   status: 'done',
+      //   url: coverUrl,
+      //   size: 0,
+      //   type: 'image'
+      // }] : [],
+      // trigger: 'customRequest',
+      // normalize: (options) => {
+      //   console.log('options', options)
+      // },
+      // getValueFromEvent: this.handleUploadFile,
+      // rules: [{
+      //   required: true,
+      //   message: '请上传封面头图'
+      // }]
     })
     const startTimeDecorator = getFieldDecorator('startTime', {
+      initialValue: detail && moment(detail.get('startTime')),
       rules: [{
         required: true,
         message: '请选择活动开始时间'
       }]
     })
-    const endTimeDecorator = getFieldDecorator('endTime', {})
-    const locationDecorator = getFieldDecorator('location', {})
+    const endTimeDecorator = getFieldDecorator('endTime', {
+      initialValue: detail && moment(detail.get('endTime'))
+    })
+    const locationDecorator = getFieldDecorator('location', {
+      initialValue: detail && detail.get('location')
+    })
     const joinTypeDecorator = getFieldDecorator('joinType', {
+      initialValue: detail && detail.get('joinType').toString(),
       rules: [{
         required: true,
         message: '请选择活动加入方式'
@@ -114,11 +210,26 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
         span: 14
       }
     }
-    const descriptionDecorator = getFieldDecorator('description', {})
-    const coverTmp = coverUrl.split('/')
+    const descriptionDecorator = getFieldDecorator('description', {
+      initialValue: detail && detail.get('description')
+    })
+    const titleDecorator = getFieldDecorator('title', {
+      initialValue: detail && detail.get('title'),
+      rules: [{
+        required: true,
+        message: '请填写活动标题'
+      }]
+    })
+    
     return (
       <div className={styles.container}>
         <Form>
+          <FormItem {...formItemLayout} label="标题">
+            {titleDecorator(
+              <Input placeholder="请填写活动标题"/>
+            )}
+          </FormItem>
+
           <FormItem {...formItemLayout} label="上传封面图片">
             {coverDecorator(
               <Dragger
@@ -131,7 +242,14 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
                   url: coverUrl,
                   size: 0,
                   type: 'image'
-                }] : []}
+                }] : [{
+                  name: 'defaultCover',
+                  uid: 'uid',
+                  status: 'done',
+                  url: DefaultCoverURL,
+                  size: 0,
+                  type: 'image',
+                }]}
                 onRemove={(file) => {
                   console.log(file)
                   this.setState({
@@ -139,28 +257,22 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
                   })
                   return true
                 }}
-                // action={(file) => {
-                //   const formData = new FormData()
-                //   formData.append('file', file.response);
-                //   (window as any).f = file
-                //   return API.query('/file/upload', {
-                //     options: {
-                //       method: 'POST',
-                //       body: formData,
-                //     },
-                //   }).then((json) => {
-                //     if (json.code === 0) {
-                //       this.setState({
-                //         coverUrl: serverOrigin + '/' + json.data
-                //       })
-                //     }
-                //   })
-                // }}
               >
-                <p className="ant-upload-drag-icon">
-                  <Icon type="inbox" />
-                </p>
-                <p className="ant-upload-text">点击或拖拽文件到这里进行上传</p>
+                {/* {coverUrl ?  */}
+                  <div className={styles.imgWrapper} style={{ backgroundImage: `url(${coverUrl || DefaultCoverURL})`}}>
+                    <div className={styles.cover}>
+                      <Icon type="inbox" /> 
+                    </div>
+                  </div>
+                  {/* // : [
+                  //   <p className="ant-upload-drag-icon">
+                  //     <Icon type="inbox" />
+                  //   </p>,
+                  //   <p className="ant-upload-text">点击或拖拽文件到这里进行上传</p>
+                  // ]
+                // } */}
+                
+                
                 {/* <p className="ant-upload-hint">Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files</p> */}
               </Dragger>
             )}
@@ -217,7 +329,7 @@ class ActivityCreate extends React.Component<ActivityCreateProps, any> {
           </FormItem>
           <FormItem className={styles.btnGroup}>
             <Button type="default">取消编辑</Button>
-            <Button type="primary" onClick={() => this.handleCreate()}>立即创建</Button>
+            <Button type="primary" onClick={() => this.handleOk()}>{detail ? '保存修改' : '立即创建'}</Button>
           </FormItem>
         </Form>
       </div>
@@ -232,4 +344,10 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(Form.create()(ActivityCreate))
+function mapDispatchToProps(dispatch) {
+  return {
+    pushURL: bindActionCreators(pushURL, dispatch)
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(ActivityCreate))

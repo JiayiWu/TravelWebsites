@@ -78,6 +78,25 @@
         left: 50%;
         box-sizing: border-box;
         transform: translate(-50%, -40%);
+        :local(.cover) {
+          display: none;
+        }
+        &:hover {
+          :local(.cover) {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            i {
+              color: white;
+              font-size: 24px;
+            }
+          }
+        }
 
       }
       :local(.userName) {

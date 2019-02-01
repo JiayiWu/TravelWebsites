@@ -6,6 +6,7 @@ import { Icon, message } from 'antd'
 import styles from './ActivityDetail.module.scss'
 import API from '../../utils/API'
 import messageHandler from '../../utils/messageHandler'
+import DefaultCover from '../../utils/image/ActivityCover.jpg'
 // import Logo from '@utils/image/activity/a1.jpg'
 // import COVER from '@utils/image/activity/a2.jpg'
 // import CREATOR from '@utils/image/activity/a4.jpg'
@@ -187,7 +188,7 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
     // const isCreator = detail.creator.id === user.id
     return detail && (
       <div className={styles.container}>
-        <div className={styles.headerContainer} style={{ backgroundImage: `url(${detail.coverUrl})`}}>
+        <div className={styles.headerContainer} style={{ backgroundImage: `url(${detail.coverUrl || DefaultCover})`}}>
           <h1 className={styles.titleWrapper}>
             <div>
               {detail.title}
@@ -231,7 +232,14 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
                 </div>
                 :
                 (detail.creator.id === user.get('id') ? 
-                  [<div className={styles.headerBtn} onClick={this.handleCancelAct}>
+                  [<div className={styles.headerBtn} onClick={() => this.props.pushURL(`/workspace/activity/update/${detail.id}`, {
+                    detail: detail
+                  })}>
+                    <Icon type="edit" />
+                    <br />
+                    编辑
+                  </div>,
+                  <div className={styles.headerBtn} onClick={this.handleCancelAct}>
                     <Icon type="minus-circle" />
                     <br />
                     取消

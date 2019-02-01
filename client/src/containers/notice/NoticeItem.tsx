@@ -101,13 +101,15 @@ class NoticeItem extends React.Component<NoticeItemProps, any> {
         return notice.authActivityInfoVO.creator
       case ITEM_TYPE.PERSON_VERIFY:
         return notice.username
+      case ITEM_TYPE.ACT_JOIN:
+        return notice.applyUserInfo
       default:
         return null
     }
   }
 
   renderTypeInfo = () => {
-    const { type, applyCreateNotice, verifyNotice } = this.props
+    const { type, applyCreateNotice, verifyNotice, applyJoinNotice } = this.props
     
     if (type === ITEM_TYPE.ACT_CREATE && applyCreateNotice) {
       return (
@@ -116,11 +118,16 @@ class NoticeItem extends React.Component<NoticeItemProps, any> {
           <span className={styles.text}>{applyCreateNotice.authActivityInfoVO.title}</span>
         </span>
       )
-    } else if (type === ITEM_TYPE.ACT_JOIN) {
+    } else if (type === ITEM_TYPE.ACT_JOIN && applyJoinNotice) {
       return (
         <span className={styles.typeInfo}>
           申请加入活动&nbsp;
-          <span className={styles.text}>活动名称</span>
+          <span className={styles.text} onClick={() => {
+            if (this.props.onHide) {
+              this.props.onHide()
+            }
+            this.props.pushURL(`/workspace/activity/detail/${applyJoinNotice.activity.id}`)
+          }}>{applyJoinNotice.activity ? applyJoinNotice.activity.title : ''}</span>
         </span>
       )
     } else if (type === ITEM_TYPE.PERSON_VERIFY && verifyNotice) {

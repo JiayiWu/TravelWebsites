@@ -10,6 +10,7 @@ import styles from './Header.module.scss'
 import API from '../utils/API'
 import messageHandler from '../utils/messageHandler'
 import Logo from '@utils/image/logo.png'
+import DefaultAvatar from '../utils/image/DefaultAvatar.jpg'
 import { pushURL } from '../actions/route'
 import { 
   setUserInfo,
@@ -102,7 +103,7 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
                     </div>
                   )}
                 >
-                  <div className={styles.user} onClick={() => user.get('type') === USER_TYPE.NORMAL && pushURL('/workspace/my')} style={{ backgroundImage: `url(${user.get('logoUrl') || Logo})` }}/>
+                  <div className={styles.user} onClick={() => user.get('type') === USER_TYPE.NORMAL && pushURL('/workspace/my')} style={{ backgroundImage: `url(${user.get('logoUrl') || DefaultAvatar})` }}/>
                 </Popover>
                 
               </div>
@@ -116,7 +117,7 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
           </div>
           
         </div>
-        <div className={styles.content} style={{ overflow: showNoticePanel ? 'hidden' : 'auto', height: showNoticePanel ? 'calc(100% - 58px)' : 'auto'}}>
+        <div className={styles.content} style={{ overflowY: showNoticePanel ? 'hidden' : 'auto', height: showNoticePanel ? 'calc(100% - 58px)' : 'auto', overflowX: 'hidden'}}>
           <Switch>
             <Route path={`${url}/activity`} component={ActivityIndex}/>
             {user.get('type') === USER_TYPE.NORMAL &&
