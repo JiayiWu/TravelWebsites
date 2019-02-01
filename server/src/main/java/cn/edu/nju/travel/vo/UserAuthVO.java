@@ -31,7 +31,7 @@ public class UserAuthVO {
         this.id = entity.getId();
         this.userId = entity.getUserId();
         this.attachmentUrl = entity.getAttachmentUrl();
-        this.context = entity.getAttachmentUrl();
+        this.context = entity.getContext();
         this.state = entity.getState();
         this.applyTime = entity.getModifyTime();
     }

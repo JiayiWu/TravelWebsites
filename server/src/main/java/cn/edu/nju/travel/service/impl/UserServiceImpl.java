@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
         }
         entity.setMobile(mobile);
         entity.setMail(mail);
-        if(!logoUrl.equals(entity.getLogoUrl())){
+        if(logoUrl!=null && !logoUrl.equals(entity.getLogoUrl())){
             fileService.deleteOldFile(entity.getLogoUrl());
             entity.setLogoUrl(logoUrl);
         }
