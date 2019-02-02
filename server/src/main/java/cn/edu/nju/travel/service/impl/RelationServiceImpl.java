@@ -79,6 +79,7 @@ public class RelationServiceImpl implements RelationService {
                     .getIndex());
             AuditEntity auditEntity = new AuditEntity();
             auditEntity.setActivityId(activityId);
+            auditEntity.setUrl(attachmentUrl);
             auditEntity.setActivityCreateId(activityEntity.getCreateId());
             auditEntity.setJoinUserId(userId);
             auditEntity.setState(ApproveStateCode.NEW.getIndex());
@@ -150,7 +151,7 @@ public class RelationServiceImpl implements RelationService {
             authenticationInfoListVO.setState(auditEntity.getState());
             //todo
             //attachment = null
-            authenticationInfoListVO.setAttachmentUrl(null);
+            authenticationInfoListVO.setAttachmentUrl(auditEntity.getUrl());
             authenticationInfoListVO.setContext(auditEntity.getContext());
             authenticationInfoListVO.setId(auditEntity.getId());
 

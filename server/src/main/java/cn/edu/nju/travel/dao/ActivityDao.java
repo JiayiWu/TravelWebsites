@@ -55,4 +55,8 @@ public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, 
 
 
     List<ActivityEntity> findAllByCreateId(Integer createId);
+
+    @Query(nativeQuery = true, value = "select * from activity a where a.id in (select id from relation r where  r.state = 0 and r.user_id = :createId)")
+    List<ActivityEntity> findAttendActivity(@Param("createId") Integer createId);
+
 }

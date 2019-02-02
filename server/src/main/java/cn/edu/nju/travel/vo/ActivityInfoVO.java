@@ -52,4 +52,7 @@ public class ActivityInfoVO {
      */
     @ApiModelProperty(notes = "参与者列表")
     private List<UserInfoVO> attendList;
+
+    @ApiModelProperty(notes = "0代表自己创建的，1代表参与的")
+    private int type;
 }
