@@ -39,7 +39,7 @@ class ApplyModal extends React.Component<ApplyModalProps, any> {
       this.props.pushURL(`/workspace/activity/detail/${item.authActivityInfoVO.id}`)
     } else if (type === APPLY_TYPE.ACT_JOIN) {
       // TODO 同意加入活动审批和身份认证审批
-      this.handleJoinAct(0)
+      this.handleJoinAct(1)
     } else if (type === APPLY_TYPE.PERSON_VERIFY) {
       this.handlePersonVerify(1)
     }
@@ -49,7 +49,7 @@ class ApplyModal extends React.Component<ApplyModalProps, any> {
     if (type === APPLY_TYPE.ACT_CREATE_RESULT) {
       this.props.onCancel()
     } else if (type === APPLY_TYPE.ACT_JOIN) {
-      this.handleJoinAct(1)
+      this.handleJoinAct(2)
       // TODO 拒绝加入活动审批和身份认证审批
       // this.props.onCancel()
     } else if (type === APPLY_TYPE.PERSON_VERIFY) {
@@ -57,7 +57,7 @@ class ApplyModal extends React.Component<ApplyModalProps, any> {
     }
   }
   /**
-   * result 0 通过 1 拒绝
+   * result 1 通过 2 拒绝
    */
   handleJoinAct = (result) => {
     const { item } = this.props
@@ -98,7 +98,7 @@ class ApplyModal extends React.Component<ApplyModalProps, any> {
       case APPLY_TYPE.ACT_CREATE_RESULT:
         return item.authActivityInfoVO.creator.name
       case APPLY_TYPE.PERSON_VERIFY:
-        return item.username
+        return item.userInfo.name
       default:
         return item.username
     }

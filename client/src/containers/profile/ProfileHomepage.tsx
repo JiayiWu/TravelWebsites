@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Icon, Button, Form, Input } from 'antd'
+import { Icon, Button, Form, Input, Alert } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
 import VerifyImage from '@utils/image/profile/header.jpeg'
 import { serverOrigin } from '../../utils/API'
@@ -41,12 +41,25 @@ export const USER_TYPE = {
   ADMIN: 1,
 }
 
+const VERIFY_STATE = {
+  NULL: -1, // 未提交
+  APPLYING: 0, // 已提交待审批
+  ACCEPT: 1, // 审批通过
+  REJECT: 2, // 审批拒绝
+}
+
+const VERITY_STATE_LIST = [{
+
+}]
+
 const FormItem = Form.Item
 
 const BASIC_INFO = {
   phone: '18260068636',
   mail: '592710057@qq.com'
 }
+
+
 
 class ProfileHomepage extends React.Component<HomepageProps, any> {
   private uploader: React.RefObject<HTMLInputElement>
@@ -59,6 +72,14 @@ class ProfileHomepage extends React.Component<HomepageProps, any> {
     editType: INFO_EDIT_TYPE.NONE,
     // basicInfo: BASIC_INFO
     attachmentUrl: this.props.user ? this.props.user.get('attachmentUrl') : ''
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.user.get('attachmentUrl') !== this.props.user.get('attachmentUrl')) {
+      this.setState({
+        attachmentUrl: nextProps.user.get('attachmentUrl')
+      })
+    }
   }
   
   onUploadVerifyImage = (props) => {
@@ -74,7 +95,6 @@ class ProfileHomepage extends React.Component<HomepageProps, any> {
   }
 
   handleSaveBasic = () => {
-    // TODO 掉修改个人信息的接口
     const { validateFields }  = this.props.form
     validateFields(['mobile', 'mail', 'name'], (err, value) => {
       if (err) {
@@ -109,6 +129,21 @@ class ProfileHomepage extends React.Component<HomepageProps, any> {
       })
     })
     
+  }
+
+  renderStateIcon = () => {
+    const { user } = this.props
+    const state = user.get('state')
+    switch(state) {
+      case VERIFY_STATE.NULL:
+        return <Alert type="warning" showIcon message="未提交认证信息，请尽快提交"/>
+      case VERIFY_STATE.APPLYING:
+        return <Alert type="info" showIcon message="已提交认证，请耐心等待"/>
+      case VERIFY_STATE.ACCEPT:
+        return <Alert type="success" showIcon message="认证通过"/>
+      case VERIFY_STATE.REJECT:
+        return <Alert type="error" showIcon message="认证失败，请重新提交认证"/>
+    }
   }
 
   /** component: 可编辑时的组件类型
@@ -195,9 +230,13 @@ class ProfileHomepage extends React.Component<HomepageProps, any> {
         </div>
         <div className={styles.infoContainer}>
           <div className={styles.header}>
-            认证信息
+            <div className={styles.left}>
+              <span>认证信息</span>
+              {this.renderStateIcon()}
+            </div>
+            
             <div className={styles.operation}>
-              {editType === INFO_EDIT_TYPE.APPLY ? 
+              {editType === INFO_EDIT_TYPE.APPLY && user.get('state') !== VERIFY_STATE.ACCEPT ? 
                 <Button type="primary" size="small" onClick={() => this.handleSaveApply()}>保存修改</Button>
                 :
                 <Icon type="edit" onClick={() => this.setState({ editType: INFO_EDIT_TYPE.APPLY })}/>

@@ -17,6 +17,7 @@ import { fromJS } from 'immutable';
 
 import { attendAct, quitAct, applyAct, cancelAct, endAct } from '../../actions/activity'
 import { pushURL } from '../../actions/route'
+import JoinModal from './modal/JoinModal';
 
 export interface ActivityItemProps {
   coverUrl: string,
@@ -24,7 +25,7 @@ export interface ActivityItemProps {
   description: string,
   endTime: number,
   id: number,
-  joinType: string,
+  joinType: string | number,
   location: string,
   startTime: number,
   attendList?: Array<UserBasicProps>,
@@ -43,8 +44,8 @@ interface ActivityDetailProps {
 }
 
 const APPLY_TYPE = {
-  AGREE: 0,
-  REFUSE: 1,
+  AGREE: 1,
+  REFUSE: 2,
 }
 
 // const USER = {
@@ -69,9 +70,10 @@ const APPLY_TYPE = {
 //   title: '烎潮音发布夜烎潮音发布夜烎潮音发布夜烎潮音发布夜烎潮音发布夜烎潮音发布夜'
 // }
 
-class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetailProps, { detail: ActivityItemProps | null }> {
-  state : { detail: ActivityItemProps | null } = {
-    detail: null
+class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetailProps, { detail: ActivityItemProps | null, showJoinModal: boolean }> {
+  state : { detail: ActivityItemProps | null, showJoinModal: boolean } = {
+    detail: null,
+    showJoinModal: false,
   }
   
   componentDidMount() {
@@ -118,11 +120,22 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
     if (!detail) {
       return
     }
-    this.props.attendAct({ activityId: detail.id, userId: user.id}).then((json) => {
-      if (json.code === 0) {
-        this.fetchActivityDetail()
-      }
-    })
+    if (detail.joinType === 1) {
+      this.setState({
+        showJoinModal: true
+      })
+    } else {
+      this.props.attendAct({ activityId: detail.id, userId: user.id }).then((json) => {
+        if (json.code === 0) {
+          this.fetchActivityDetail()
+        }
+      })
+
+    }
+  }
+
+  fetchAttendAct = (options) => {
+    
   }
 
   handleQuitAct = () => {
@@ -266,6 +279,15 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
         <div style={{ width: 1000, margin: 'auto' }}>
           <ActivityDetailContent detail={detail}/>
         </div>
+        {this.state.showJoinModal && 
+          <JoinModal 
+            activity={detail}
+            onOk={this.fetchActivityDetail}
+            onCancel={() => this.setState({
+              showJoinModal: false,
+            })}
+          />
+        }
       </div>
     )
   }

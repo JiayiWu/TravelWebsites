@@ -78,7 +78,7 @@ class NoticeItem extends React.Component<NoticeItemProps, any> {
         if (this.props.onHide) {
           this.props.onHide()
         }
-        this.props.pushURL(`/workspace/activity/detail/apply/${applyCreateNotice.authActivityInfoVO.id}`, { detail: applyCreateNotice.authActivityInfoVO })
+        this.props.pushURL(`/workspace/activity/detail/apply/${applyCreateNotice.id}`, { detail: {...applyCreateNotice.authActivityInfoVO, id: applyCreateNotice.id} })
       }
       
     } else if (type === ITEM_TYPE.ACT_JOIN) {
@@ -100,7 +100,7 @@ class NoticeItem extends React.Component<NoticeItemProps, any> {
       case ITEM_TYPE.ACT_CREATE:
         return notice.authActivityInfoVO.creator
       case ITEM_TYPE.PERSON_VERIFY:
-        return notice.username
+        return notice.userInfo
       case ITEM_TYPE.ACT_JOIN:
         return notice.applyUserInfo
       default:

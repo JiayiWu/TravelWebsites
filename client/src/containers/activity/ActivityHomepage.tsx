@@ -7,20 +7,12 @@ import moment from 'moment'
 import styles from './ActivityHomepage.module.scss'
 import API from '../../utils/API'
 import messageHandler from '../../utils/messageHandler'
-import { UserBasicProps } from '../profile/ProfileHomepage'
+import { UserBasicProps, USER_TYPE } from '../profile/ProfileHomepage'
 import { pushURL } from '../../actions/route'
 import JoinModal from './modal/JoinModal'
 import DefaultCover from '../../utils/image/ActivityCover.jpg'
-import C1 from '@utils/image/homepage/carousel1.jpg'
-import C2 from '@utils/image/homepage/carousel2.jpg'
-import C3 from '@utils/image/homepage/carousel3.jpg'
-import C4 from '@utils/image/homepage/carousel4.jpg'
 
-import A1 from '@utils/image/activity/a1.jpg'
-import A2 from '@utils/image/activity/a2.jpg'
-import A3 from '@utils/image/activity/a3.jpg'
-import A4 from '@utils/image/activity/a4.jpg'
-import A5 from '@utils/image/activity/a5.jpg'
+import DynamicScrollPane from '../../components/DynamicScrollPane'
 import { fromJS } from 'immutable';
 
 interface ActivityHomepageProps {
@@ -46,72 +38,13 @@ const JOIN_TYPE = {
   APPLY: 1,
 }
 
-const CAROUSEL_LIST = [{
-  image: C1,
-  name: '斗牛',
-  time: new Date().getTime()
-}, {
-  image: C2,
-  name: '降临',
-  time: new Date().getTime()
-}, {
-  image: C3,
-  name: '王牌对王牌',
-  time: new Date().getTime()
-}, {
-  image: C4,
-  name: '癌',
-  time: new Date().getTime()
-}]
-
-const ACTIVITY_LIST = [{
-  id: 0,
-  image: A1,
-  name: '南京烎潮音发布夜',
-  time: new Date().getTime(),
-  description: '独家！#烎潮音发布夜# 活捉一只新鲜的彩排花！认真又努力的。华晨宇 会给我们带来什么样的惊喜呢！搓手期待华语乐坛新生代领军人物@华晨宇yu ！明天直播见',
-  location: '南京',
-  partiCount: 3000,
-}, {
-  id: 1,
-  image: A2,
-  name: '南京烎潮音发布夜',
-  time: new Date().getTime(),
-  description: '独家！#烎潮音发布夜# 活捉一只新鲜的彩排花！认真又努力的。华晨宇 会给我们带来什么样的惊喜呢！搓手期待华语乐坛新生代领军人物@华晨宇yu ！明天直播见',
-  location: '南京',
-  partiCount: 3000,
-}, {
-  id: 2,
-  image: A3,
-  name: '南京烎潮音发布夜',
-  time: new Date().getTime(),
-  description: '独家！#烎潮音发布夜# 活捉一只新鲜的彩排花！认真又努力的。华晨宇 会给我们带来什么样的惊喜呢！搓手期待华语乐坛新生代领军人物@华晨宇yu ！明天直播见',
-  location: '南京',
-  partiCount: 3000,
-}, {
-  id: 3,
-  image: A4,
-  name: '南京烎潮音发布夜',
-  time: new Date().getTime(),
-  description: '独家！#烎潮音发布夜# 活捉一只新鲜的彩排花！认真又努力的。华晨宇 会给我们带来什么样的惊喜呢！搓手期待华语乐坛新生代领军人物@华晨宇yu ！明天直播见',
-  location: '南京',
-  partiCount: 3000,
-}, {
-  id: 4,
-  image: A5,
-  name: '南京烎潮音发布夜',
-  time: new Date().getTime(),
-  description: '独家！#烎潮音发布夜# 活捉一只新鲜的彩排花！认真又努力的。华晨宇 会给我们带来什么样的惊喜呢！搓手期待华语乐坛新生代领军人物@华晨宇yu ！明天直播见',
-  location: '南京',
-  partiCount: 3000,
-}]
-
 const WEEK_DAYS = ['日', '一', '二', '三', '四', '五', '六']
 
 class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
   state = {
     recommendList: [] as Array<ActivityItemProps>,
     activityList: [] as Array<ActivityItemProps>,
+    isLoading: false,
     joinModal: {
       show: false,
       joinAct: null,
@@ -146,6 +79,19 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
   }
   fetchRecommendList = () => {
     return API.query('/activity/recommendation/5', {}).then(messageHandler)
+  }
+  handleLoadMore = () => {
+    this.setState({
+      isLoading: true,
+    })
+    this.fetchActivityList().then((json) => {
+      if (json.code === 0) {
+        this.setState({
+          activityList: this.state.activityList.concat(json.data),
+          isLoading: false,
+        })
+      }
+    })
   }
   jumpToAct = (activity) => {
     this.props.pushURL(`/workspace/activity/detail/${activity.id}`)
@@ -185,7 +131,7 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
         <div className={styles.right}>
           <div className={styles.titleWrapper}>
             <span className={styles.title}>{act.title}</span>
-            {act.creator && user && act.creator.id != user.get('id') ? 
+            {act.creator && user && user.get('type') === USER_TYPE.NORMAL && act.creator.id != user.get('id') ? 
               <Button type="default" onClick={(e) => {
                 e.stopPropagation()
                 if (act.joinType === JOIN_TYPE.DIRECT) {
@@ -242,7 +188,7 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
     )
   }
   public render() {
-    const { activityList, joinModal } = this.state
+    const { activityList, joinModal, isLoading } = this.state
     return (
       <div className={styles.container}>
         <div className={styles.headerWrapper}>
@@ -253,9 +199,16 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
             <h3>活动列表</h3>
             <Button type="primary" className={styles.createBtn} onClick={() => this.props.pushURL('/workspace/activity/create')}>创建活动</Button>
           </div>
-          {activityList.map((act) => {
-            return this.renderActCard(act)
-          })}
+          <DynamicScrollPane
+            hasMore={true}
+            loadMore={this.handleLoadMore}
+            isLoading={isLoading}
+          >
+            {activityList.map((act) => {
+              return this.renderActCard(act)
+            })}
+          </DynamicScrollPane>
+          
         </div>
         {joinModal.show && joinModal.joinAct &&
           <JoinModal 

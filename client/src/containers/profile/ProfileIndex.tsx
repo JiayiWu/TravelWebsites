@@ -121,7 +121,9 @@ class ProfileIndex extends React.Component<ProfileProps, any> {
               />
             }
             {contentType === CONTENT_TYPE.ACTIVITY &&
-              <ProfileActivity />
+              <ProfileActivity 
+                user={user}
+              />
             }
             {contentType === CONTENT_TYPE.SECURITY &&
               <ProfilePasswd />

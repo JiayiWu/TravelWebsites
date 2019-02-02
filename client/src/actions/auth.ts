@@ -56,7 +56,7 @@ export const updateApply = (updateInfo: {attachmentUrl?: string, context?: strin
     if (json.code === 0) {
       dispatch({
         type: UPDATE_APPLY,
-        payload: updateInfo,
+        payload: json.data,
       })
     }
     return json

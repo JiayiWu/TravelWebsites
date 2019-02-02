@@ -3,7 +3,7 @@ import { Modal, Form, Input, Upload, Button, Icon, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
 import styles from './JoinModal.module.scss'
 import API, { serverOrigin } from '../../../utils/API'
-import { ActivityItemProps } from '../ActivityHomepage'
+import { ActivityItemProps } from '../ActivityDetail'
 import messageHandler from '../../../utils/messageHandler';
 
 interface JoinModalProps extends FormComponentProps {
@@ -37,6 +37,9 @@ class JoinModal extends React.Component<JoinModalProps, any> {
   handleOk = () => {
     const { validateFields } = this.props.form
     const { activity } = this.props
+    if (!activity) {
+      return 
+    }
     validateFields((err, value) => {
       if (err) {
         return

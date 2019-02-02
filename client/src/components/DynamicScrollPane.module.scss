@@ -1,0 +1,9 @@
+:global(.dynamic-scroll-pane) {
+  overflow-y: auto;
+}
+  :local(.footer) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+  }

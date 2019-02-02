@@ -3,10 +3,12 @@ import classnames from 'classnames'
 import { Button, Tabs } from 'antd'
 import styles from './ProfileActivity.module.scss'
 import ActivityCard from '../activity/components/ActivityCard'
+import API from '../../utils/API'
 import { ACTIVITY_LIST } from '../../utils/constants'
+import messageHandler from '../../utils/messageHandler';
 
-interface ProfileActivtyProps {
-
+interface ProfileActivityProps {
+  user: any
 }
 
 const TabPane = Tabs.TabPane
@@ -17,7 +19,18 @@ const TAB_TYPE = {
 }
 
 
-class ProfileActivity extends React.Component {
+class ProfileActivity extends React.Component<ProfileActivityProps, any> {
+  state = {
+    
+  }
+  componentDidMount() {
+    const { user } = this.props
+    API.query(`/activity/list/${user.id}`,{}).then(messageHandler).then((json) => {
+      if (json.code === 0) {
+
+      }
+    })
+  }
   renderActivitys = (list) => {
     return (
       <div>

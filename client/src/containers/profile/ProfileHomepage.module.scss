@@ -15,7 +15,13 @@
       font-size: 18px;
       margin-bottom: 10px;
       color: #333;
-
+      :local(.left) {
+        display: inline-flex;
+        align-items: center;
+        & > * {
+          margin-right: 10px;
+        }
+      }
       :local(.operation) {
         > i {
           font-size: 20px;
