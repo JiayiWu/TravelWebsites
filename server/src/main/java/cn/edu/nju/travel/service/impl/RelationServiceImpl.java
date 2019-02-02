@@ -68,6 +68,9 @@ public class RelationServiceImpl implements RelationService {
         if(activityEntity == null){
             throw new ServerException(ResponseCode.Error,"没有这项活动");
         }
+        if(userId == 0){
+            throw new ServerException(ResponseCode.Error,"userId不能为空");
+        }
         RelationEntity relationEntity = new RelationEntity();
         relationEntity.setActivityId(activityId);
         relationEntity.setUserId(userId);
