@@ -19,8 +19,8 @@ public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, 
             " a.cover_url = :coverUrl, a.join_type = :joinType, a.description = :description " +
             "where a.id = :id")
     void updateActivityInfo(@Param("id") Integer id,
+                            @Param("title") String title,
                            @Param("location") String location,
-                           @Param("title") String title,
                            @Param("startTime") Timestamp startTime,
                            @Param("endTime") Timestamp endTime,
                            @Param("joinType") Integer joinType,
