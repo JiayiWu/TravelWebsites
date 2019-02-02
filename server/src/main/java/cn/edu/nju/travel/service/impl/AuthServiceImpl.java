@@ -56,7 +56,13 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserAuthVO getAuthInfo(int userId) {
         AuthenticationEntity entity = authenticationDao.findByUserId(userId);
-        return entity==null?null:new UserAuthVO(entity);
+        if(entity == null){
+            UserAuthVO userAuthVO = new UserAuthVO();
+            userAuthVO.setUserId(userId);
+            userAuthVO.setState(ApproveStateCode.NO_APPLY);
+            return userAuthVO;
+        }
+        return new UserAuthVO(entity);
     }
 
     @Override
