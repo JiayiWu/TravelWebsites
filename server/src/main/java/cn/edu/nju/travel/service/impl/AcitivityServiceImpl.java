@@ -1,9 +1,6 @@
 package cn.edu.nju.travel.service.impl;
 
-import cn.edu.nju.travel.constant.ActivityStateCode;
-import cn.edu.nju.travel.constant.ApproveStateCode;
-import cn.edu.nju.travel.constant.JoinTypeCode;
-import cn.edu.nju.travel.constant.RelationStateCode;
+import cn.edu.nju.travel.constant.*;
 import cn.edu.nju.travel.dao.ActivityDao;
 import cn.edu.nju.travel.dao.UserDao;
 import cn.edu.nju.travel.entity.ActivityEntity;
@@ -71,7 +68,7 @@ public class AcitivityServiceImpl implements ActivityService{
     public ActivityInfoVO findActivityById(Integer id) throws Exception{
         ActivityEntity activityEntity = activityDao.findById(id).get();
 
-        ActivityInfoVO activityInfoVO = getActivityInfoVO(activityEntity);
+        ActivityInfoVO activityInfoVO = getActivityInfoVO(activityEntity,ActivityTypeCode.COMMON.getIndex());
 
         return activityInfoVO;
     }
@@ -109,7 +106,7 @@ public class AcitivityServiceImpl implements ActivityService{
         List<ActivityInfoVO> activityInfoVOList = new ArrayList<>();
         for(ActivityEntity activityEntity : activityEntityList){
             if(activityEntity.getState().equals(ActivityStateCode.VALID.getIndex()))
-            activityInfoVOList.add(getActivityInfoVO(activityEntity));
+            activityInfoVOList.add(getActivityInfoVO(activityEntity, ActivityTypeCode.COMMON.getIndex()));
         }
         return activityInfoVOList;
     }
@@ -150,6 +147,7 @@ public class AcitivityServiceImpl implements ActivityService{
                     throw new ServerException(ResponseCode.Error,"错误的活动的状态");
             }
             AuthActivityInfoVO authActivityInfoVO = new AuthActivityInfoVO();
+            authActivityInfoVO.setId(activityEntity.getId());
             authActivityInfoVO.setCreator(userService.findById(activityEntity.getCreateId()));
             authActivityInfoVO.setTitle(activityEntity.getTitle());
             authActivityInfoVO.setLocation(activityEntity.getLocation());
@@ -201,7 +199,7 @@ public class AcitivityServiceImpl implements ActivityService{
         List<ActivityInfoVO> activityInfoVOList = new ArrayList<>();
 
         for (ActivityEntity activityEntity : activityEntityList){
-            activityInfoVOList.add(getActivityInfoVO(activityEntity));
+            activityInfoVOList.add(getActivityInfoVO(activityEntity,ActivityTypeCode.COMMON.getIndex()));
         }
         return activityInfoVOList;
     }
@@ -228,13 +226,18 @@ public class AcitivityServiceImpl implements ActivityService{
     public List<ActivityInfoVO> getActivitiesByCreatorId(Integer createId) throws Exception {
         List<ActivityInfoVO> activityInfoVOList = new ArrayList<>();
         List<ActivityEntity> activityEntityList = activityDao.findAllByCreateId(createId);
+        List<ActivityEntity> attendActivityList = activityDao.findAttendActivity(createId);
+        //TODO 海强这个地方不应该用for循环调用，会导致多次数据库操作，后续可以优化
         for (ActivityEntity activityEntity:activityEntityList){
-            activityInfoVOList.add(getActivityInfoVO(activityEntity));
+            activityInfoVOList.add(getActivityInfoVO(activityEntity,ActivityTypeCode.CREATE.getIndex()));
+        }
+        for (ActivityEntity activityEntity:attendActivityList){
+            activityInfoVOList.add(getActivityInfoVO(activityEntity,ActivityTypeCode.ATTEND.getIndex()));
         }
         return activityInfoVOList;
     }
 
-    private ActivityInfoVO getActivityInfoVO(ActivityEntity activityEntity) throws Exception{
+    private ActivityInfoVO getActivityInfoVO(ActivityEntity activityEntity,int type) throws Exception{
         UserInfoVO creator = userService.findById(activityEntity.getCreateId());
 
         List<RelationEntity> relationEntityList = relationService.findAllRelationByActivityId(activityEntity.getId());
@@ -271,6 +274,7 @@ public class AcitivityServiceImpl implements ActivityService{
         activityInfoVO.setCreator(creator);
         activityInfoVO.setAttendList(attendList);
         activityInfoVO.setState(activityEntity.getState());
+        activityInfoVO.setType(type);
         return activityInfoVO;
     }
 }

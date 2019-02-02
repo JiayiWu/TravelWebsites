@@ -203,7 +203,7 @@ public class ActivityController {
             }else {
                 throw new ServerException(ResponseCode.Error,"不是创建者，没有审批权限");
             }
-            return null;
+            return SimpleResponse.ok("success");
         } catch (Exception e) {
             return SimpleResponse.exception(e);
         }

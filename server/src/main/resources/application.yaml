@@ -25,4 +25,4 @@ server:
 
 travel:
   constant:
-    pageSize: 2
+    pageSize: 10

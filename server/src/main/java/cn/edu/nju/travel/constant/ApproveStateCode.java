@@ -10,7 +10,7 @@ import cn.edu.nju.travel.utils.ServerException;
  */
 public enum  ApproveStateCode {
 
-    NEW(0,"新申请审批，还未处理"),ACCEPT(1,"审批通过"),REJECT(2,"审批拒绝"),DETELE(3,"逻辑删除");
+    NO_APPLY(-1, "未提交认证"), NEW(0,"新申请审批，还未处理"),ACCEPT(1,"审批通过"),REJECT(2,"审批拒绝"),DETELE(3,"逻辑删除");
 
     private final String value;
     private final int index;

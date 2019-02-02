@@ -43,4 +43,7 @@ public class AuditEntity {
     @Column(name = "context")
     private String context;
 
+    @Column(name = "url")
+    private String url;
+
 }

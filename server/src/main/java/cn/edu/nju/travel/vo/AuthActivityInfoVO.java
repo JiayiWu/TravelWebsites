@@ -11,6 +11,8 @@ import lombok.Data;
  */
 @Data
 public class AuthActivityInfoVO {
+    private int id;
+
     @ApiModelProperty(notes = "创建人信息")
     private UserInfoVO creator;
 
