@@ -23,17 +23,20 @@ public class UserAuthVO {
     @Setter
     private String context;
     @Setter
-    private Timestamp applyTime;
+    private long applyTime;
     private int state;
+    @Setter
+    private UserInfoVO userInfo;
 
 
-    public UserAuthVO(AuthenticationEntity entity){
+    public UserAuthVO(AuthenticationEntity entity, UserInfoVO userInfo){
         this.id = entity.getId();
         this.userId = entity.getUserId();
         this.attachmentUrl = entity.getAttachmentUrl();
         this.context = entity.getContext();
         this.state = entity.getState();
-        this.applyTime = entity.getModifyTime();
+        this.applyTime = entity.getModifyTime().getTime();
+        this.userInfo = userInfo;
     }
 
     public void setState(ApproveStateCode code){

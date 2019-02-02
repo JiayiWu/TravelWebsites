@@ -2,12 +2,15 @@ package cn.edu.nju.travel.service.impl;
 
 import cn.edu.nju.travel.constant.ApproveStateCode;
 import cn.edu.nju.travel.dao.AuthenticationDao;
+import cn.edu.nju.travel.dao.UserDao;
 import cn.edu.nju.travel.entity.AuthenticationEntity;
+import cn.edu.nju.travel.entity.UserEntity;
 import cn.edu.nju.travel.form.ResponseCode;
 import cn.edu.nju.travel.service.AuthService;
 import cn.edu.nju.travel.service.FileService;
 import cn.edu.nju.travel.utils.ServerException;
 import cn.edu.nju.travel.vo.UserAuthVO;
+import cn.edu.nju.travel.vo.UserInfoVO;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     AuthenticationDao authenticationDao;
+
+    @Autowired
+    UserDao userDao;
 
     @Autowired
     FileService fileService;
@@ -50,7 +56,8 @@ public class AuthServiceImpl implements AuthService {
         authenticationEntity.setContext(context);
         authenticationEntity.setState(ApproveStateCode.NEW.getIndex());
 
-        return new UserAuthVO(authenticationDao.save(authenticationEntity));
+        AuthenticationEntity savedEntity = authenticationDao.save(authenticationEntity);
+        return this.userAuthVOWrap(savedEntity);
     }
 
     @Override
@@ -62,14 +69,14 @@ public class AuthServiceImpl implements AuthService {
             userAuthVO.setState(ApproveStateCode.NO_APPLY);
             return userAuthVO;
         }
-        return new UserAuthVO(entity);
+        return this.userAuthVOWrap(entity);
     }
 
     @Override
     public List<UserAuthVO> getAuthInfoOnePageByState(int lastId, ApproveStateCode state) {
         List<AuthenticationEntity> entityList = authenticationDao.findNextAuthListByState
                 (lastId,state.getIndex(),pageSize);
-        return entityList.stream().map(UserAuthVO::new).collect(
+        return entityList.stream().map(this::userAuthVOWrap).collect(
                 Collectors.toList());
     }
 
@@ -77,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
     public List<UserAuthVO> getAuthInfoOnePage(int lastId) {
         List<AuthenticationEntity> entityList = authenticationDao.findNextAuthListAll(lastId,
                 pageSize);
-        return entityList.stream().map(UserAuthVO::new).collect(
+        return entityList.stream().map(this::userAuthVOWrap).collect(
                 Collectors.toList());
     }
 
@@ -85,7 +92,12 @@ public class AuthServiceImpl implements AuthService {
     public UserAuthVO authUser(int userId, ApproveStateCode state) {
         AuthenticationEntity entity = authenticationDao.findByUserId(userId);
         entity.setState(state.getIndex());
-        return new UserAuthVO(authenticationDao.save(entity));
+        return this.userAuthVOWrap(authenticationDao.save(entity));
+    }
+
+    private UserAuthVO userAuthVOWrap(AuthenticationEntity entity){
+        UserEntity userEntity = userDao.findById(entity.getUserId());
+        return new UserAuthVO(entity, new UserInfoVO(userEntity));
     }
 
 }
