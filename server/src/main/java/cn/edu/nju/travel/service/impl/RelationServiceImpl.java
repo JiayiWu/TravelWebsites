@@ -166,9 +166,12 @@ public class RelationServiceImpl implements RelationService {
                 //state -1获取该用户可以看见的所有审批，0 查看待处审批 1 查看审批通过申请  2  查看审批拒绝的申请
                 return authenticationInfoListVOList;
             case 0:
-                for(AuthenticationInfoListVO authenticationInfoListVO : authenticationInfoListVOList){
+                Iterator<AuthenticationInfoListVO> iterator = authenticationInfoListVOList.iterator();
+                //修复迭代器错误
+                while(iterator.hasNext()){
+                    AuthenticationInfoListVO authenticationInfoListVO = iterator.next();
                     if(!authenticationInfoListVO.getState().equals(ApproveStateCode.NEW.getIndex())){
-                        authenticationInfoListVOList.remove(authenticationInfoListVO);
+                        iterator.remove();
                     }
                 }
                 return  authenticationInfoListVOList;
