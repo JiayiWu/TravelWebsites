@@ -34,24 +34,24 @@ public class ActivityServiceTest {
     }
 
 //    //创建新活动
-//    @Test
-//    public void testCreateActivity(){
-//        String location = "it's test for sonarqube";
-//        String title = "titleee";
-//        String coverUrl = "it's test for sonarqube";
-//        String description = "it's test for sonarqube";
-//
-//        Long startTime = 2000000000l;
-//        Long endTime = 2000000009l;
-//        Integer createId = 3;
-//        Integer joinType = JoinTypeCode.AUTH.getIndex();//need to apply
-//
-//        try {
-//            activityService.createActivity(createId, title,     location, startTime, endTime, joinType, coverUrl, description);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+    @Test
+    public void testCreateActivity(){
+        String location = "it's test for sonarqube";
+        String title = "titleee";
+        String coverUrl = "it's test for sonarqube";
+        String description = "it's test for sonarqube";
+
+        Long startTime = 2000000000l;
+        Long endTime = 2000000009l;
+        Integer createId = 3;
+        Integer joinType = JoinTypeCode.AUTH.getIndex();//need to apply
+
+        try {
+            activityService.createActivity(createId, title,     location, startTime, endTime, joinType, coverUrl, description);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
     //审批活动通过
