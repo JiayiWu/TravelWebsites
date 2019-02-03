@@ -11,6 +11,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class HighQualityServiceTest {
 
+
+
+    //
     @Autowired
     HighQualityService highQualityService;
 
