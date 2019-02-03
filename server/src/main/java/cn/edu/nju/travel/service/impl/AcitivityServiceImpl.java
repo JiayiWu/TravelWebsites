@@ -245,7 +245,13 @@ public class AcitivityServiceImpl implements ActivityService{
         List<Integer> attendIdList = new ArrayList<>();
         List<UserInfoVO> attendList;
         if(activityEntity.getJoinType().equals(JoinTypeCode.DIRECT.getIndex())){
-            relationEntityList.forEach(relationEntity -> attendIdList.add(relationEntity.getUserId()));
+            //bug 所有的relation包括了逻辑删除的relation
+//            relationEntityList.forEach(relationEntity -> attendIdList.add(relationEntity.getUserId()));
+            for(RelationEntity relationEntity : relationEntityList){
+                if(relationEntity.getState().equals(RelationStateCode.VALID)){
+                    attendIdList.add(relationEntity.getUserId());
+                }
+            }
         } else if (activityEntity.getJoinType().equals(JoinTypeCode.AUTH.getIndex())){
             for(RelationEntity relationEntity : relationEntityList){
                 if(relationEntity.getState().equals(RelationStateCode.VALID.getIndex())){

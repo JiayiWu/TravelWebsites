@@ -54,8 +54,12 @@ public class UserServiceImpl implements UserService {
         if(entity == null){
             throw new ServerException(ResponseCode.Error,"此用户不存在");
         }
-        entity.setMobile(mobile);
-        entity.setMail(mail);
+        if(mobile != null){
+            entity.setMobile(mobile);
+        }
+        if(mail != null){
+            entity.setMail(mail);
+        }
         if(logoUrl!=null && !logoUrl.equals(entity.getLogoUrl())){
             fileService.deleteOldFile(entity.getLogoUrl());
             entity.setLogoUrl(logoUrl);

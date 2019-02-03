@@ -19,8 +19,8 @@ public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, 
             " a.cover_url = :coverUrl, a.join_type = :joinType, a.description = :description " +
             "where a.id = :id")
     void updateActivityInfo(@Param("id") Integer id,
+                            @Param("title") String title,
                            @Param("location") String location,
-                           @Param("title") String title,
                            @Param("startTime") Timestamp startTime,
                            @Param("endTime") Timestamp endTime,
                            @Param("joinType") Integer joinType,
@@ -56,7 +56,7 @@ public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, 
 
     List<ActivityEntity> findAllByCreateId(Integer createId);
 
-    @Query(nativeQuery = true, value = "select * from activity a where a.id in (select id from relation r where  r.state = 0 and r.user_id = :createId)")
+    @Query(nativeQuery = true, value = "select * from activity a where a.id in (select r.activity_id as id from relation r where  r.state = 0 and r.user_id = :createId)")
     List<ActivityEntity> findAttendActivity(@Param("createId") Integer createId);
 
 }
