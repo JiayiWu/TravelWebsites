@@ -128,7 +128,7 @@ class LoginContainer extends React.Component<LoginProps & FormComponentProps> {
         {getFieldDecorator('mail', {
           rules: [{
             validator: (rules, value, callback) => {
-              const phone = getFieldDecorator('phone')
+              const phone = getFieldDecorator('mobile')
               if (!value && !phone) {
                 callback('请至少填写手机或邮箱中的一种')
               } else {

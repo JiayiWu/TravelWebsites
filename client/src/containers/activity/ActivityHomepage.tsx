@@ -14,6 +14,7 @@ import DefaultCover from '../../utils/image/ActivityCover.jpg'
 
 import DynamicScrollPane from '../../components/DynamicScrollPane'
 import { fromJS } from 'immutable';
+import ActivityCard from './components/ActivityCard';
 
 interface ActivityHomepageProps {
   user: any, // redux
@@ -26,14 +27,15 @@ export interface ActivityItemProps {
   description: string,
   endTime: number,
   id: number,
-  joinType: string,
+  joinType: string | number,
   location: string,
   startTime: number,
   attendList: Array<UserBasicProps>,
   title: string,
+  type: number,
 }
 
-const JOIN_TYPE = {
+export const JOIN_TYPE = {
   DIRECT: 0,
   APPLY: 1,
 }
@@ -45,6 +47,7 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
     recommendList: [] as Array<ActivityItemProps>,
     activityList: [] as Array<ActivityItemProps>,
     isLoading: false,
+    hasMore: true,
     joinModal: {
       show: false,
       joinAct: null,
@@ -71,7 +74,7 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
       options: {
         method: 'POST',
         body: JSON.stringify({
-          lastTimestamp: this.state.activityList.length > 0 ? this.state.activityList[0].startTime : 0,
+          lastTimestamp: this.state.activityList.length > 0 ? this.state.activityList[this.state.activityList.length - 1].startTime : 0,
           size: 10,
         })
       }
@@ -86,9 +89,11 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
     })
     this.fetchActivityList().then((json) => {
       if (json.code === 0) {
+        
         this.setState({
           activityList: this.state.activityList.concat(json.data),
           isLoading: false,
+          hasMore: json.data.length !== 0
         })
       }
     })
@@ -188,49 +193,54 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
     )
   }
   public render() {
-    const { activityList, joinModal, isLoading } = this.state
+    const { activityList, joinModal, isLoading, hasMore } = this.state
+    const { user } = this.props
     return (
-      <div className={styles.container}>
-        <div className={styles.headerWrapper}>
-          {this.renderHeader()}
-        </div>
-        <div className={styles.listContainer} >
-          <div className={styles.listHeader}>
-            <h3>活动列表</h3>
-            <Button type="primary" className={styles.createBtn} onClick={() => this.props.pushURL('/workspace/activity/create')}>创建活动</Button>
+      <DynamicScrollPane
+        hasMore={hasMore}
+        loadMore={this.handleLoadMore}
+        isLoading={isLoading}
+      >
+        <div className={styles.container}>
+          <div className={styles.headerWrapper}>
+            {this.renderHeader()}
           </div>
-          <DynamicScrollPane
-            hasMore={true}
-            loadMore={this.handleLoadMore}
-            isLoading={isLoading}
-          >
-            {activityList.map((act) => {
-              return this.renderActCard(act)
-            })}
-          </DynamicScrollPane>
           
-        </div>
-        {joinModal.show && joinModal.joinAct &&
-          <JoinModal 
-            onOk={() => {
-              // TODO 刷新列表
-              this.setState({
+          <div className={styles.listContainer} >
+            <div className={styles.listHeader}>
+              <h3>活动列表</h3>
+              {user.get('type') === USER_TYPE.NORMAL &&
+                <Button type="primary" className={styles.createBtn} onClick={() => this.props.pushURL('/workspace/activity/create')}>创建活动</Button>
+              }
+            </div>
+              {activityList.map((act) => {
+                // return this.renderActCard(act)
+                return <ActivityCard activity={act} onRefresh={this.fetchActivityList}/>
+              })}   
+          </div>
+          {joinModal.show && joinModal.joinAct &&
+            <JoinModal 
+              onOk={() => {
+                // TODO 刷新列表
+                this.setState({
+                  joinModal: {
+                    show: false,
+                    joinAct: null,
+                  }
+                })
+              }}
+              activity={joinModal.joinAct}
+              onCancel={() => this.setState({
                 joinModal: {
                   show: false,
                   joinAct: null,
                 }
-              })
-            }}
-            activity={joinModal.joinAct}
-            onCancel={() => this.setState({
-              joinModal: {
-                show: false,
-                joinAct: null,
-              }
-            })}
-          />
-        }
-      </div>
+              })}
+            />
+          }
+        </div>
+      </DynamicScrollPane>
+      
     )
   }
 }

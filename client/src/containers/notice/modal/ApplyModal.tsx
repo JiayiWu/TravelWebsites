@@ -63,7 +63,7 @@ class ApplyModal extends React.Component<ApplyModalProps, any> {
     const { item } = this.props
     this.props.applyJoinAct(item.activity.id, item.applyUserInfo.id, result).then(messageHandler).then((json) => {
       if (json.code === 0) {
-        message.success(result === 0 ? '已同意' : '已拒绝')
+        message.success(result === 1 ? '已同意' : '已拒绝')
         this.props.onCancel()
       }
     })
@@ -73,7 +73,7 @@ class ApplyModal extends React.Component<ApplyModalProps, any> {
    */
   handlePersonVerify = (state) => {
     const { item } = this.props
-    this.props.applyVerify(item.applyUserInfo.id, state).then(messageHandler).then((json) => {
+    this.props.applyVerify(item.userInfo.id, state).then(messageHandler).then((json) => {
       if (json.code === 0) {
         message.success(state === 1 ? '已同意' : '已拒绝')
         this.props.onCancel()
@@ -119,6 +119,7 @@ class ApplyModal extends React.Component<ApplyModalProps, any> {
         title={this.getModalHeader(type)}
         wrapClassName={styles.applyModal}
         footer={
+          item.state !== NOTICE_STATE.SUCCESS && item.state !== NOTICE_STATE.FAIL &&
           <div className={styles.footer}>
             <Button type="default" onClick={() => this.handleClose()}>{type === APPLY_TYPE.ACT_CREATE_RESULT ? '取消' : '拒绝'}</Button>
             <Button type="primary" onClick={() => this.handleOk()}>{type === APPLY_TYPE.ACT_CREATE_RESULT ? '查看详情' : '同意'}</Button>            
@@ -135,7 +136,7 @@ class ApplyModal extends React.Component<ApplyModalProps, any> {
           }
           {type === APPLY_TYPE.ACT_CREATE_RESULT &&
             <FormItem {...formItemLayout} label="申请创建">
-              {item.title}
+              {item.authActivityInfoVO.title}
             </FormItem>
           }
           
@@ -152,7 +153,7 @@ class ApplyModal extends React.Component<ApplyModalProps, any> {
               </FormItem>,
               <FormItem {...formItemLayout} label={type === APPLY_TYPE.ACT_JOIN ? "附加信息" : "认证照片"}>
                 {item.attachmentUrl ? 
-                  <div className={styles.attachment} style={{ backgroundImage: `url(${serverOrigin}/${item.attachmentUrl})`}}/>
+                  <div className={styles.attachment} style={{ backgroundImage: `url(${item.attachmentUrl})`}}/>
                   :
                   '暂无'
                 }

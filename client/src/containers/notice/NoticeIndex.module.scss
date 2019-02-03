@@ -7,6 +7,9 @@
   :global(.ant-tabs) {
     height: 100% !important;
     // position: relative !important;
+    :global(.ant-tabs-tabpane) {
+      height: 100%;
+    }
     :global(.ant-tabs-content) {
       height: 100% !important;
     }

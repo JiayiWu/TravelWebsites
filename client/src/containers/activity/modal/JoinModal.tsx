@@ -98,7 +98,7 @@ class JoinModal extends React.Component<JoinModalProps, any> {
                 message: '请输入申请理由'
               }]
             })(
-              <Input.TextArea placeholder="请输入申请理由" maxLength={6} minLength={3} />
+              <Input.TextArea placeholder="请输入申请理由" />
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="附件">

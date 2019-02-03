@@ -148,6 +148,7 @@ class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponen
         }).then(messageHandler).then((json) => {
           if (json.code === 0) {
             message.info('创建成功，请耐心等待审批')
+            this.props.pushURL(`/workspace/activity`)
           }
         })
       }
