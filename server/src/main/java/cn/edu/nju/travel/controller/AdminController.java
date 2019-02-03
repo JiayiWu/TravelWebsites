@@ -135,4 +135,7 @@ public class AdminController {
 
 
     //todo balabal jenkins
+    private void func(){
+        System.out.println("chufa jenkins");
+    }
 }
