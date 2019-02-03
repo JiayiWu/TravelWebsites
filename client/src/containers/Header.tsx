@@ -28,7 +28,7 @@ interface HeaderProps {
 }
 
 const TYPE = {
-  HOMEPAGE: 'homepage',
+  HOMEPAGE: 'activity',
   NEWS: 'news'
 }
 
@@ -72,7 +72,7 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
     const { showNoticePanel } = this.state
     const { match, location, user, pushURL, logout } = this.props
     const url = match.path
-    const type = (location.pathname.split('/')[2] || 'homepage').toLowerCase()
+    const type = (location.pathname.split('/')[2] || 'activity').toLowerCase()
     const userId = localStorage.getItem('userid')
     return (
       <div className={styles.container}>
@@ -117,7 +117,7 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
           </div>
           
         </div>
-        <div className={styles.content} style={{ overflowY: showNoticePanel ? 'hidden' : 'auto', height: showNoticePanel ? 'calc(100% - 58px)' : 'auto', overflowX: 'hidden'}}>
+        <div className={styles.content} style={{ overflowY: showNoticePanel ? 'hidden' : 'auto', height: 'calc(100% - 60px)', overflowX: 'auto'}}>
           <Switch>
             <Route path={`${url}/activity`} component={ActivityIndex}/>
             {user.get('type') === USER_TYPE.NORMAL &&

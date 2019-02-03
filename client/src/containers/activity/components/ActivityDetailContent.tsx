@@ -4,6 +4,7 @@ import { Icon, Tabs } from 'antd'
 import styles from './ActivityDetailContent.module.scss'
 import { UserBasicProps } from '../../profile/ProfileHomepage'
 import { ActivityItemProps } from '../ActivityDetail'
+import DefaultAvatar from '../../../utils/image/DefaultAvatar.jpg'
 
 interface DetailContentProps {
   detail: ActivityItemProps,
@@ -39,7 +40,7 @@ class ActivityDetailCnontent extends React.Component<DetailContentProps, any> {
                 {detail.attendList.map((attend) => {
                   return (
                     <div className={styles.memberItem}>
-                      <img src={attend.logoUrl} />
+                      <img src={attend.logoUrl || DefaultAvatar}/>
                       <div className={styles.infoWrapper}>
                         {attend.name}
                       </div>

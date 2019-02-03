@@ -22,18 +22,20 @@ class DynamicScrollPane extends React.Component<ScrollPaneProps, any> {
   }
 
   handleScroll = () => {
+    const { hasMore, isLoading } = this.props
     let scrollTop = 0, scrollHeight = 0, refHeight = 0
     if (this.wrapper && this.wrapper.current) {
       scrollTop = this.wrapper.current.scrollTop
       scrollHeight = this.wrapper.current.scrollHeight
       refHeight = this.wrapper.current.clientHeight
     }
-    const isBottom = scrollHeight !== 0 ? refHeight + scrollTop === scrollHeight : false
-    console.log(this.wrapper, scrollTop, scrollHeight, refHeight)
+    const isBottom = scrollHeight !== 0 ? refHeight + scrollTop + 10 >= scrollHeight : false
+    if (!hasMore || isLoading) {
+      return
+    }
     if (isBottom) {
       this.props.loadMore()
     }
-    // scrollTop = (bodyScrollTop - documentScrollTop > 0) ? bodyScrollTop : documentScrollTop;
 
   }
 

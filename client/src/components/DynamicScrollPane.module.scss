@@ -1,5 +1,6 @@
 :global(.dynamic-scroll-pane) {
   overflow-y: auto;
+  height:100%;
 }
   :local(.footer) {
     display: flex;

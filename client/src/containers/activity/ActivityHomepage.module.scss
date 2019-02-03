@@ -1,13 +1,21 @@
 @import '~@utils/constant.module.scss';
 :local(.container) {
   width: 100%;
-  overflow: auto;
-  height: 100%;
+  height: auto;
 
   :local(.headerWrapper) {
     width: 100%;
     height: 382px;
     margin-bottom: 20px;
+    :global(.ant-carousel) {
+      height: 100%;
+      :global(.slick-slider) {
+        height: 100%;
+        :global(.slick-list) {
+          height: 100%;
+        }
+      }
+    }
     :local(.item) {
       background-image: url();
       background-size: contain;

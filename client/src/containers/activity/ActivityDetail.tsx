@@ -30,6 +30,8 @@ export interface ActivityItemProps {
   startTime: number,
   attendList?: Array<UserBasicProps>,
   title: string,
+  state: number,
+  type: number,
 }
 
 interface ActivityDetailProps {
@@ -46,6 +48,14 @@ interface ActivityDetailProps {
 const APPLY_TYPE = {
   AGREE: 1,
   REFUSE: 2,
+}
+
+export const ACTIVITY_STATE = {
+  NEW: 0, // 审批中
+  VALID: 1, // 通过审批
+  INVALID: 2, // 未通过审批
+  DELETE: 3, // 已取消
+  END: 4, // 已结束
 }
 
 // const USER = {
@@ -144,7 +154,7 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
     if (!detail) {
       return
     }
-    this.props.quitAct(detail.id, user.id).then((json) => {
+    this.props.quitAct(detail.id, user.get('id')).then((json) => {
       if (json.code === 0) {
         this.fetchActivityDetail()
       }
@@ -179,11 +189,11 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
 
   handleEndAct = () => {
     const { detail } = this.state
-    const { user } = this.props
+    // const { user } = this.props
     if (!detail) {
       return
     } 
-    this.props.endAct(detail.id, user.get('id')).then(messageHandler).then((json) => {
+    this.props.endAct(detail.id).then(messageHandler).then((json) => {
       if (json.code === 0) {
         message.success('结束活动成功')
         this.props.pushURL('/workspace/activity')
@@ -197,7 +207,7 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
     if (!detail) {
       return null
     }
-    const isAttender = detail.attendList ? detail.attendList.find((attend) => attend.id === user.id) : false
+    const isAttender = detail.attendList ? detail.attendList.find((attend) => attend.id === user.get('id')) : false
     // const isCreator = detail.creator.id === user.id
     return detail && (
       <div className={styles.container}>
@@ -218,12 +228,13 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
             <div className={styles.right}>
               {user.get('type') === USER_TYPE.ADMIN ? 
                 (match.path.indexOf('apply') >= 0 ? 
-                  [
+                  [detail.state !== ACTIVITY_STATE.DELETE && detail.state !== ACTIVITY_STATE.INVALID &&
                     <div className={styles.headerBtn} onClick={() => this.handleApplyAct(APPLY_TYPE.AGREE)}>
                       <Icon type="check-circle" />
                       <br />
                       同意创建
                     </div>,
+                    detail.state !== ACTIVITY_STATE.DELETE && detail.state !== ACTIVITY_STATE.INVALID &&
                     <div className={styles.headerBtn} onClick={() => this.handleApplyAct(APPLY_TYPE.REFUSE)}>
                       <Icon type="close-circle" />
                       <br />
@@ -245,18 +256,21 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
                 </div>
                 :
                 (detail.creator.id === user.get('id') ? 
-                  [<div className={styles.headerBtn} onClick={() => this.props.pushURL(`/workspace/activity/update/${detail.id}`, {
+                  [detail.state !== ACTIVITY_STATE.VALID && detail.state !== ACTIVITY_STATE.INVALID && detail.state !== ACTIVITY_STATE.END && detail.state !== ACTIVITY_STATE.DELETE &&
+                  <div className={styles.headerBtn} onClick={() => this.props.pushURL(`/workspace/activity/update/${detail.id}`, {
                     detail: detail
                   })}>
                     <Icon type="edit" />
                     <br />
                     编辑
                   </div>,
+                  detail.state !== ACTIVITY_STATE.END && detail.state !== ACTIVITY_STATE.DELETE && detail.state !== ACTIVITY_STATE.INVALID &&
                   <div className={styles.headerBtn} onClick={this.handleCancelAct}>
                     <Icon type="minus-circle" />
                     <br />
                     取消
                   </div>,
+                  detail.state !== ACTIVITY_STATE.END && detail.state !== ACTIVITY_STATE.DELETE && detail.state !== ACTIVITY_STATE.INVALID &&
                   <div className={styles.headerBtn} onClick={this.handleEndAct}>
                     <Icon type="poweroff" />
                     <br />
@@ -264,6 +278,7 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
                   </div>
                   ]
                   :
+                  detail.state !== ACTIVITY_STATE.END && detail.state !== ACTIVITY_STATE.DELETE && detail.state !== ACTIVITY_STATE.INVALID &&
                   <div className={styles.headerBtn} onClick={this.handleAttendAct}>
                     <Icon type="plus-circle" />
                     <br />
@@ -282,7 +297,12 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
         {this.state.showJoinModal && 
           <JoinModal 
             activity={detail}
-            onOk={this.fetchActivityDetail}
+            onOk={() => {
+              this.setState({
+                showJoinModal: false,
+              })
+              this.fetchActivityDetail()
+            }}
             onCancel={() => this.setState({
               showJoinModal: false,
             })}

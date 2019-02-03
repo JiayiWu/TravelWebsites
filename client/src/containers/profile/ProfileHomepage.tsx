@@ -234,15 +234,15 @@ class ProfileHomepage extends React.Component<HomepageProps, any> {
               <span>认证信息</span>
               {this.renderStateIcon()}
             </div>
-            
-            <div className={styles.operation}>
-              {editType === INFO_EDIT_TYPE.APPLY && user.get('state') !== VERIFY_STATE.ACCEPT ? 
-                <Button type="primary" size="small" onClick={() => this.handleSaveApply()}>保存修改</Button>
-                :
-                <Icon type="edit" onClick={() => this.setState({ editType: INFO_EDIT_TYPE.APPLY })}/>
-              }
-            </div>
-            
+            {user.get('state') !== VERIFY_STATE.ACCEPT &&
+              <div className={styles.operation}>
+                {editType === INFO_EDIT_TYPE.APPLY ? 
+                  <Button type="primary" size="small" onClick={() => this.handleSaveApply()}>保存修改</Button>
+                  :
+                  <Icon type="edit" onClick={() => this.setState({ editType: INFO_EDIT_TYPE.APPLY })}/>
+                }
+              </div>
+            }
           </div>
           <div className={styles.content}>
             <Form>

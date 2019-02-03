@@ -9,7 +9,7 @@ export const attendAct = (body: { activityId: number, attachmentUrl?: string, co
 }
 
 export const quitAct = (activityId, userId) => (dispatch) => {
-  return API.query(`/activity/quit${activityId}/user/${userId}`, {
+  return API.query(`/activity/quit/${activityId}/user/${userId}`, {
     options: {
       method: 'POST'
     }
@@ -32,8 +32,8 @@ export const cancelAct = (activityId) => (dispatch) => {
   })
 }
 
-export const endAct = (activityId, userId) => (dispatch) => {
-  return API.query(`/activity/end/${activityId}/user/${userId}`, {
+export const endAct = (activityId) => (dispatch) => {
+  return API.query(`/activity/end/${activityId}`, {
     options: {
       method: 'POST'
     }

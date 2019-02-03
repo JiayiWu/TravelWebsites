@@ -1,8 +1,10 @@
 @import '~@utils/constant.module.scss';
 :local(.container) {
-  width: $center-width;
+  // width: $center-width;
   margin: auto;
   padding-top: 30px;
+  height: 100%;
+  overflow: auto;
   :local(.btnGroup) {
     display: flex;
     align-items: center;
