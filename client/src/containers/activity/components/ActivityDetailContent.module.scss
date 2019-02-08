@@ -20,6 +20,9 @@
     :local(.content) {
       margin-top: 10px;
       font-size: 14px;
+      :global(.bf-content) {
+        height: auto;
+      }
     }
 
     :local(.memberContainer) {

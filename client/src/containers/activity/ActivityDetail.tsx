@@ -81,6 +81,7 @@ export const ACTIVITY_STATE = {
 // }
 
 class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetailProps, { detail: ActivityItemProps | null, showJoinModal: boolean }> {
+
   state : { detail: ActivityItemProps | null, showJoinModal: boolean } = {
     detail: null,
     showJoinModal: false,

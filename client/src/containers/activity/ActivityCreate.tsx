@@ -24,7 +24,12 @@ const Dragger = Upload.Dragger
 const FormItem = Form.Item
 const RadioGroup = Radio.Group
 class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponentProps, any> {
+  private editor: React.RefObject<any>
 
+  constructor(props) {
+    super(props)
+    this.editor = React.createRef()
+  }
   state = {
     coverUrl: '',
   }
@@ -107,6 +112,8 @@ class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponen
   handleOk = () => {
     const { validateFields } = this.props.form
     const { user, route } = this.props
+    this.editor.current ? (window as any).editor = (this.editor.current as any).getEditorState() : console.log('no editor')
+
     validateFields((err, value) => {
       if (err) {
         return
@@ -142,7 +149,8 @@ class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponen
               coverUrl: this.state.coverUrl,
               endTime: moment(value.endTime).valueOf(),
               startTime: moment(value.startTime).valueOf(),
-              createId: user && user.get('id')
+              createId: user && user.get('id'),
+              description: this.editor.current ? (this.editor.current as any).getEditorState().toHTML() : ''
             })
           }
         }).then(messageHandler).then((json) => {
@@ -325,7 +333,13 @@ class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponen
           </FormItem>
           <FormItem {...formItemLayout} label="活动介绍">
             {descriptionDecorator(
-              <Input.TextArea placeholder="请输入活动介绍" autosize={{ minRows: 4, maxRows: 10 }}/>
+              // <Input.TextArea placeholder="请输入活动介绍" autosize={{ minRows: 4, maxRows: 10 }}/>
+              <MyEditor
+                ref={this.editor}
+                // onRef={(element) => {
+                //   this.editor = element
+                // }}
+              />
             )}
           </FormItem>
           <FormItem className={styles.btnGroup}>

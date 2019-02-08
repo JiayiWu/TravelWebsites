@@ -4,6 +4,7 @@ import { Icon, Tabs } from 'antd'
 import styles from './ActivityDetailContent.module.scss'
 import { UserBasicProps } from '../../profile/ProfileHomepage'
 import { ActivityItemProps } from '../ActivityDetail'
+import MyEditor from '../../../components/MyEditor'
 import DefaultAvatar from '../../../utils/image/DefaultAvatar.jpg'
 
 interface DetailContentProps {
@@ -13,6 +14,12 @@ interface DetailContentProps {
 const TabPane = Tabs.TabPane
 
 class ActivityDetailCnontent extends React.Component<DetailContentProps, any> {
+  private editor: React.RefObject<any>
+
+  constructor(props) {
+    super(props)
+    this.editor = React.createRef()
+  }
   public render() {
     const { detail } = this.props
     return (
@@ -31,7 +38,11 @@ class ActivityDetailCnontent extends React.Component<DetailContentProps, any> {
                 {detail.location}
               </div>
             </div>
-            <div className={styles.content}>{detail.description}</div>
+            {/* <div className={styles.content}>{detail.description}</div> */}
+            <div className={styles.content}>
+              
+              <MyEditor ref={this.editor} readOnly defaultValue={detail.description}/>
+            </div>
             {/* 评论 */}
           </TabPane>
           {detail.attendList && detail.attendList.length > 0 &&
