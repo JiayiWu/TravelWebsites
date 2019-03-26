@@ -242,7 +242,19 @@ public class AcitivityServiceImpl implements ActivityService{
     public List<ActivityInfoVO> searchActivities(int size, String keyword, int lastId)
             throws Exception {
         List<ActivityEntity> activityEntities = activityDao.findActivitiesByKeyword(size,
-                "%"+keyword+"%", lastId, new Timestamp(System.currentTimeMillis()));
+                "%"+keyword+"%", lastId);
+        List<ActivityInfoVO> voList = new ArrayList<>();
+        for(ActivityEntity entity:activityEntities){
+            voList.add(entity2VO(entity));
+        }
+        return voList;
+    }
+
+    @Override
+    public List<ActivityInfoVO> getLatestActivities(int size, long lastCreateTime) throws
+            Exception {
+        List<ActivityEntity> activityEntities = activityDao.findLatestActivities(size, new
+                Timestamp(lastCreateTime));
         List<ActivityInfoVO> voList = new ArrayList<>();
         for(ActivityEntity entity:activityEntities){
             voList.add(entity2VO(entity));
@@ -263,6 +275,7 @@ public class AcitivityServiceImpl implements ActivityService{
         vo.setCoverUrl(entity.getCoverUrl());
         vo.setState(entity.getState());
         vo.setDescription(entity.getDescription());
+        vo.setCreateTime(entity.getCreateTime().getTime());
         return vo;
 
     }

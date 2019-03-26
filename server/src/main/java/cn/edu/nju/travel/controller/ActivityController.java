@@ -245,13 +245,28 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "关键字匹配活动", response = ActivityInfoVO.class, notes =
-            "返回List<ActivityInfoVO>,只返回审批通过的、尚未结束的活动")
+            "返回名称、地点或描述中匹配关键字的List<ActivityInfoVO>,只返回审批通过的、尚未结束的活动")
     @GetMapping("searchList")
     public SimpleResponse searchActivity(HttpSession httpSession, @RequestParam int size,
             @RequestParam String keyword, @RequestParam int lastId){
         try{
             List<ActivityInfoVO> activityInfoVOList = activityService.searchActivities(size,
                     keyword, lastId);
+            return SimpleResponse.ok(activityInfoVOList);
+        } catch (Exception e) {
+            return SimpleResponse.exception(e);
+        }
+    }
+
+    @ApiOperation(value = "最新活动", response = ActivityInfoVO.class, notes =
+            "lastCreateTime为上一页最后一个活动创建时间的毫秒数（若是第一页则不传）；"
+                    + "返回按创建时间由新到旧的List<ActivityInfoVO>, 只返回审批通过的、尚未结束的活动")
+    @GetMapping("latestList")
+    public SimpleResponse latestActivities(HttpSession httpSession, @RequestParam int size,
+            @RequestParam(required = false) Long lastCreateTime){
+        try {
+            List<ActivityInfoVO> activityInfoVOList = activityService.getLatestActivities(size,
+                    lastCreateTime==null?Long.MAX_VALUE:lastCreateTime);
             return SimpleResponse.ok(activityInfoVOList);
         } catch (Exception e) {
             return SimpleResponse.exception(e);

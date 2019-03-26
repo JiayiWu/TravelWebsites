@@ -60,4 +60,7 @@ public class ActivityInfoVO {
 
     @ApiModelProperty(notes = "0代表自己创建的，1代表参与的")
     private int type;
+
+    @ApiModelProperty(notes = "活动创建时间")
+    private long createTime;
 }
