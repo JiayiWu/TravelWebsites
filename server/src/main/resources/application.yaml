@@ -10,6 +10,7 @@ spring:
         id:
           new_generator_mappings: false
         dialect: org.hibernate.dialect.MySQL5Dialect
+    show-sql: true
   servlet:
     multipart:
       max-file-size: 20MB

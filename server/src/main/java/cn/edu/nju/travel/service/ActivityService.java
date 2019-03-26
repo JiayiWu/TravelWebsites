@@ -41,5 +41,9 @@ public interface ActivityService {
 
     List<ActivityInfoVO> getActivitiesByCreatorId(Integer createId) throws Exception;
 
+    List<ActivityInfoVO> searchActivities(int size, String keyword, int lastId) throws Exception;
+
+    List<ActivityInfoVO> getLatestActivities(int size, long lastCreateTime) throws Exception;
+
 
 }
