@@ -1,11 +1,14 @@
 package cn.edu.nju.travel.vo;
 
 import cn.edu.nju.travel.constant.JoinTypeCode;
+import cn.edu.nju.travel.entity.ActivityEntity;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.sql.Timestamp;
 import java.util.List;
+import lombok.NoArgsConstructor;
 
 /**
  * Created by Jiayiwu on 19/1/13.
@@ -13,6 +16,8 @@ import java.util.List;
  * Change everywhere
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ActivityInfoVO {
     private Integer id;
 

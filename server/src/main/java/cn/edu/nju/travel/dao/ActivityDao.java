@@ -59,4 +59,11 @@ public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, 
     @Query(nativeQuery = true, value = "select * from activity a where a.id in (select r.activity_id as id from relation r where  r.state = 0 and r.user_id = :createId)")
     List<ActivityEntity> findAttendActivity(@Param("createId") Integer createId);
 
+    @Query(nativeQuery = true, value = "select * from activity a "
+            + "where a.state=1 AND a.end_time > :currentTime AND a.id>:lastId and "
+            + "(a.title LIKE :keyword or a.location LIKE :keyword or a.description LIKE :keyword) "
+            + "LIMIT :size")
+    List<ActivityEntity> findActivitiesByKeyword(@Param("size") int size, @Param("keyword") String
+            keyword, @Param("lastId") int lastId, @Param("currentTime") Timestamp currentTime);
+
 }

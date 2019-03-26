@@ -16,6 +16,7 @@ import cn.edu.nju.travel.vo.ActivityInfoVO;
 import cn.edu.nju.travel.vo.AuthActivityInfoVO;
 import cn.edu.nju.travel.vo.AuthenticationActivityInfoListVO;
 import cn.edu.nju.travel.vo.UserInfoVO;
+import java.sql.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -235,6 +236,35 @@ public class AcitivityServiceImpl implements ActivityService{
             activityInfoVOList.add(getActivityInfoVO(activityEntity,ActivityTypeCode.ATTEND.getIndex()));
         }
         return activityInfoVOList;
+    }
+
+    @Override
+    public List<ActivityInfoVO> searchActivities(int size, String keyword, int lastId)
+            throws Exception {
+        List<ActivityEntity> activityEntities = activityDao.findActivitiesByKeyword(size,
+                "%"+keyword+"%", lastId, new Timestamp(System.currentTimeMillis()));
+        List<ActivityInfoVO> voList = new ArrayList<>();
+        for(ActivityEntity entity:activityEntities){
+            voList.add(entity2VO(entity));
+        }
+        return voList;
+    }
+
+    private ActivityInfoVO entity2VO(ActivityEntity entity) throws Exception {
+        ActivityInfoVO vo = new ActivityInfoVO();
+        vo.setId(entity.getId());
+        UserInfoVO userInfoVO = userService.findById(entity.getCreateId());
+        vo.setCreator(userInfoVO);
+        vo.setTitle(entity.getTitle());
+        vo.setLocation(entity.getLocation());
+        vo.setStartTime(entity.getStartTime().getTime());
+        vo.setEndTime(entity.getEndTime().getTime());
+        vo.setJoinType(entity.getJoinType());
+        vo.setCoverUrl(entity.getCoverUrl());
+        vo.setState(entity.getState());
+        vo.setDescription(entity.getDescription());
+        return vo;
+
     }
 
     private ActivityInfoVO getActivityInfoVO(ActivityEntity activityEntity,int type) throws Exception{

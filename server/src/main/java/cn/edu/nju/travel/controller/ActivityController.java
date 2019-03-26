@@ -243,4 +243,18 @@ public class ActivityController {
             return SimpleResponse.exception(e);
         }
     }
+
+    @ApiOperation(value = "关键字匹配活动", response = ActivityInfoVO.class, notes =
+            "返回List<ActivityInfoVO>,只返回审批通过的、尚未结束的活动")
+    @GetMapping("searchList")
+    public SimpleResponse searchActivity(HttpSession httpSession, @RequestParam int size,
+            @RequestParam String keyword, @RequestParam int lastId){
+        try{
+            List<ActivityInfoVO> activityInfoVOList = activityService.searchActivities(size,
+                    keyword, lastId);
+            return SimpleResponse.ok(activityInfoVOList);
+        } catch (Exception e) {
+            return SimpleResponse.exception(e);
+        }
+    }
 }
