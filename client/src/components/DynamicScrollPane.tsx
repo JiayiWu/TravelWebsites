@@ -33,6 +33,8 @@ class DynamicScrollPane extends React.Component<ScrollPaneProps, any> {
     if (!hasMore || isLoading) {
       return
     }
+    (window as any).wrapper = this.wrapper.current
+    console.log('scroll')
     if (isBottom) {
       this.props.loadMore()
     }

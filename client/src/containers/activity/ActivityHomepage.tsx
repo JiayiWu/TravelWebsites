@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Carousel, Icon, Button, Radio, Input } from 'antd'
+import { Carousel, Icon, Button, Radio, Input, Tabs } from 'antd'
 import LinesEllipsis from 'react-lines-ellipsis'
 import moment from 'moment'
 import styles from './ActivityHomepage.module.scss'
@@ -21,6 +21,7 @@ interface ActivityHomepageProps {
   pushURL: Function, // redux
 }
 
+const TabPane = Tabs.TabPane
 export interface ActivityItemProps {
   coverUrl: string,
   creator: UserBasicProps,
@@ -41,6 +42,11 @@ export const JOIN_TYPE = {
 }
 
 const WEEK_DAYS = ['日', '一', '二', '三', '四', '五', '六']
+
+const ACT_TYPE = {
+  HOT: 0,
+  NEW: 1,
+}
 
 const RadioGroup = Radio.Group
 
@@ -67,9 +73,11 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
   state = {
     recommendList: [] as Array<ActivityItemProps>,
     activityList: [] as Array<ActivityItemProps>,
+    newActList: [] as Array<ActivityItemProps>,
     searchType: SEARCH_TYPE.ALL,
-    isLoading: false,
-    hasMore: true,
+    isLoading: [false, false],
+    hasMore: [true, true],
+    actType: ACT_TYPE.HOT,
     joinModal: {
       show: false,
       joinAct: null,
@@ -106,19 +114,27 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
     return API.query('/activity/recommendation/5', {}).then(messageHandler)
   }
   handleLoadMore = () => {
+    let { isLoading, hasMore, actType } = this.state
+    isLoading[actType] = true
     this.setState({
-      isLoading: true,
+      isLoading,
     })
-    this.fetchActivityList().then((json) => {
-      if (json.code === 0) {
-        
-        this.setState({
-          activityList: this.state.activityList.concat(json.data),
-          isLoading: false,
-          hasMore: json.data.length !== 0
-        })
-      }
-    })
+    if (actType === ACT_TYPE.HOT) {
+      this.fetchActivityList().then((json) => {
+        if (json.code === 0) {
+          isLoading[actType] = false
+          hasMore[actType] = json.data.length !== 0
+          this.setState({
+            activityList: this.state.activityList.concat(json.data),
+            isLoading,
+            hasMore
+          })
+        }
+      })
+    } else {
+      // 获取最新活动列表
+    }
+    
   }
   jumpToAct = (activity) => {
     this.props.pushURL(`/workspace/activity/detail/${activity.id}`)
@@ -233,19 +249,16 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
       </div>
     )
   }
-  public render() {
-    const { activityList, joinModal, isLoading, hasMore } = this.state
+  renderActList = () => {
+    const { hasMore, isLoading, actType, activityList, newActList } = this.state
     const { user } = this.props
+    const actList = actType === ACT_TYPE.HOT ? activityList : newActList
     return (
       <DynamicScrollPane
-        hasMore={hasMore}
+        hasMore={hasMore[actType]}
         loadMore={this.handleLoadMore}
-        isLoading={isLoading}
+        isLoading={isLoading[actType]}
       >
-        <div className={styles.container}>
-          <div className={styles.headerWrapper}>
-            {this.renderHeader()}
-          </div>
           
           <div className={styles.listContainer} >
             <div className={styles.listHeader}>
@@ -254,12 +267,32 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
                 <Button type="primary" className={styles.createBtn} onClick={() => this.props.pushURL('/workspace/activity/create')}>创建活动</Button>
               }
             </div>
-              {activityList.map((act) => {
+              {actList.map((act) => {
                 // return this.renderActCard(act)
                 return <ActivityCard key={act.id} activity={act} onRefresh={this.fetchActivityList}/>
-              })}   
+              })}
           </div>
-          {joinModal.show && joinModal.joinAct &&
+          
+      </DynamicScrollPane>
+    )
+  }
+  public render() {
+    const { activityList, joinModal, isLoading, hasMore, actType } = this.state
+    const { user } = this.props
+    return (
+      <div className={styles.container}>
+        <div className={styles.headerWrapper}>
+          {this.renderHeader()}
+        </div>
+        <Tabs style={{ width: 1000, margin: 'auto'}} activeKey={actType.toString()} onChange={(key) => this.setState({ actType: parseInt(key) })}>
+          <TabPane tab="最热活动" key={ACT_TYPE.HOT.toString()}>
+            {this.renderActList()}
+          </TabPane>
+          <TabPane tab="最新活动" key={ACT_TYPE.NEW.toString()}>
+            {this.renderActList()}
+          </TabPane>
+        </Tabs>
+        {joinModal.show && joinModal.joinAct &&
             <JoinModal 
               onOk={() => {
                 // TODO 刷新列表
@@ -279,9 +312,7 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
               })}
             />
           }
-        </div>
-      </DynamicScrollPane>
-      
+      </div>
     )
   }
 }
