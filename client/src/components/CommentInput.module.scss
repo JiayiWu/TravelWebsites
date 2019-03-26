@@ -1,0 +1,13 @@
+:local(.inputWrapper) {
+  width: 100%;
+  position: relative;
+  input {
+    padding-right: 57px;
+    height: 40px;
+  }
+  button {
+    position: absolute;
+    right: 5px;
+    bottom: 8px;
+  }
+}

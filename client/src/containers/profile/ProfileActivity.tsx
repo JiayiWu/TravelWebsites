@@ -10,7 +10,8 @@ import messageHandler from '../../utils/messageHandler'
 
 
 interface ProfileActivityProps {
-  user: any
+  user: any,
+  urlUserId: string,
 }
 
 const TabPane = Tabs.TabPane
@@ -35,8 +36,8 @@ class ProfileActivity extends React.Component<ProfileActivityProps, any> {
     this.fetchActList()
   }
   fetchActList = (props = this.props) => {
-    const { user } = props
-    API.query(`/activity/list/${user.get('id')}`,{}).then(messageHandler).then((json) => {
+    const { user, urlUserId } = props
+    API.query(`/activity/list/${urlUserId || user.get('id')}`,{}).then(messageHandler).then((json) => {
       if (json.code === 0) {
         let createList = [] as Array<ActivityItemProps>, particiList = [] as Array<ActivityItemProps>
         json.data.forEach((activity) => {
@@ -68,7 +69,9 @@ class ProfileActivity extends React.Component<ProfileActivityProps, any> {
     )
   }
   public render() {
+    const { urlUserId, user } = this.props
     const { createList, particiList } = this.state
+    const notMe = urlUserId && (urlUserId != user.get('id'))
     return (
       <div className={styles.container}>
         <div className={classnames(styles.countContainer, styles.cardContainer)}>
@@ -86,14 +89,16 @@ class ProfileActivity extends React.Component<ProfileActivityProps, any> {
               <div className={styles.label}>总参与人数</div>
             </div>
           </div>
-          <div className={styles.item}>
-            <Button type="primary">创建活动</Button>
-          </div>
+          {!notMe && 
+            <div className={styles.item}>
+              <Button type="primary">创建活动</Button>
+            </div>
+          }
         </div>
         <div className={classnames(styles.activityContainer, styles.cardContainer)}>
           <Tabs defaultActiveKey={TAB_TYPE.CREATE}>
-            <TabPane tab="我参加的" key={TAB_TYPE.JOIN}>{this.renderActivitys(particiList)}</TabPane>
-            <TabPane tab="我创建的" key={TAB_TYPE.CREATE}>{this.renderActivitys(createList)}</TabPane>
+            <TabPane tab={`${!notMe ? '我' : 'Ta'}参加的`} key={TAB_TYPE.JOIN}>{this.renderActivitys(particiList)}</TabPane>
+            <TabPane tab={`${!notMe ? '我' : 'Ta'}创建的`} key={TAB_TYPE.CREATE}>{this.renderActivitys(createList)}</TabPane>
           </Tabs>
         </div>
       </div>

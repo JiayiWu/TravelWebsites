@@ -27,6 +27,9 @@ class ActivityCard extends React.Component<CardProps, any> {
   jumpToAct = (activity) => {
     this.props.pushURL(`/workspace/activity/detail/${activity.id}`)
   }
+  handleLike() {
+    // 点赞/取消点赞
+  }
   renderState = () => {
     const { activity } = this.props
     let color = '#1890ff', text = '审批中'
@@ -115,6 +118,12 @@ class ActivityCard extends React.Component<CardProps, any> {
             }
             
           </div>
+          <div className={styles.content}>
+            <LinesEllipsis
+              text={activity.description}
+              maxLine={3}
+            />
+          </div>
           <div className={styles.infoLine}>
             <div className={styles.infoItem}>
               <Icon type="environment" />
@@ -124,17 +133,17 @@ class ActivityCard extends React.Component<CardProps, any> {
               <Icon type="team" />
               {activity.attendList.length}人参加
             </div>
-            <div className={styles.inforItem}>
+            <div className={styles.infoItem}>
               <Icon type="calendar" />
-              {actTime.format('YYYY年MM月D日，')}周{WEEK_DAYS[Number(actTime.format('d'))]}，{actTime.format('HH:mm')}
+              {actTime.format('YYYY年MM月D日，')}{actTime.format('HH:mm')}
+              {/* {actTime.format('YYYY年MM月D日，')}周{WEEK_DAYS[Number(actTime.format('d'))]}，{actTime.format('HH:mm')} */}
+            </div>
+            <div className={styles.likeBtn}>
+              25人点赞
+              <Button type="primary" size="small" onClick={() => this.handleLike()}><Icon type="like" /></Button>
             </div>
           </div>
-          <div className={styles.content}>
-            <LinesEllipsis
-              text={activity.description}
-              maxLine={3}
-            />
-          </div>
+          
         </div>
       </div>
     )

@@ -42,6 +42,16 @@ const ProfileIndex = Loadable({
   loading: () => <div>loading...</div>
 })
 
+const SearchIndex = Loadable({
+  loader: () => import('./search/SearchIndex'),
+  loading: () => <div>loading...</div>
+})
+
+const FriendsIndex = Loadable({
+  loader: () => import('./friends/FriendsIndex'),
+  loading: () => <div>loading...</div>
+})
+
 class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
   state = {
     showNoticePanel: false,
@@ -87,7 +97,7 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
                 <div className={styles.menuItem} data-active={type === TYPE.HOMEPAGE} onClick={() => this.props.pushURL('/workspace/activity')}>
                   首页
                 </div>
-                <div className={styles.menuItem} data-active={type === TYPE.NEWS}>
+                <div className={styles.menuItem} data-active={type === TYPE.NEWS} onClick={() => this.props.pushURL('/workspace/news')}>
                   朋友圈
                 </div>
               </div>
@@ -123,6 +133,9 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
             {user.get('type') === USER_TYPE.NORMAL &&
               <Route path={`${url}/my`} component={ProfileIndex} />
             }
+            <Route path={`${url}/user/:userId`} component={ProfileIndex} />
+            <Route path={`${url}/search`} component={SearchIndex} />
+            <Route path={`${url}/news`} component={FriendsIndex} />
             
           </Switch>
         </div>

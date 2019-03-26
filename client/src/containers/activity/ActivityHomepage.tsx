@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Carousel, Icon, Button } from 'antd'
+import { Carousel, Icon, Button, Radio, Input } from 'antd'
 import LinesEllipsis from 'react-lines-ellipsis'
 import moment from 'moment'
 import styles from './ActivityHomepage.module.scss'
@@ -42,10 +42,32 @@ export const JOIN_TYPE = {
 
 const WEEK_DAYS = ['日', '一', '二', '三', '四', '五', '六']
 
+const RadioGroup = Radio.Group
+
+export const SEARCH_TYPE = {
+  ALL: 0,
+  ACT: 1,
+  USER: 2,
+}
+
+export const SEARCH_TYPES = [{
+  type: SEARCH_TYPE.ALL,
+  text: '全部',
+  placeholder: '搜活动/用户'
+}, {
+  type: SEARCH_TYPE.ACT,
+  text: '活动',
+  placeholder: '搜活动'
+}, {
+  type: SEARCH_TYPE.USER,
+  text: '用户',
+  placeholder: '搜用户'
+}]
 class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
   state = {
     recommendList: [] as Array<ActivityItemProps>,
     activityList: [] as Array<ActivityItemProps>,
+    searchType: SEARCH_TYPE.ALL,
     isLoading: false,
     hasMore: true,
     joinModal: {
@@ -101,30 +123,49 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
   jumpToAct = (activity) => {
     this.props.pushURL(`/workspace/activity/detail/${activity.id}`)
   }
+  renderSearch = () => {
+    return (
+      <div className={styles.searchContainer}>
+        <RadioGroup className={styles.radioGroup} value={this.state.searchType} onChange={(e) => this.setState({ searchType: e.target.value })}>
+          <Radio value={SEARCH_TYPE.ALL}>全部</Radio>
+          <Radio value={SEARCH_TYPE.ACT}>活动</Radio>
+          <Radio value={SEARCH_TYPE.USER}>用户</Radio>
+        </RadioGroup>
+        <Input.Search 
+          placeholder={SEARCH_TYPES[this.state.searchType].placeholder} 
+          onSearch={(value) => this.props.pushURL(`/workspace/search`, { type: this.state.searchType, value })}
+        />
+      </div>
+    )
+  }
   renderHeader = () => {
     const { recommendList } = this.state
     return (
-      <Carousel effect="fade" vertical autoplay>
-        {recommendList.map((act, index) => {
-          return (
-            <div key={index} style={{ height: '382px'}}>
-              <div className={styles.item} style={{ backgroundImage: `url(${act.coverUrl || DefaultCover})`}}>
-                <div className={styles.time}>
-                  <div className={styles.month}>
-                    {moment(act.endTime).format('D')}
+      <div className={styles.header}>
+        <Carousel effect="fade" vertical autoplay>
+          {recommendList.map((act, index) => {
+            return (
+              <div key={index} style={{ height: '382px'}}>
+                <div className={styles.item} style={{ backgroundImage: `url(${act.coverUrl || DefaultCover})`}}>
+                  <div className={styles.time}>
+                    <div className={styles.month}>
+                      {moment(act.endTime).format('D')}
+                    </div>
+                    <div>
+                      {moment(act.endTime).format('/MMM.YYYY')}
+                    </div>
                   </div>
-                  <div>
-                    {moment(act.endTime).format('/MMM.YYYY')}
-                  </div>
+                  <div className={styles.title}>{act.title}</div>
                 </div>
-                <div className={styles.title}>{act.title}</div>
+                {/* <img src={act.image} style={{ width: '100%'}}/> */}
+                
               </div>
-              {/* <img src={act.image} style={{ width: '100%'}}/> */}
-              
-            </div>
-          )
-        })}
-      </Carousel>
+            )
+          })}
+        </Carousel>
+        {this.renderSearch()}
+      </div>
+      
     )
   }
   renderActCard = (act) => {
@@ -215,7 +256,7 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
             </div>
               {activityList.map((act) => {
                 // return this.renderActCard(act)
-                return <ActivityCard activity={act} onRefresh={this.fetchActivityList}/>
+                return <ActivityCard key={act.id} activity={act} onRefresh={this.fetchActivityList}/>
               })}   
           </div>
           {joinModal.show && joinModal.joinAct &&

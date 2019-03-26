@@ -130,7 +130,7 @@ class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponen
               coverUrl: this.state.coverUrl,
               endTime: moment(value.endTime).valueOf(),
               startTime: moment(value.startTime).valueOf(),
-              
+              description: this.editor.current ? (this.editor.current as any).getEditorState().toHTML() : ''
             })
           }
         }).then(messageHandler).then((json) => {
@@ -336,6 +336,7 @@ class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponen
               // <Input.TextArea placeholder="请输入活动介绍" autosize={{ minRows: 4, maxRows: 10 }}/>
               <MyEditor
                 ref={this.editor}
+                defaultValue={detail && detail.get('description')}
                 // onRef={(element) => {
                 //   this.editor = element
                 // }}

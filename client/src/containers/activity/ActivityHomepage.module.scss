@@ -7,6 +7,28 @@
     width: 100%;
     height: 382px;
     margin-bottom: 20px;
+    :local(.header) {
+      position: relative;
+      height: 100%;
+
+      :local(.searchContainer) {
+        background-color: rgba(0, 0, 0, 0.4);
+        
+        padding: 10px;
+        border-radius: 5px;
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        :local(.radioGroup) {
+          margin-bottom: 10px;
+          color: white;
+          :global(.ant-radio-wrapper) {
+            color: white;
+          }
+        }
+      }
+    }
     :global(.ant-carousel) {
       height: 100%;
       :global(.slick-slider) {

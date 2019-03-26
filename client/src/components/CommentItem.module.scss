@@ -1,0 +1,29 @@
+:local(.container) {
+  width: 100%;
+  display: flex;
+  // align-items: center;
+  position: relative;
+  padding: 20px 0;
+
+  :local(.avatar) {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: tomato;
+    flex-shrink: 0;
+  }
+
+  :local(.right) {
+    flex-grow: 1;
+    color: #444;
+    :local(.user) {
+      color: #7594B3;
+      cursor: pointer;
+      margin-left: 5px;
+    }
+  }
+  :local(.reply) {
+    color: #7594B3;
+    cursor: pointer;
+  }
+}

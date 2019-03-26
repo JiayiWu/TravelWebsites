@@ -10,7 +10,17 @@
     background-position: center center;
     vertical-align: bottom;
     position: relative;
-
+    :local(.likeBtn) {
+      width: $center-width;
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      button {
+        float: right;
+        margin-right: 30px;
+      }
+    }
     :local(.titleWrapper) {
       width: $center-width - 192px;
       margin: auto;
@@ -20,6 +30,7 @@
       left: 83px;
       overflow: hidden;
       white-space: nowrap;
+
 
       & > div {
         text-shadow: 0 1px 3px rgba(0, 0, 0, .9)
@@ -90,7 +101,21 @@
       }
     }
   }
+  :local(.splitLine) {
+    width: 100%;
+    border: 1px solid #e2e2e2;
+    margin-bottom: 10px;
+  }
 
+  :local(.commentContainer) {
+    padding: 10px;
+    :local(.commentItem):not(:first-child) {
+      border-top: 1px solid #e2e2e2;
+    }
+    // :local(.commentItem):first-child {
+    //   border-top: none;
+    // }
+  }
 }
 
 @keyframes titleSlider {
