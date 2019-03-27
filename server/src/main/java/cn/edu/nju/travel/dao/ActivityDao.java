@@ -1,6 +1,7 @@
 package cn.edu.nju.travel.dao;
 
 import cn.edu.nju.travel.entity.ActivityEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -12,7 +13,7 @@ import java.util.List;
 /**
  * Created on 2019/1/13
  */
-public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, Integer>{
+public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, Integer> {
 
     @Modifying
     @Query(nativeQuery = true,value = "update activity a set a.location = :location, a.title = :title, a.start_time = :startTime, a.end_time = :endTime," +
