@@ -31,9 +31,11 @@
     flex-grow: 1;
     margin-left: 15px;
     font-size: 14px;
+    display: flex;
+    flex-direction: column;
     :local(.titleWrapper) {
       font-size: 18px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
@@ -42,8 +44,13 @@
       justify-content: space-between;
     }
 
+    :local(.content) {
+      flex-grow: 1;
+    }
+
     :local(.infoLine) {
       margin-bottom: 0px;
+      position: relative;
       & > div {
         display: inline-block;
         i {
@@ -53,6 +60,14 @@
       div:not(:last-child) {
         margin-right: 10px;
       }
+      :local(.likeBtn) {
+        position: absolute;
+        right: 0;
+        button {
+          margin-left: 10px;
+        }
+      }
+
     }
   }
   &:hover {

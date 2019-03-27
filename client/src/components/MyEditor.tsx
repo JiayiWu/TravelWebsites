@@ -10,7 +10,7 @@ interface MyEditorProps {
   ref: React.RefObject<any>,
   readOnly?: boolean,
   defaultValue?: string,
-  // controls?: Array<string>
+  controls?: Array<string>
 }
 
 const defaultControls = [
@@ -32,7 +32,7 @@ class MyEdior extends React.Component<MyEditorProps, any> {
   }
   state = {
     editorState: BraftEditor.createEditorState(this.props.defaultValue), // 设置编辑器初始内容
-    outputHTML: '<p></p>'
+    outputHTML: BraftEditor.createEditorState(this.props.defaultValue).toHTML()
   }
 
   getEditorState = () => {
@@ -74,7 +74,7 @@ class MyEdior extends React.Component<MyEditorProps, any> {
             value={editorState}
             onChange={this.handleChange}
             readOnly={this.props.readOnly}
-            controls={this.props.readOnly ? [] : defaultControls}
+            controls={this.props.readOnly ? [] : (this.props.controls || defaultControls)}
             media={{
               uploadFn: MyUploadFn
             }}

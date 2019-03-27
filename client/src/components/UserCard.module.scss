@@ -1,0 +1,36 @@
+:local(.userCard) {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  // &:hover {
+  //   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+  // }
+
+  :local(.left) {
+    flex-grow: 1;
+    display: flex;
+    :local(.img) {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background-color: tomato;
+      margin-right: 10px;
+    }
+    :local(.infoWrapper) {
+      display: flex;
+      flex-direction: column;
+      :local(.name) {
+        color: #111;
+      }
+      :local(.info) {
+        color: #999;
+        & > span {
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+}

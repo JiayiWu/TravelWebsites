@@ -27,7 +27,7 @@ class ActivityIndex extends React.Component<ActivityIndexProps, any> {
   public render() {
     const { match } = this.props
     return (
-      <div style={{ width: '100%', height: '100%', position: 'relative', overflowY: 'hidden' }}>        
+      <div style={{ width: '100%', height: '100%', position: 'relative' }}>        
         <Switch>
           <Route exact path={`${match.path}/`} component={Homepage}/>
           <Route path={`${match.path}/create`} component={Create}/>

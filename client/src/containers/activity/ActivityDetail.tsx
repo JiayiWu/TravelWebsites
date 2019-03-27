@@ -2,7 +2,7 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux' 
-import { Icon, message } from 'antd'
+import { Icon, message, Button, Anchor } from 'antd'
 import styles from './ActivityDetail.module.scss'
 import API from '../../utils/API'
 import messageHandler from '../../utils/messageHandler'
@@ -12,6 +12,8 @@ import DefaultCover from '../../utils/image/ActivityCover.jpg'
 // import CREATOR from '@utils/image/activity/a4.jpg'
 
 import ActivityDetailContent from './components/ActivityDetailContent'
+import CommentInput from '../../components/CommentInput'
+import CommentItem from '../../components/CommentItem'
 import { UserBasicProps, USER_TYPE } from '../profile/ProfileHomepage'
 import { fromJS } from 'immutable';
 
@@ -81,7 +83,12 @@ export const ACTIVITY_STATE = {
 // }
 
 class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetailProps, { detail: ActivityItemProps | null, showJoinModal: boolean }> {
+  private commentInput: React.RefObject<HTMLInputElement>
 
+  constructor(props) {
+    super(props)
+    this.commentInput = React.createRef()
+  }
   state : { detail: ActivityItemProps | null, showJoinModal: boolean } = {
     detail: null,
     showJoinModal: false,
@@ -218,6 +225,9 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
               {detail.title}
             </div>
           </h1>
+          <div className={styles.likeBtn}>
+            <Button type="primary" ><Icon type="like" /></Button>
+          </div>
         </div>
         <div className={styles.infoContainer}>
           <div className={styles.centerContainer}>
@@ -230,13 +240,13 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
               {user.get('type') === USER_TYPE.ADMIN ? 
                 (match.path.indexOf('apply') >= 0 ? 
                   [detail.state !== ACTIVITY_STATE.DELETE && detail.state !== ACTIVITY_STATE.INVALID &&
-                    <div className={styles.headerBtn} onClick={() => this.handleApplyAct(APPLY_TYPE.AGREE)}>
+                    <div className={styles.headerBtn} key='0' onClick={() => this.handleApplyAct(APPLY_TYPE.AGREE)}>
                       <Icon type="check-circle" />
                       <br />
                       同意创建
                     </div>,
                     detail.state !== ACTIVITY_STATE.DELETE && detail.state !== ACTIVITY_STATE.INVALID &&
-                    <div className={styles.headerBtn} onClick={() => this.handleApplyAct(APPLY_TYPE.REFUSE)}>
+                    <div className={styles.headerBtn} key='1' onClick={() => this.handleApplyAct(APPLY_TYPE.REFUSE)}>
                       <Icon type="close-circle" />
                       <br />
                       拒绝创建
@@ -257,8 +267,9 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
                 </div>
                 :
                 (detail.creator.id === user.get('id') ? 
-                  [detail.state !== ACTIVITY_STATE.VALID && detail.state !== ACTIVITY_STATE.INVALID && detail.state !== ACTIVITY_STATE.END && detail.state !== ACTIVITY_STATE.DELETE &&
-                  <div className={styles.headerBtn} onClick={() => this.props.pushURL(`/workspace/activity/update/${detail.id}`, {
+                  [detail.state !== ACTIVITY_STATE.END && detail.state !== ACTIVITY_STATE.DELETE && detail.state !== ACTIVITY_STATE.INVALID &&
+                  // detail.state !== ACTIVITY_STATE.VALID && detail.state !== ACTIVITY_STATE.INVALID && detail.state !== ACTIVITY_STATE.END && detail.state !== ACTIVITY_STATE.DELETE &&
+                  <div className={styles.headerBtn} key='0' onClick={() => this.props.pushURL(`/workspace/activity/update/${detail.id}`, {
                     detail: detail
                   })}>
                     <Icon type="edit" />
@@ -266,13 +277,13 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
                     编辑
                   </div>,
                   detail.state !== ACTIVITY_STATE.END && detail.state !== ACTIVITY_STATE.DELETE && detail.state !== ACTIVITY_STATE.INVALID &&
-                  <div className={styles.headerBtn} onClick={this.handleCancelAct}>
+                  <div className={styles.headerBtn} key='1' onClick={this.handleCancelAct}>
                     <Icon type="minus-circle" />
                     <br />
                     取消
                   </div>,
                   detail.state !== ACTIVITY_STATE.END && detail.state !== ACTIVITY_STATE.DELETE && detail.state !== ACTIVITY_STATE.INVALID &&
-                  <div className={styles.headerBtn} onClick={this.handleEndAct}>
+                  <div className={styles.headerBtn} key='2' onClick={this.handleEndAct}>
                     <Icon type="poweroff" />
                     <br />
                     结束
@@ -294,7 +305,32 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
         </div>
         <div style={{ width: 1000, margin: 'auto' }}>
           <ActivityDetailContent detail={detail}/>
+          <div className={styles.splitLine}/>
+          <div className={styles.commentContainer} ref={this.commentInput}>
+            <CommentInput />
+            <div className={styles.commentList}>
+              {new Array(20).fill(0).map((comment, index) => {
+                return (
+                  <div className={styles.commentItem} key={index}>
+                    <CommentItem 
+                      onReply={() => { 
+                        
+                        (window as any).commentInput = this.commentInput.current
+                    
+                        this.commentInput.current && this.commentInput.current.scrollIntoView({
+                          block: 'start',
+                          behavior: 'smooth'
+                        })
+                        
+                      }}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          </div>
         </div>
+       
         {this.state.showJoinModal && 
           <JoinModal 
             activity={detail}

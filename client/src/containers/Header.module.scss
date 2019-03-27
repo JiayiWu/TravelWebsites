@@ -96,6 +96,7 @@
   :local(.content) {
     height: calc(100% - 60px);
     position: relative;
+    scroll-behavior: smooth;
   }
   :local(.noticePanel) {
     position: absolute;
