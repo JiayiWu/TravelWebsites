@@ -1,5 +1,6 @@
 import React from 'react'
 import { Icon } from 'antd'
+import classnames from 'classnames'
 import styles from './ImageContainer.module.scss'
 
 class ImagesContainer extends React.Component<any, any> {
@@ -12,6 +13,7 @@ class ImagesContainer extends React.Component<any, any> {
   }
 
   renderBigMode = () => {
+    const { currentPicture } = this.state
     return (
       <div className={styles.bigImageContainer}>
         <div className={styles.header} onClick={() => this.setState({ showBig: false, currentPicture: null })}><Icon type="to-top" />&nbsp;收起</div>
@@ -19,7 +21,7 @@ class ImagesContainer extends React.Component<any, any> {
         <div className={styles.gallery}>
           {new Array(6).fill(0).map((image, index) => {
             return (
-              <div className={styles.galleryImage} key={index} onClick={(index) => this.setState({ currentPicture: index })}></div>
+              <div className={classnames(styles.galleryImage, currentPicture == index ? styles.activeImage : '')} key={index} onClick={() => this.setState({ currentPicture: index })}></div>
             )
           })}
         </div>
@@ -36,7 +38,7 @@ class ImagesContainer extends React.Component<any, any> {
           :
           new Array(6).fill(0).map((image, index) => {
             return (
-              <div className={styles.imageItem} key={index} onClick={(index) => this.setState({ showBig: true, currentPicture: index })}></div>
+              <div className={styles.imageItem} key={index} onClick={() => this.setState({ showBig: true, currentPicture: index })}></div>
             )
           })
         }

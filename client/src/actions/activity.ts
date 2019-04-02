@@ -47,3 +47,15 @@ export const applyJoinAct = (activityId, userId, result) => (dispatch) => {
     }
   })
 }
+
+export const likeRefer = (isLike, referId, type) => (dispatch) => {
+  return API.query(isLike ? '/interaction/like' : '/interaction/unlike', {
+    options: {
+      method: 'POST'
+    },
+    searchParams: {
+      referId,
+      type
+    }
+  })
+}

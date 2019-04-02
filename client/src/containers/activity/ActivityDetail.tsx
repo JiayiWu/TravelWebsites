@@ -2,7 +2,7 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux' 
-import { Icon, message, Button, Anchor } from 'antd'
+import { Icon, message, Button, Anchor, Tooltip } from 'antd'
 import styles from './ActivityDetail.module.scss'
 import API from '../../utils/API'
 import messageHandler from '../../utils/messageHandler'
@@ -17,7 +17,7 @@ import CommentItem from '../../components/CommentItem'
 import { UserBasicProps, USER_TYPE } from '../profile/ProfileHomepage'
 import { fromJS } from 'immutable';
 
-import { attendAct, quitAct, applyAct, cancelAct, endAct } from '../../actions/activity'
+import { attendAct, quitAct, applyAct, cancelAct, endAct, likeRefer } from '../../actions/activity'
 import { pushURL } from '../../actions/route'
 import JoinModal from './modal/JoinModal';
 
@@ -34,6 +34,8 @@ export interface ActivityItemProps {
   title: string,
   state: number,
   type: number,
+  like: boolean,
+  likeCount: number,
 }
 
 interface ActivityDetailProps {
@@ -44,6 +46,7 @@ interface ActivityDetailProps {
   pushURL: Function, // redux
   cancelAct: Function, // redux
   endAct: Function, // redux
+  likeRefer: Function, // redux
   route: any, // redux
 }
 
@@ -81,17 +84,26 @@ export const ACTIVITY_STATE = {
 //   startTime: new Date().getTime(),
 //   title: '烎潮音发布夜烎潮音发布夜烎潮音发布夜烎潮音发布夜烎潮音发布夜烎潮音发布夜'
 // }
+interface ActivityDetailState {
+  detail: ActivityItemProps | null,
+  showJoinModal: boolean,
+  like: boolean,
+  likeCount: number,
+}
 
-class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetailProps, { detail: ActivityItemProps | null, showJoinModal: boolean }> {
+class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetailProps, ActivityDetailState> {
   private commentInput: React.RefObject<HTMLInputElement>
 
   constructor(props) {
     super(props)
     this.commentInput = React.createRef()
   }
-  state : { detail: ActivityItemProps | null, showJoinModal: boolean } = {
+  state : ActivityDetailState = {
     detail: null,
     showJoinModal: false,
+    like: false,
+    likeCount: 0,
+
   }
   
   componentDidMount() {
@@ -99,8 +111,11 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
     // console.log(route)
     if (match.path.indexOf('apply') >= 0) {
       if (route.getIn(['state', 'detail'])) {
+        const detail = route.getIn(['state', 'detail']).toJS()
         this.setState({
-          detail: route.getIn(['state', 'detail']).toJS()
+          detail,
+          like: detail.like,
+          likeCount: detail.likeCount,
         })
       } else {
         this.fetchActivityDetail()
@@ -112,8 +127,11 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
   componentWillReceiveProps(nextProps) {
     // TODO 之后加上id之后需要判断两次id是否相同，是否需要重新获取
     if (nextProps.match.path.indexOf('apply') && nextProps.route.getIn(['state', 'detail'])) {
+      const detail = nextProps.route.getIn(['state', 'detail']).toJS()
       this.setState({
-        detail: nextProps.route.getIn(['state', 'detail']).toJS()
+        detail,
+        like: detail.like,
+        likeCount: detail.likeCount,
       })
     } else {
       this.fetchActivityDetail(nextProps)
@@ -126,7 +144,9 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
     API.query(`/activity/info/${params.id}`, {}).then((messageHandler)).then((json) => {
       if (json.code === 0) {
         this.setState({
-          detail: json.data
+          detail: json.data,
+          like: json.data.like,
+          likeCount: json.data.likeCount,
         })
       }
     })
@@ -209,6 +229,19 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
     })
   }
 
+  handleLikeAct = (e) => {
+    const { detail } = this.state
+    if (!detail) {
+      return
+    }
+    this.props.likeRefer(!detail.like, detail.id, 1).then((json) => {
+      if (json.code === 0) {
+        message.success(detail.like ? '取消点赞成功' : '点赞成功')
+        this.fetchActivityDetail()
+      }
+    })
+  }
+
   public render() {
     const { detail } = this.state
     const { user, match } = this.props
@@ -226,7 +259,9 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
             </div>
           </h1>
           <div className={styles.likeBtn}>
-            <Button type="primary" ><Icon type="like" /></Button>
+            <Tooltip title={detail.like ? '取消点赞' : '点赞'}>
+              <Button type={detail.like ? "default" : "primary"} onClick={(e) => this.handleLikeAct(e)}>{detail.likeCount}&nbsp;<Icon type="like" /></Button>
+            </Tooltip>
           </div>
         </div>
         <div className={styles.infoContainer}>
@@ -365,6 +400,7 @@ function mapDispatchToProps(dispatch) {
     cancelAct: bindActionCreators(cancelAct, dispatch),
     endAct: bindActionCreators(endAct, dispatch),
     pushURL: bindActionCreators(pushURL, dispatch),
+    likeRefer: bindActionCreators(likeRefer, dispatch),
   }
 }
 

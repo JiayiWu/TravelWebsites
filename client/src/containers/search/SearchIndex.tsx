@@ -2,10 +2,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Tabs, Input, Button } from 'antd'
+import API from '../../utils/API'
 import styles from './SearchIndex.module.scss'
-import {SEARCH_TYPE, SEARCH_TYPES} from '../activity/ActivityHomepage'
+import DynamicScrollPane from '../../components/DynamicScrollPane'
+import ActivityCard from '../activity/components/ActivityCard'
+import {SEARCH_TYPE, SEARCH_TYPES, ActivityItemProps} from '../activity/ActivityHomepage'
 import UserCard from '../../components/UserCard'
-import { fromJS } from 'immutable';
+import { fromJS } from 'immutable'
 import { pushURL } from '../../actions/route'
 
 interface SearchIndexProps {
@@ -18,27 +21,66 @@ const TabPane = Tabs.TabPane
 class SearchIndex extends React.Component<SearchIndexProps, any> {
   state = {
     type: this.props.route.getIn(['state', 'type']) || 0,
-    keywords: this.props.route.getIn(['state', 'value']) || '',
+    keyword: this.props.route.getIn(['state', 'value']) || '',
+    isLoading: false,
     userList: [],
-    actList: []
+    actList: [] as Array<ActivityItemProps>
   }
   
   componentDidMount() {
     const { route } = this.props
-    const [keywords, type] = [route.getIn(['state', 'value']), route.getIn(['state', 'type'])]
-
+    const [keyword, type] = [route.getIn(['state', 'value']), route.getIn(['state', 'type'])]
+    this.handleSearch({keyword, type})
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      type: this.props.route.getIn(['state', 'type']) || 0,
-      keywords: this.props.route.getIn(['state', 'value']) || '',
+  // componentWillReceiveProps(nextProps) {
+  //   this.setState({
+  //     type: this.props.route.getIn(['state', 'type']) || 0,
+  //     keywords: this.props.route.getIn(['state', 'value']) || '',
 
-    })
+  //   })
+  // }
+
+  // static getDerivedStateFromProps(props, prevState) {
+  //   return {
+  //     ...prevState,
+  //     keyword: props.route.getIn(['state', 'value']) || '',
+  //     type: props.route.getIn(['state', 'type']) || 0
+  //   }
+  // }
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log('update', prevState, this.state)
+    if (prevState.keyword !== this.state.keyword || prevState.type !== this.state.type) {
+      this.handleSearch({keyword: this.state.keyword, type: this.state.type})
+    }
   }
 
   handleSearch(obj: { keyword?: string, type?: string | number }) {
-
+    const { type, keyword } = obj
+    const { userList, actList } = this.state
+    this.setState({
+      isLoading: true,
+    })
+    
+    return type === SEARCH_TYPE.ACT ? API.query('/activity/searchList', {
+      searchParams: {
+        size: 10,
+        keyword,
+        lastId: actList.length > 0 ? actList[actList.length - 1].id : 0
+      }
+    }).then((json) => {
+      if (json.code === 0) {
+        this.setState({
+          actList: actList.concat(json.data),
+          isLoading: false,
+        })
+      }
+    }) : Promise.resolve().then(() => {
+      this.setState({
+        isLoading: false,
+      })
+    })
   }
 
   handleFollow = () => {
@@ -51,7 +93,7 @@ class SearchIndex extends React.Component<SearchIndexProps, any> {
       <div className={styles.allContainer}>
         <div className={styles.header}>
           <h3>活动列表</h3>
-          <a onClick={() => this.props.pushURL(route.get('url'), { value: this.state.keywords, type: SEARCH_TYPE.ACT })}>查看更多活动</a>
+          <a onClick={() => this.props.pushURL(route.get('url'), { value: this.state.keyword, type: SEARCH_TYPE.ACT })}>查看更多活动</a>
         </div>
         <div className={styles.listContainer}>
           {this.renderActs()}
@@ -66,13 +108,22 @@ class SearchIndex extends React.Component<SearchIndexProps, any> {
 
   renderActs() {
     return (
-      <div className={styles.listContainer}>
-        {new Array(3).fill(0).map((act, index) => {
-          return (
-            <div style={{ display: 'block', width: '100%' }} key={index}>活动项</div>
-          )
-        })}
-      </div>
+      <DynamicScrollPane
+        hasMore={true}
+        isLoading={this.state.isLoading}
+        loadMore={() => this.handleSearch({ type: this.state.type, keyword: this.state.keyword })}
+      >
+        <div className={styles.listContainer}>
+          {this.state.actList.map((act, index) => {
+            return (
+              <ActivityCard 
+                activity={act}
+              />
+            )
+          })}
+        </div>
+      </DynamicScrollPane>
+      
     )
   }
 
@@ -91,23 +142,21 @@ class SearchIndex extends React.Component<SearchIndexProps, any> {
   }
 
   render() {
-    const { type, keywords } = this.state
-    // const { route } = this.props
-    // const [keywords, type] = [route.getIn(['state', 'value']), route.getIn(['state', 'type'])]
+    const { type, keyword } = this.state
     return (
       <div className={styles.container}>
         <Input.Search
           placeholder="搜索"
-          defaultValue={keywords}
+          defaultValue={keyword}
           onSearch={(value) => this.setState({
-            keywords: value,
+            keyword: value,
             type,
           })}
         />
         <Tabs defaultActiveKey={type.toString()} onChange={(key) => this.handleSearch({keyword: key})}>
-          <TabPane tab={SEARCH_TYPES[SEARCH_TYPE.ALL].text} key={SEARCH_TYPE.ALL.toString()}>
+          {/* <TabPane tab={SEARCH_TYPES[SEARCH_TYPE.ALL].text} key={SEARCH_TYPE.ALL.toString()}>
             {this.renderAll()}
-          </TabPane>
+          </TabPane> */}
           <TabPane tab={SEARCH_TYPES[SEARCH_TYPE.ACT].text} key={SEARCH_TYPE.ACT.toString()}>
             {this.renderActs()}
           </TabPane>
