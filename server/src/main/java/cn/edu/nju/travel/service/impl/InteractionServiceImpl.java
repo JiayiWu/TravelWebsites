@@ -2,12 +2,20 @@ package cn.edu.nju.travel.service.impl;
 
 import cn.edu.nju.travel.constant.LikeEntityType;
 import cn.edu.nju.travel.dao.ActivityDao;
+import cn.edu.nju.travel.dao.CommentDao;
 import cn.edu.nju.travel.dao.LikeDao;
+import cn.edu.nju.travel.dao.UserDao;
 import cn.edu.nju.travel.entity.ActivityEntity;
+import cn.edu.nju.travel.entity.CommentEntity;
 import cn.edu.nju.travel.entity.LikeEntity;
+import cn.edu.nju.travel.entity.UserEntity;
+import cn.edu.nju.travel.form.CommentForm;
 import cn.edu.nju.travel.form.ResponseCode;
 import cn.edu.nju.travel.service.InteractionService;
 import cn.edu.nju.travel.utils.ServerException;
+import cn.edu.nju.travel.vo.CommentVO;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -20,11 +28,13 @@ import org.springframework.stereotype.Service;
 public class InteractionServiceImpl implements InteractionService {
 
     @Resource
-    private
-    LikeDao likeDao;
+    private LikeDao likeDao;
     @Resource
-    private
-    ActivityDao activityDao;
+    private ActivityDao activityDao;
+    @Resource
+    private CommentDao commentDao;
+    @Resource
+    private UserDao userDao;
 
     @Override
     public int like(int userId, int referId, LikeEntityType type) {
@@ -71,5 +81,55 @@ public class InteractionServiceImpl implements InteractionService {
     @Override
     public boolean isLike(int userId, int referId, LikeEntityType type) {
         return likeDao.findByUserIdAndReferIdAndType(userId, referId, type.getValue())!=null;
+    }
+
+    @Override
+    public CommentVO addComment(int userId, CommentForm commentForm) {
+        CommentEntity commentEntity = new CommentEntity();
+        commentEntity.setContent(commentForm.getContent());
+        commentEntity.setCreatorId(userId);
+        commentEntity.setParentId(commentForm.getParentId());
+        commentEntity.setReferId(commentForm.getReferId());
+        commentEntity.setType(commentForm.getType());
+        commentEntity = commentDao.save(commentEntity);
+        return getCommentVOByEntity(commentEntity);
+    }
+
+    @Override
+    public List<CommentVO> getComments(int referId, LikeEntityType type) {
+        List<CommentEntity> entities = commentDao.findByReferIdAndType(referId, type.getValue());
+        return entities.stream().map(this::getCommentVOByEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteComment(int id) {
+        commentDao.deleteById(id);
+    }
+
+    @Override
+    public boolean isUserComment(int userId, int commentId) {
+        CommentEntity entity = commentDao.findByIdAndCreatorId(commentId, userId);
+        return entity != null;
+    }
+
+
+    private CommentVO getCommentVOByEntity(CommentEntity entity){
+        CommentVO vo = new CommentVO();
+        vo.setId(entity.getId());//id
+        vo.setContent(entity.getContent());//内容
+        vo.setCreateTime(entity.getCreateTime().getTime());//评论时间
+        UserEntity creator = userDao.findById(entity.getCreatorId());
+        vo.setCommenter(creator.getName());//评论者姓名
+        Integer parentId = entity.getParentId();
+        if(parentId != null && parentId != 0){
+            vo.setParentId(parentId);//被回复的评论id
+            CommentEntity parentComment = commentDao.getOne(parentId);
+            int commentedUserId = parentComment.getCreatorId();
+            UserEntity commentedUser = userDao.findById(commentedUserId);
+            vo.setCommentedUser(commentedUser.getName());//被评论者姓名
+        }
+
+        return vo;
     }
 }
