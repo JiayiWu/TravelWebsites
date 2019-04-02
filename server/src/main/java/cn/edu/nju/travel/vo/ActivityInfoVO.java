@@ -63,4 +63,10 @@ public class ActivityInfoVO {
 
     @ApiModelProperty(notes = "活动创建时间")
     private long createTime;
+
+    @ApiModelProperty(notes = "点赞总数")
+    private int likeCount;
+
+    @ApiModelProperty(notes = "是否点赞")
+    private boolean like;
 }

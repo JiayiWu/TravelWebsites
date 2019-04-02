@@ -2,8 +2,10 @@ package cn.edu.nju.travel.service.impl;
 
 import cn.edu.nju.travel.constant.*;
 import cn.edu.nju.travel.dao.ActivityDao;
+import cn.edu.nju.travel.dao.LikeDao;
 import cn.edu.nju.travel.dao.UserDao;
 import cn.edu.nju.travel.entity.ActivityEntity;
+import cn.edu.nju.travel.entity.LikeEntity;
 import cn.edu.nju.travel.entity.RelationEntity;
 import cn.edu.nju.travel.entity.UserEntity;
 import cn.edu.nju.travel.form.ActivityForm;
@@ -17,6 +19,7 @@ import cn.edu.nju.travel.vo.AuthActivityInfoVO;
 import cn.edu.nju.travel.vo.AuthenticationActivityInfoListVO;
 import cn.edu.nju.travel.vo.UserInfoVO;
 import java.sql.Date;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +40,9 @@ public class AcitivityServiceImpl implements ActivityService{
 
     @Autowired
     UserDao userDao;
+
+    @Autowired
+    LikeDao likeDao;
 
     @Autowired
     UserService userService;
@@ -245,39 +251,22 @@ public class AcitivityServiceImpl implements ActivityService{
                 "%"+keyword+"%", lastId);
         List<ActivityInfoVO> voList = new ArrayList<>();
         for(ActivityEntity entity:activityEntities){
-            voList.add(entity2VO(entity));
+            voList.add(getActivityInfoVO(entity, ActivityTypeCode.COMMON.getIndex()));
         }
         return voList;
     }
 
     @Override
-    public List<ActivityInfoVO> getLatestActivities(int size, long lastCreateTime) throws
+    public List<ActivityInfoVO> getLatestActivities(int size, long lastCreateTime)
+            throws
             Exception {
         List<ActivityEntity> activityEntities = activityDao.findLatestActivities(size, new
                 Timestamp(lastCreateTime));
         List<ActivityInfoVO> voList = new ArrayList<>();
         for(ActivityEntity entity:activityEntities){
-            voList.add(entity2VO(entity));
+            voList.add(getActivityInfoVO(entity, ActivityTypeCode.COMMON.getIndex()));
         }
         return voList;
-    }
-
-    private ActivityInfoVO entity2VO(ActivityEntity entity) throws Exception {
-        ActivityInfoVO vo = new ActivityInfoVO();
-        vo.setId(entity.getId());
-        UserInfoVO userInfoVO = userService.findById(entity.getCreateId());
-        vo.setCreator(userInfoVO);
-        vo.setTitle(entity.getTitle());
-        vo.setLocation(entity.getLocation());
-        vo.setStartTime(entity.getStartTime().getTime());
-        vo.setEndTime(entity.getEndTime().getTime());
-        vo.setJoinType(entity.getJoinType());
-        vo.setCoverUrl(entity.getCoverUrl());
-        vo.setState(entity.getState());
-        vo.setDescription(entity.getDescription());
-        vo.setCreateTime(entity.getCreateTime().getTime());
-        return vo;
-
     }
 
     private ActivityInfoVO getActivityInfoVO(ActivityEntity activityEntity,int type) throws Exception{
@@ -324,6 +313,12 @@ public class AcitivityServiceImpl implements ActivityService{
         activityInfoVO.setAttendList(attendList);
         activityInfoVO.setState(activityEntity.getState());
         activityInfoVO.setType(type);
+        activityInfoVO.setCreateTime(activityEntity.getCreateTime().getTime());
+
+        //点赞总数
+        activityInfoVO.setLikeCount(activityEntity.getLikeCounts());
+
+
         return activityInfoVO;
     }
 }

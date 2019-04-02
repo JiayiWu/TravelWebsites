@@ -1,13 +1,17 @@
 package cn.edu.nju.travel.controller;
 
+import cn.edu.nju.travel.constant.LikeEntityType;
 import cn.edu.nju.travel.form.*;
 import cn.edu.nju.travel.service.ActivityService;
+import cn.edu.nju.travel.service.InteractionService;
 import cn.edu.nju.travel.service.RelationService;
 import cn.edu.nju.travel.service.UserService;
 import cn.edu.nju.travel.utils.ServerException;
 import cn.edu.nju.travel.vo.ActivityInfoVO;
 import cn.edu.nju.travel.vo.AuthenticationInfoListVO;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +37,9 @@ public class ActivityController {
 
     @Autowired
     RelationService relationService;
+
+    @Autowired
+    InteractionService interactionService;
 
     @ApiOperation(value = "创建活动", response = SimpleResponse.class, notes = "创建成功返回0")
     @RequestMapping(value = "check", method = RequestMethod.POST)
@@ -76,7 +83,8 @@ public class ActivityController {
             List<ActivityInfoVO> activityInfoVOList =
                     activityService.getActivityList(new Timestamp(activityListForm.getLastTimestamp()),
                     activityListForm.getSize());
-            return SimpleResponse.ok(activityInfoVOList);
+            Integer userId = (Integer) httpSession.getAttribute("userId");
+            return SimpleResponse.ok(addLikeInfo(activityInfoVOList, userId));
         }catch (Exception e){
             return SimpleResponse.exception(e);
         }
@@ -88,7 +96,8 @@ public class ActivityController {
     public SimpleResponse getActivityInfo(HttpSession httpSession, @PathVariable int id){
         try{
             ActivityInfoVO activityInfoVO = activityService.findActivityById(id);
-            return SimpleResponse.ok(activityInfoVO);
+            Integer userId = (Integer) httpSession.getAttribute("userId");
+            return SimpleResponse.ok(addLikeInfo(activityInfoVO, userId));
         }catch (Exception e){
             return SimpleResponse.exception(e);
         }
@@ -101,7 +110,8 @@ public class ActivityController {
         try{
             List<ActivityInfoVO> activityInfoVOList = activityService.getActivitiesByCreatorId(creatorid);
 
-            return SimpleResponse.ok(activityInfoVOList);
+            Integer userId = (Integer) httpSession.getAttribute("userId");
+            return SimpleResponse.ok(addLikeInfo(activityInfoVOList,userId));
         }catch (Exception e){
 
             return SimpleResponse.exception(e);
@@ -238,7 +248,8 @@ public class ActivityController {
         try{
             List<ActivityInfoVO> activityInfoVOList =
                     activityService.getRecommendationActivities(size);
-            return SimpleResponse.ok(activityInfoVOList);
+            Integer userId = (Integer) httpSession.getAttribute("userId");
+            return SimpleResponse.ok(addLikeInfo(activityInfoVOList,userId));
         }catch (Exception e){
             return SimpleResponse.exception(e);
         }
@@ -252,7 +263,8 @@ public class ActivityController {
         try{
             List<ActivityInfoVO> activityInfoVOList = activityService.searchActivities(size,
                     keyword, lastId);
-            return SimpleResponse.ok(activityInfoVOList);
+            Integer userId = (Integer) httpSession.getAttribute("userId");
+            return SimpleResponse.ok(addLikeInfo(activityInfoVOList,userId));
         } catch (Exception e) {
             return SimpleResponse.exception(e);
         }
@@ -267,9 +279,24 @@ public class ActivityController {
         try {
             List<ActivityInfoVO> activityInfoVOList = activityService.getLatestActivities(size,
                     lastCreateTime==null?Long.MAX_VALUE:lastCreateTime);
-            return SimpleResponse.ok(activityInfoVOList);
+            Integer userId = (Integer) httpSession.getAttribute("userId");
+            return SimpleResponse.ok(addLikeInfo(activityInfoVOList,userId));
         } catch (Exception e) {
             return SimpleResponse.exception(e);
         }
+    }
+
+    private List<ActivityInfoVO> addLikeInfo(List<ActivityInfoVO> voList, Integer userId){
+        if(userId == null){
+            return voList;
+        }
+        return voList.stream().peek(vo-> vo.setLike(interactionService.isLike(userId, vo.getId(), LikeEntityType.ACTIVITY))).collect(Collectors.toList());
+    }
+
+    private ActivityInfoVO addLikeInfo(ActivityInfoVO vo, Integer userId){
+        if(userId != null){
+            vo.setLike(interactionService.isLike(userId, vo.getId(), LikeEntityType.ACTIVITY));
+        }
+        return vo;
     }
 }

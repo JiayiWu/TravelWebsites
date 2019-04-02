@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -57,6 +58,13 @@ public class ActivityEntity  {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "like_count")
+    private Integer likeCounts;
+
+    @Version
+    private long version;
+
 
 
 }
