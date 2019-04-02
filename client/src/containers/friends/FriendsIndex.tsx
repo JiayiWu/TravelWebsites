@@ -2,7 +2,8 @@ import React from 'react'
 import { Input, Button, Icon, Upload, Popover, Modal } from 'antd'
 import styles from './FriendsIndex.module.scss'
 import { serverOrigin } from '../../utils/API'
-import MyEditor from '../../components/MyEditor'
+import ForwardActCard from './components/ForwardActCard'
+import ImagesContainer from './components/ImagesContainer';
 // import TextArea from 'antd/lib/input/TextArea';
 
 const MAX_IMAGE = 9
@@ -144,13 +145,8 @@ class FriendsIndex extends React.Component {
                     <div className={styles.username}>西红柿蛋花</div>
                     <div className={styles.time}></div>
                     <div className={styles.content}>有毒，打开微博想借鉴一下发微博的界面样式结果<br/>刷了半个小时</div>
-                    <div className={styles.imageWrapper}>
-                      {new Array(6).fill(0).map((image, index) => {
-                        return (
-                          <div className={styles.imageItem} key={index}></div>
-                        )
-                      })}
-                    </div>
+                    <ImagesContainer />
+                    <ForwardActCard />
                   </div>
                   <Icon type="delete" className={styles.deleteIcon} />
                 </div>

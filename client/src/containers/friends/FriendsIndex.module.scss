@@ -82,22 +82,7 @@
             color: #333;
           }
 
-          :local(.imageWrapper) {
-            width: 330px;
-            // display: flex;
-            // flex-wrap: wrap;
-            // justify-content: space-between;
-            margin-top: 10px;
-    
-            :local(.imageItem) {
-              width: 100px;
-              height: 100px;
-              display: inline-block;
-              background-color: wheat;
-              margin-right: 10px;
-              margin-bottom: 10px;
-            }
-          }
+         
         }
         :local(.deleteIcon) {
           position: absolute;

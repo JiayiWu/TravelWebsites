@@ -1,0 +1,20 @@
+:local(.container) {
+  width: 100%;
+  padding: 20px;
+  background-color: #f2f2f5;
+
+  display: flex;
+  :local(.cover) {
+    background-color: tomato;
+    width: 100px;
+    height: 100px;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+  :local(.right) {
+    flex-grow: 1;
+    padding: 10px;
+    font-weight: 600;
+    
+  }
+}
