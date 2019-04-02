@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux'
 import moment from 'moment'
 import { fromJS } from 'immutable'
 import { RouteComponentProps } from 'react-router'
-import { Form, Input, Upload, Icon, DatePicker, Radio, Button, message } from 'antd'
+import { Form, Input, Upload, Icon, DatePicker, Radio, Button, message, Checkbox } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
 import DefaultCoverURL from '../../utils/image/ActivityCover.jpg'
 import styles from './ActivityCreate.module.scss'
@@ -32,6 +32,7 @@ class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponen
   }
   state = {
     coverUrl: '',
+    updateNews: false,
   }
 
   componentDidMount() {
@@ -112,6 +113,7 @@ class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponen
   handleOk = () => {
     const { validateFields } = this.props.form
     const { user, route } = this.props
+    const { updateNews } = this.state
     this.editor.current ? (window as any).editor = (this.editor.current as any).getEditorState() : console.log('no editor')
 
     validateFields((err, value) => {
@@ -159,6 +161,7 @@ class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponen
             this.props.pushURL(`/workspace/activity`)
           }
         })
+        // 发布朋友圈
       }
       
     })
@@ -167,7 +170,7 @@ class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponen
   public render() {
     const { getFieldDecorator, getFieldValue } = this.props.form
     const { route } = this.props
-    const { coverUrl } = this.state
+    const { coverUrl, updateNews } = this.state
     const detail = route.getIn(['state', 'detail'])
     const coverTmp = coverUrl.split('/')
     const coverDecorator = getFieldDecorator('coverUrl', {
@@ -343,6 +346,11 @@ class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponen
               />
             )}
           </FormItem>
+          {!detail &&
+            <FormItem className={styles.btnGroup}>
+              <Checkbox value={updateNews} onChange={(e) => this.setState({ updateNews: e.target.checked })}>同步发布到朋友圈</Checkbox>
+            </FormItem>
+          }
           <FormItem className={styles.btnGroup}>
             <Button type="default">取消编辑</Button>
             <Button type="primary" onClick={() => this.handleOk()}>{detail ? '保存修改' : '立即创建'}</Button>

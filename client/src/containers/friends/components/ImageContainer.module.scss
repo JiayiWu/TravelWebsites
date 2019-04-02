@@ -1,0 +1,69 @@
+:local(.imageWrapper) {
+  width: 330px;
+  // display: flex;
+  // flex-wrap: wrap;
+  // justify-content: space-between;
+  margin-top: 10px;
+  position: relative;
+
+  :local(.imageItem) {
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    background-color: wheat;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+
+  
+}
+:local(.bigImageContainer) {
+  margin: 10px;
+  width: 100%;
+  background-color: #f2f2f5;
+  padding: 10px;
+  :local(.header) {
+    cursor: pointer;
+  }
+  :local(.image) {
+    width: 100%;
+    background-color: tomato;
+    background-size: cover;
+    height: 500px; // 有真图之后被注释掉
+    transition: all 0.5s ease; // 转换图片的动效（使用background-url更换）
+  }
+  :local(.gallery) {
+    width: 100%;
+    display: flex;
+    padding-top: 10px;
+
+    :local(.galleryImage) {
+      width: 50px;
+      height: 50px;
+      border: 1px solid transparent;
+      position: relative;
+      margin-right: 10px;
+      background-color: wheat;
+      
+      &:hover {
+        border-color: tomato;
+      }
+      &::after {
+        content: '';
+        display: inline-block;
+        position: absolute;
+        left: 1;
+        top: 1;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+    }
+    :local(.activeImage) {
+      border-color: tomato;
+      &::after {
+        display: none;
+      }
+    }
+  }
+}

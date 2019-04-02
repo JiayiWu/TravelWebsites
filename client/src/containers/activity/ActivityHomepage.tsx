@@ -34,6 +34,8 @@ export interface ActivityItemProps {
   attendList: Array<UserBasicProps>,
   title: string,
   type: number,
+  like: boolean,
+  likeCount: number,
 }
 
 export const JOIN_TYPE = {
@@ -51,16 +53,11 @@ const ACT_TYPE = {
 const RadioGroup = Radio.Group
 
 export const SEARCH_TYPE = {
-  ALL: 0,
-  ACT: 1,
-  USER: 2,
+  ACT: 0,
+  USER: 1,
 }
 
 export const SEARCH_TYPES = [{
-  type: SEARCH_TYPE.ALL,
-  text: '全部',
-  placeholder: '搜活动/用户'
-}, {
   type: SEARCH_TYPE.ACT,
   text: '活动',
   placeholder: '搜活动'
@@ -74,7 +71,7 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
     recommendList: [] as Array<ActivityItemProps>,
     activityList: [] as Array<ActivityItemProps>,
     newActList: [] as Array<ActivityItemProps>,
-    searchType: SEARCH_TYPE.ALL,
+    searchType: SEARCH_TYPE.ACT,
     isLoading: [false, false],
     hasMore: [true, true],
     actType: ACT_TYPE.HOT,
@@ -91,6 +88,13 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
         })
       }
     })
+    this.fetchActivityList(ACT_TYPE.NEW).then((json) => {
+      if (json.code === 0) {
+        this.setState({
+          newActList: json.data
+        })
+      }
+    })
     this.fetchRecommendList().then((json) => {
       if (json.code === 0) {
         this.setState({
@@ -99,16 +103,28 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
       }
     })
   }
-  fetchActivityList = () => {
-    return API.query('/activity/list', {
-      options: {
-        method: 'POST',
-        body: JSON.stringify({
-          lastTimestamp: this.state.activityList.length > 0 ? this.state.activityList[this.state.activityList.length - 1].startTime : 0,
+  fetchActivityList = (actType = ACT_TYPE.HOT) => {
+    const currentList = actType === ACT_TYPE.HOT ? this.state.activityList : this.state.newActList
+    const lastCreateTime = currentList.length > 0 ? currentList[currentList.length - 1].startTime : 0
+    return actType === ACT_TYPE.HOT ? 
+      API.query('/activity/list', {
+        options: {
+          method: 'POST',
+          body: JSON.stringify({
+            lastTimestamp: lastCreateTime,
+            size: 10,
+          })
+        }
+      }).then(messageHandler)
+      :
+      API.query('/activity/latestList', {
+        searchParams: lastCreateTime ? {
           size: 10,
-        })
-      }
-    }).then(messageHandler)
+          lastCreateTime
+        } : {
+          size: 10
+        }
+      }).then(messageHandler)
   }
   fetchRecommendList = () => {
     return API.query('/activity/recommendation/5', {}).then(messageHandler)
@@ -133,6 +149,17 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
       })
     } else {
       // 获取最新活动列表
+      this.fetchActivityList(ACT_TYPE.NEW).then((json) => {
+        if (json.code === 0) {
+          isLoading[actType] = false
+          hasMore[actType] = json.data.length !== 0
+          this.setState({
+            newActList: this.state.newActList.concat(json.data),
+            isLoading,
+            hasMore,
+          })
+        }
+      })
     }
     
   }
@@ -143,7 +170,7 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
     return (
       <div className={styles.searchContainer}>
         <RadioGroup className={styles.radioGroup} value={this.state.searchType} onChange={(e) => this.setState({ searchType: e.target.value })}>
-          <Radio value={SEARCH_TYPE.ALL}>全部</Radio>
+          {/* <Radio value={SEARCH_TYPE.ALL}>全部</Radio> */}
           <Radio value={SEARCH_TYPE.ACT}>活动</Radio>
           <Radio value={SEARCH_TYPE.USER}>用户</Radio>
         </RadioGroup>
