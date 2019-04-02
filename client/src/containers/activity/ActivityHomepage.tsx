@@ -118,9 +118,11 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
       }).then(messageHandler)
       :
       API.query('/activity/latestList', {
-        searchParams: {
+        searchParams: lastCreateTime ? {
           size: 10,
-          lastCreateTime,
+          lastCreateTime
+        } : {
+          size: 10
         }
       }).then(messageHandler)
   }

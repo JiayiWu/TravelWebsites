@@ -30,7 +30,7 @@ class ActivityDetailCnontent extends React.Component<DetailContentProps, any> {
               <div className={styles.item}>
                 <Icon type="clock-circle" theme="filled" />
                 {moment(detail.startTime).format('YYYY-MM-DD HH:mm')}
-                至
+                &nbsp;至&nbsp;
                 {moment(detail.endTime).format('YYYY-MM-DD HH:mm')}
               </div>
               <div className={styles.item}>
