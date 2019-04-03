@@ -30,6 +30,10 @@ public class UserInfoVO {
 
     private int type;
 
+    private int fansNum;
+
+    private boolean isConcerned;
+
     public UserInfoVO(UserEntity userEntity){
         this.id = userEntity.getId();
         this.name = userEntity.getName();
@@ -37,6 +41,7 @@ public class UserInfoVO {
         this.mail = userEntity.getMail();
         this.logoUrl = userEntity.getLogoUrl();
         this.type = RoleTypeCode.USER.getIndex();
+        this.fansNum = userEntity.getFansNum();
     }
 
     public UserInfoVO(AdminEntity adminEntity){

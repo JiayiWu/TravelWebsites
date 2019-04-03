@@ -3,10 +3,12 @@ package cn.edu.nju.travel.service.impl;
 import cn.edu.nju.travel.constant.LikeEntityType;
 import cn.edu.nju.travel.dao.ActivityDao;
 import cn.edu.nju.travel.dao.CommentDao;
+import cn.edu.nju.travel.dao.ConcernDao;
 import cn.edu.nju.travel.dao.LikeDao;
 import cn.edu.nju.travel.dao.UserDao;
 import cn.edu.nju.travel.entity.ActivityEntity;
 import cn.edu.nju.travel.entity.CommentEntity;
+import cn.edu.nju.travel.entity.ConcernEntity;
 import cn.edu.nju.travel.entity.LikeEntity;
 import cn.edu.nju.travel.entity.UserEntity;
 import cn.edu.nju.travel.form.CommentForm;
@@ -14,6 +16,8 @@ import cn.edu.nju.travel.form.ResponseCode;
 import cn.edu.nju.travel.service.InteractionService;
 import cn.edu.nju.travel.utils.ServerException;
 import cn.edu.nju.travel.vo.CommentVO;
+import cn.edu.nju.travel.vo.UserInfoVO;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
@@ -35,6 +39,8 @@ public class InteractionServiceImpl implements InteractionService {
     private CommentDao commentDao;
     @Resource
     private UserDao userDao;
+    @Resource
+    private ConcernDao concernDao;
 
     @Override
     public int like(int userId, int referId, LikeEntityType type) {
@@ -111,6 +117,54 @@ public class InteractionServiceImpl implements InteractionService {
     public boolean isUserComment(int userId, int commentId) {
         CommentEntity entity = commentDao.findByIdAndCreatorId(commentId, userId);
         return entity != null;
+    }
+
+    @Override
+    public void concernUser(int selfId, int concernedUserId) {
+        ConcernEntity concernEntity = concernDao.findByUserIdAndConcernedId(selfId, concernedUserId);
+        if(concernEntity != null){
+            throw new ServerException(ResponseCode.Error, "登陆用户已关注该用户");
+        }
+        concernEntity = new ConcernEntity();
+        concernEntity.setUserId(selfId);
+        concernEntity.setConcernedId(concernedUserId);
+        concernDao.save(concernEntity);
+        UserEntity concernedUser = userDao.findById(concernedUserId);
+        concernedUser.setFansNum(concernedUser.getFansNum()+1);
+        userDao.save(concernedUser);
+    }
+
+    @Override
+    public void unConcern(int selfId, int concernedUserId) {
+        ConcernEntity concernEntity = concernDao.findByUserIdAndConcernedId(selfId,
+                concernedUserId);
+        if(concernEntity == null){
+            throw new ServerException(ResponseCode.Error, "登录用户尚未关注此用户");
+        }
+        concernDao.delete(concernEntity);
+        UserEntity concernedUser = userDao.findById(concernedUserId);
+        concernedUser.setFansNum(concernedUser.getFansNum()-1);
+        userDao.save(concernedUser);
+    }
+
+    @Override
+    public List<UserInfoVO> getConcernUserList(int selfId, int size, int lastUserId) {
+        List<Integer> idList;
+        if(lastUserId == 0){
+            idList = concernDao.findConcernedUserIdsFirstPage(selfId, size);
+        }else{
+            idList = concernDao.findConcernedUserIds(selfId, size, lastUserId);
+        }
+        List<UserInfoVO> voList = new ArrayList<>();
+        for(int uid:idList){
+            voList.add(new UserInfoVO(userDao.findById(uid)));
+        }
+        return voList;
+    }
+
+    @Override
+    public boolean isUserConcerned(int userId, int concernedUserId) {
+        return concernDao.findByUserIdAndConcernedId(userId, concernedUserId) != null;
     }
 
 

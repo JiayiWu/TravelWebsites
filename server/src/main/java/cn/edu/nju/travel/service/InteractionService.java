@@ -3,6 +3,7 @@ package cn.edu.nju.travel.service;
 import cn.edu.nju.travel.constant.LikeEntityType;
 import cn.edu.nju.travel.form.CommentForm;
 import cn.edu.nju.travel.vo.CommentVO;
+import cn.edu.nju.travel.vo.UserInfoVO;
 import java.util.List;
 
 /**
@@ -23,5 +24,13 @@ public interface InteractionService {
     void deleteComment(int id);
 
     boolean isUserComment(int userId, int commentId);
+
+    void concernUser(int selfId, int concernedUserId);
+
+    void unConcern(int selfId, int concernedUserId);
+
+    List<UserInfoVO> getConcernUserList(int selfId, int size, int lastUserId);
+
+    boolean isUserConcerned(int userId, int concernedUserId);
 
 }

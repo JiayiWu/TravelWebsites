@@ -13,6 +13,7 @@ import cn.edu.nju.travel.utils.ServerException;
 import cn.edu.nju.travel.vo.UserInfoVO;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -132,6 +133,12 @@ public class UserServiceImpl implements UserService {
     public boolean isAdmin(int userId) {
         AdminEntity entity = adminDao.findById(userId);
         return entity != null;
+    }
+
+    @Override
+    public List<UserInfoVO> searchUsers(String keyword, int size, int lastId) {
+        List<UserEntity> entities = userDao.findUsersWithKeyword("%"+keyword+"%", size, lastId);
+        return entities.stream().map(UserInfoVO::new).collect(Collectors.toList());
     }
 
 

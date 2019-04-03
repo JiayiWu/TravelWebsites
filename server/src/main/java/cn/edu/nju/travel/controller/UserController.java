@@ -11,9 +11,14 @@ import cn.edu.nju.travel.service.UserService;
 import cn.edu.nju.travel.vo.StudentAuthInfo;
 import cn.edu.nju.travel.vo.UserAuthVO;
 import cn.edu.nju.travel.vo.UserInfoVO;
+import cn.edu.nju.travel.vo.UserInfoVOWrapper;
 import io.swagger.annotations.ApiOperation;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +42,9 @@ public class UserController {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    UserInfoVOWrapper userInfoVOWrapper;
 
     @ApiOperation(value = "用户学生认证申请", response = SimpleResponse.class)
     @PostMapping("application/auth")
@@ -117,6 +125,35 @@ public class UserController {
         try{
             UserInfoVO vo = userService.findUser(userId, RoleTypeCode.getTypeByIndex(type));
             return SimpleResponse.ok(vo);
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
+        }
+    }
+
+    @ApiOperation(value = "获取普通用户主页信息", response = UserInfoVO.class, notes = "获取用户主页信息")
+    @GetMapping("homeInfo/{userId}")
+    public SimpleResponse getOtherInfo(HttpSession httpSession, @PathVariable("userId")int userId){
+        Integer selfId = (Integer)httpSession.getAttribute("userId");
+        try{
+            UserInfoVO vo = userService.findUser(userId, RoleTypeCode.USER);
+            return SimpleResponse.ok(userInfoVOWrapper.wrapWithConcernInfo(selfId, vo));
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
+        }
+    }
+
+    @ApiOperation(value = "搜索用户", response = UserInfoVO.class, notes = "返回List<UserInfoVO>, "
+            + "根据关键词(匹配用户名和手机号)搜索用户, size为每页大小，lastId为上一页最后一个用户id，如为首页不传或传入0即可" )
+    @GetMapping("searchList")
+    public SimpleResponse searchUser(HttpSession httpSession, @RequestParam String keyword,
+            @RequestParam int size, @RequestParam(required = false) Integer lastId){
+        Integer userId = (Integer)httpSession.getAttribute("userId");
+        if(lastId == null){
+            lastId = 0;
+        }
+        try{
+            List<UserInfoVO> voList = userService.searchUsers(keyword, size, lastId);
+            return SimpleResponse.ok(userInfoVOWrapper.wrapListWithConcernInfo(userId, voList));
         }catch (Exception e){
             return SimpleResponse.exception(e);
         }
