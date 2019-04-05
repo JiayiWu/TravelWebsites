@@ -23,7 +23,7 @@ class ImagesContainer extends React.Component<{images: Array<string>}, any> {
         <div className={styles.gallery}>
           {this.props.images.map((image, index) => {
             return (
-              <div className={classnames(styles.galleryImage, currentPicture == index ? styles.activeImage : '')} style={{ backgroundImage: `url(${image})`}} key={index} onClick={() => this.setState({ currentPicture: image })}></div>
+              <div className={classnames(styles.galleryImage, this.props.images.indexOf(currentPicture) == index ? styles.activeImage : '')} style={{ backgroundImage: `url(${image})`}} key={index} onClick={() => this.setState({ currentPicture: image })}></div>
             )
           })}
         </div>
