@@ -29,7 +29,8 @@ interface HeaderProps {
 
 const TYPE = {
   HOMEPAGE: 'activity',
-  NEWS: 'news'
+  NEWS: 'news',
+  STATISTICS: 'statistics'
 }
 
 const ActivityIndex = Loadable({
@@ -49,6 +50,11 @@ const SearchIndex = Loadable({
 
 const FriendsIndex = Loadable({
   loader: () => import('./friends/FriendsIndex'),
+  loading: () => <div>loading...</div>
+})
+
+const StatisIndex = Loadable({
+  loader: () => import('./profile/AdminStatis'),
   loading: () => <div>loading...</div>
 })
 
@@ -100,6 +106,10 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
                 <div className={styles.menuItem} data-active={type === TYPE.NEWS} onClick={() => this.props.pushURL('/workspace/news')}>
                   朋友圈
                 </div>
+                <div className={styles.menuItem} hidden={user.get('type') === USER_TYPE.NORMAL} data-active={type === TYPE.STATISTICS} onClick={() => this.props.pushURL('/workspace/statistics')}>
+                    网站数据
+                </div>
+
               </div>
             </div>
             {userId && user && user.get('id') ? 
@@ -136,7 +146,7 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
             <Route path={`${url}/user/:userId`} component={ProfileIndex} />
             <Route path={`${url}/search`} component={SearchIndex} />
             <Route path={`${url}/news`} component={FriendsIndex} />
-            
+            <Route path={`${url}/statistics`} component={StatisIndex} />
           </Switch>
         </div>
         

@@ -9,6 +9,7 @@ import HeaderImage from '@utils/image/profile/header.jpeg'
 import ProfileHomepage from './ProfileHomepage'
 import ProfileActivity from './ProfileActivity'
 import ProfilePasswd from './ProfilePasswd'
+import ProfileStatis from './ProfileStatis'
 import { setUserInfo, updateBasic, fetchBasicInfo, fetchApplyInfo, updateApply } from '../../actions/auth'
 import oss from '../../utils/file'
 import { serverOrigin } from '../../utils/API'
@@ -30,6 +31,7 @@ const CONTENT_TYPE = {
   HOMEPAGE: 0,
   ACTIVITY: 1,
   SECURITY: 2,
+  STATISTICS: 3,
 }
 
 // const GUEST_CONTENT_TYPE = {
@@ -38,7 +40,7 @@ const CONTENT_TYPE = {
 //   FANS: 2,
 // }
 
-const CONTENT_LIST = ['我的窝', '我的活动', '账号安全']
+const CONTENT_LIST = ['我的窝', '我的活动', '账号安全', '我的数据']
 // const GUEST_CONTENT_LIST = ['Ta的窝', 'Ta的关注', 'Ta的粉丝']
 
 class ProfileIndex extends React.Component<RouteComponentProps & ProfileProps, any> {
@@ -188,6 +190,10 @@ class ProfileIndex extends React.Component<RouteComponentProps & ProfileProps, a
             }
             {contentType === CONTENT_TYPE.SECURITY &&
               <ProfilePasswd />
+            }
+            {contentType === CONTENT_TYPE.STATISTICS &&
+              <ProfileStatis />
+
             }
           </div>
         </div>
