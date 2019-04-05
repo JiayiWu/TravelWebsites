@@ -58,4 +58,9 @@ public class BlogServiceImpl implements BlogService{
         return blogEntities.stream().map(entity -> blogVOWrapper.wrapEntity2VO(entity)).collect(
                 Collectors.toList());
     }
+
+    @Override
+    public boolean isUserBlog(int userId, int blogId) {
+        return blogDao.findByIdAndUserId(blogId, userId)!=null;
+    }
 }

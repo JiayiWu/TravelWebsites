@@ -16,4 +16,6 @@ public interface BlogService {
     List<BlogVO> getUserBlogs(int userId, int size, long lastTime);
 
     List<BlogVO> getConcernUsersBlogs(int userId, int size, long lastTime);
+
+    boolean isUserBlog(int userId, int blogId);
 }

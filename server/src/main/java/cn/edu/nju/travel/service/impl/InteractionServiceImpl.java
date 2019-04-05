@@ -2,11 +2,13 @@ package cn.edu.nju.travel.service.impl;
 
 import cn.edu.nju.travel.constant.LikeEntityType;
 import cn.edu.nju.travel.dao.ActivityDao;
+import cn.edu.nju.travel.dao.BlogDao;
 import cn.edu.nju.travel.dao.CommentDao;
 import cn.edu.nju.travel.dao.ConcernDao;
 import cn.edu.nju.travel.dao.LikeDao;
 import cn.edu.nju.travel.dao.UserDao;
 import cn.edu.nju.travel.entity.ActivityEntity;
+import cn.edu.nju.travel.entity.BlogEntity;
 import cn.edu.nju.travel.entity.CommentEntity;
 import cn.edu.nju.travel.entity.ConcernEntity;
 import cn.edu.nju.travel.entity.LikeEntity;
@@ -41,6 +43,8 @@ public class InteractionServiceImpl implements InteractionService {
     private UserDao userDao;
     @Resource
     private ConcernDao concernDao;
+    @Resource
+    private BlogDao blogDao;
 
     @Override
     public int like(int userId, int referId, LikeEntityType type) {
@@ -58,7 +62,10 @@ public class InteractionServiceImpl implements InteractionService {
                 activityEntity = activityDao.save(activityEntity);
                 return activityEntity.getLikeCounts();
             case BLOG:
-                //todo
+                BlogEntity blogEntity = blogDao.findById(referId).get();
+                blogEntity.setLikeCount(blogEntity.getLikeCount()+1);
+                blogEntity = blogDao.save(blogEntity);
+                return blogEntity.getLikeCount();
 
         }
         return 0;
@@ -79,7 +86,10 @@ public class InteractionServiceImpl implements InteractionService {
                 activityEntity = activityDao.save(activityEntity);
                 return activityEntity.getLikeCounts();
             case BLOG:
-                //todo
+                BlogEntity blogEntity = blogDao.findById(referId).get();
+                blogEntity.setLikeCount(blogEntity.getLikeCount()-1);
+                blogEntity = blogDao.save(blogEntity);
+                return blogEntity.getLikeCount();
         }
         return 0;
     }

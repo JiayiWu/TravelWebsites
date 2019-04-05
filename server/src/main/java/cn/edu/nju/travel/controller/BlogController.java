@@ -5,6 +5,7 @@ import cn.edu.nju.travel.form.ResponseCode;
 import cn.edu.nju.travel.form.SimpleResponse;
 import cn.edu.nju.travel.service.BlogService;
 import cn.edu.nju.travel.vo.BlogVO;
+import cn.edu.nju.travel.vo.BlogVOWrapper;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.annotation.Resource;
@@ -27,6 +28,8 @@ public class BlogController {
 
     @Resource
     BlogService blogService;
+    @Resource
+    BlogVOWrapper blogVOWrapper;
 
     @ApiOperation(value = "发布朋友圈", response = BlogVO.class, notes = "发布朋友圈")
     @PostMapping("release")
@@ -37,7 +40,7 @@ public class BlogController {
         }
         try{
             BlogVO vo = blogService.releaseBlog(userId, blogForm);
-            return SimpleResponse.ok(vo);
+            return SimpleResponse.ok(blogVOWrapper.wrapVOWithSelfInfo(userId, vo));
         }catch (Exception e){
             return SimpleResponse.exception(e);
         }
@@ -66,9 +69,10 @@ public class BlogController {
         if(lastTime == null || lastTime==0){
             lastTime = Long.MAX_VALUE;
         }
+        Integer selfId = (Integer) httpSession.getAttribute("userId");
         try{
             List<BlogVO> voList = blogService.getUserBlogs(userId, size, lastTime);
-            return SimpleResponse.ok(voList);
+            return SimpleResponse.ok(blogVOWrapper.wrapListWithSelfInfo(selfId, voList));
         }catch (Exception e){
             return SimpleResponse.exception(e);
         }
@@ -88,7 +92,7 @@ public class BlogController {
         }
         try{
             List<BlogVO> voList = blogService.getConcernUsersBlogs(userId, size, lastTime);
-            return SimpleResponse.ok(voList);
+            return SimpleResponse.ok(blogVOWrapper.wrapListWithSelfInfo(userId, voList));
         }catch (Exception e){
             return SimpleResponse.exception(e);
         }
