@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps, withRouter } from 'react-router'
 import { bindActionCreators } from 'redux'
 import { Icon, Button } from 'antd'
 import Immutable, { fromJS } from 'immutable' 
@@ -18,6 +18,7 @@ import DefaultAvatar from '../../utils/image/DefaultAvatar.jpg'
 
 // import { updateBasic, fetchBasicInfo, fetchApplyInfo } from '../../actions/user'
 import messageHandler from '../../utils/messageHandler';
+import FriendsIndex from '../friends/FriendsIndex';
 
 interface ProfileProps {
   fetchBasicInfo: Function, // dispatch
@@ -33,8 +34,9 @@ interface ProfileProps {
 const CONTENT_TYPE = {
   HOMEPAGE: 0,
   ACTIVITY: 1,
-  SECURITY: 2,
-  STATISTICS: 3,
+  BLOGS: 2,
+  SECURITY: 3,
+  STATISTICS: 4,
 }
 
 // const GUEST_CONTENT_TYPE = {
@@ -43,7 +45,7 @@ const CONTENT_TYPE = {
 //   FANS: 2,
 // }
 
-const CONTENT_LIST = ['我的窝', '我的活动', '账号安全', '我的数据']
+const CONTENT_LIST = ['我的窝', '我的活动', '我的动态', '账号安全', '我的数据']
 // const GUEST_CONTENT_LIST = ['Ta的窝', 'Ta的关注', 'Ta的粉丝']
 
 class ProfileIndex extends React.Component<RouteComponentProps & ProfileProps, any> {
@@ -67,10 +69,23 @@ class ProfileIndex extends React.Component<RouteComponentProps & ProfileProps, a
     this.props.fetchApplyInfo()
   }
   componentWillReceiveProps(nextProps) {
-    if (!((nextProps.match.params as any).userId) &&!Immutable.is(nextProps.user, this.props.user)) {
+    if (!Immutable.is(nextProps.user, this.props.user)) {
       this.setState({
         user: nextProps.user
       })
+    } else if (nextProps.location.pathname.indexOf('my') >= 0 && this.props.location.pathname.indexOf('user') >= 0) {
+      this.setState({
+        user: nextProps.user
+      })
+    }
+    // if (!((nextProps.match.params as any).userId) &&!Immutable.is(nextProps.user, this.props.user)) {
+    //   this.setState({
+    //     user: nextProps.user
+    //   })
+    // }
+
+    if (nextProps.location && this.props.location && nextProps.location.pathname !== this.props.location.pathname) {
+      this.fetchBasicInfo(nextProps)
     }
     
   }
@@ -87,9 +102,10 @@ class ProfileIndex extends React.Component<RouteComponentProps & ProfileProps, a
       }
     })
   }
-  fetchBasicInfo = () => {
-    const { match } = this.props
+  fetchBasicInfo = (props = this.props) => {
+    const { match } = props
     const urlUserId = (match.params as any).userId
+    console.log(urlUserId)
     if (urlUserId) {
       // 获取用户信息后setState
       API.query(`/user/homeInfo/${urlUserId}`, {}).then((json) => {
@@ -129,13 +145,23 @@ class ProfileIndex extends React.Component<RouteComponentProps & ProfileProps, a
         </div>
       )
     }) : (
-      <div
-          className={styles.menuItem}
-          data-active={true}
-          onClick={() => this.setState({ contentType: CONTENT_TYPE.ACTIVITY })}
-        >
-          Ta的窝
-        </div>
+      [<div
+        className={styles.menuItem}
+        key={CONTENT_TYPE.ACTIVITY.toString()}
+        data-active={contentType === CONTENT_TYPE.ACTIVITY}
+        onClick={() => this.setState({ contentType: CONTENT_TYPE.ACTIVITY })}
+      >
+        Ta的窝
+      </div>, 
+      <div 
+        className={styles.menuItem}
+        key={CONTENT_TYPE.BLOGS.toString()}
+        data-active={contentType === CONTENT_TYPE.BLOGS}
+        onClick={() => this.setState({ contentType: CONTENT_TYPE.BLOGS})}
+      >
+        Ta的动态
+      </div>
+      ]
     )
     // }) : GUEST_CONTENT_LIST.map((name, index) => {
     //   return (
@@ -181,11 +207,11 @@ class ProfileIndex extends React.Component<RouteComponentProps & ProfileProps, a
             }
             <div className={styles.btnGroup}>
               <div className={styles.myBtn}>
-                <div>{user.get('concerNum')}</div>
+                <div>{user.get('concerNum') || 0}</div>
                 <div>关注</div>
               </div>
               <div className={styles.myBtn}>
-                <div>{user.get('fansNum')}</div>
+                <div>{user.get('fansNum') || 0}</div>
                 <div>粉丝</div>
               </div>
             </div>
@@ -205,8 +231,13 @@ class ProfileIndex extends React.Component<RouteComponentProps & ProfileProps, a
                 urlUserId={urlUser}
               />
             }
+            {contentType === CONTENT_TYPE.BLOGS &&
+              <div style={{ background: 'white', padding: 20 }}>
+                <FriendsIndex userId={urlUser || this.props.user.get('id')}/>
+              </div>
+            }
             {contentType === CONTENT_TYPE.SECURITY &&
-              <ProfilePasswd />
+               <ProfilePasswd />
             }
             {contentType === CONTENT_TYPE.STATISTICS &&
               <ProfileStatis />

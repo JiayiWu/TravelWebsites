@@ -35,6 +35,11 @@ class ProfileActivity extends React.Component<ProfileActivityProps, any> {
   componentDidMount() {
     this.fetchActList()
   }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.urlUserId !== this.props.urlUserId) {
+      this.fetchActList(nextProps)
+    }
+  }
   fetchActList = (props = this.props) => {
     const { user, urlUserId } = props
     API.query(`/activity/list/${urlUserId || user.get('id')}`,{}).then(messageHandler).then((json) => {

@@ -11,7 +11,6 @@ import styles from './ActivityCreate.module.scss'
 import MyEditor from '../../components/MyEditor'
 import API, { serverOrigin } from '../../utils/API'
 import messageHandler from '../../utils/messageHandler'
-
 import { pushURL } from '../../actions/route'
 
 interface ActivityCreateProps extends FormComponentProps {
@@ -161,7 +160,7 @@ class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponen
             this.props.pushURL(`/workspace/activity`)
           }
         })
-        // 发布朋友圈
+        
       }
       
     })
@@ -370,7 +369,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    pushURL: bindActionCreators(pushURL, dispatch)
+    pushURL: bindActionCreators(pushURL, dispatch),
   }
 }
 

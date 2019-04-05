@@ -10,7 +10,9 @@
     width: 100px;
     height: 100px;
     display: inline-block;
-    background-color: wheat;
+    background-size: cover;
+    background-position: center center;
+    // background-color: wheat;
     margin-right: 10px;
     margin-bottom: 10px;
   }
@@ -22,14 +24,18 @@
   width: 100%;
   background-color: #f2f2f5;
   padding: 10px;
+  position: relative;
   :local(.header) {
     cursor: pointer;
   }
   :local(.image) {
     width: 100%;
     background-color: tomato;
-    background-size: cover;
-    height: 500px; // 有真图之后被注释掉
+    // background-size: cover;
+    // position: absolute;
+
+    // background-position: center center;
+    // height: 500px; // 有真图之后被注释掉
     transition: all 0.5s ease; // 转换图片的动效（使用background-url更换）
   }
   :local(.gallery) {
@@ -42,6 +48,8 @@
       height: 50px;
       border: 1px solid transparent;
       position: relative;
+      background-size: cover;
+      background-position: center center;
       margin-right: 10px;
       background-color: wheat;
       

@@ -1,4 +1,5 @@
 import * as React from 'react'
+import styles from './ProfilePasswd.module.scss'
 import { Form, Input, Button, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
 import API from '../../utils/API'
@@ -150,7 +151,7 @@ class ProfileStatis extends React.Component<StatisProps &FormComponentProps, any
   }
   render() {
     return (
-      <div id="activityNums" style={{ width: 800, height: 400 }}></div>
+      <div id="activityNums" className={styles.container} style={{ height: 400}}></div>
 
     );
   }

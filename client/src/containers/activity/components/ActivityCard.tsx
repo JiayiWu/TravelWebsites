@@ -141,8 +141,11 @@ class ActivityCard extends React.Component<CardProps, any> {
           </div>
           <div className={styles.content}>
             <LinesEllipsis
-              text={activity.description}
-              maxLine={3}
+              text={activity.description.replace(/(<[^>]+>)/g, '')}
+              basedOn="letters"
+              maxLine={2}
+              ellipsis='...'
+              style={{ "overflow-wrap": "break-word" }}
             />
           </div>
           <div className={styles.infoLine}>

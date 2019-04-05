@@ -1,16 +1,20 @@
 import React from 'react'
-import { Icon } from 'antd'
+import { Icon, message } from 'antd'
+import API from '../utils/API'
 import styles from './CommentItem.module.scss'
 import CommentInput from './CommentInput'
 
 interface CommentItemProps {
   onReply: () => void,
-  comment: CommentProps
+  comment: CommentProps,
+  onRefresh: () => void
 }
 
 export interface CommentProps {
   commentedUser: string,
   commenter: string,
+  commenterLogo: string,
+  myself: boolean,
   content: string,
   createTime: number,
   id: number,
@@ -28,11 +32,26 @@ class CommentItem extends React.Component<CommentItemProps, any> {
     // })
     this.props.onReply()
   }
+  handleDelete = () => {
+    API.query('/interaction/deleteComment', {
+      options: {
+        method: 'DELETE'
+      },
+      searchParams: {
+        id: this.props.comment.id
+      }
+    }).then((json) => {
+      if (json.code === 0) {
+        message.success('删除评论成功')
+        this.props.onRefresh && this.props.onRefresh()
+      }
+    })
+  }
   render() {
     const { comment } = this.props
     return (
       <div className={styles.container}>
-        <div className={styles.avatar}></div>
+        <div className={styles.avatar} style={{ backgroundImage: `url(${comment.commenterLogo})`}}></div>
         <div className={styles.right}>
           <span className={styles.user}>{comment.commenter}</span>
           :&nbsp;
@@ -42,7 +61,9 @@ class CommentItem extends React.Component<CommentItemProps, any> {
           <span className={styles.content}>{comment.content}</span>
         </div>
         <div className={styles.options}>
-          <Icon type="delete" />
+          {comment.myself &&
+            <Icon type="delete" onClick={() => this.handleDelete()}/>
+          }
           <div className={styles.reply} onClick={() => this.handleReply()}>
             回复
           </div>
