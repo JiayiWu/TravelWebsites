@@ -45,5 +45,7 @@ public interface ActivityService {
 
     List<ActivityInfoVO> getLatestActivities(int size, long lastCreateTime) throws Exception;
 
+    int getCreateActivityNum(int userId);
+
 
 }

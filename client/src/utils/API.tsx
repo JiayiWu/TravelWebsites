@@ -4,7 +4,7 @@ import 'whatwg-fetch'
 interface paramProps {
   searchParams?: any, // GET params
   options?: {
-    method?: string, // GET / POST, default GET
+    method?: string, // GET / POST / DELETE, default GET
     body?: any, // POST
     headers?: any, 
   }
@@ -27,10 +27,10 @@ const query = (url, params: paramProps) => {
       return str + '&' + key + '=' + searchParams[key]
     }
   }, url) : url
-  if (options && options.method === 'POST') {
+  if (options && options.method !== 'GET') {
     // POST 请求
     return fetch(serverOrigin + realUrl, { 
-      method: 'POST',
+      method: options.method,
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json'

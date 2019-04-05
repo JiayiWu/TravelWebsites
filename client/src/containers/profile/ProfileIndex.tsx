@@ -11,8 +11,9 @@ import ProfileActivity from './ProfileActivity'
 import ProfilePasswd from './ProfilePasswd'
 import ProfileStatis from './ProfileStatis'
 import { setUserInfo, updateBasic, fetchBasicInfo, fetchApplyInfo, updateApply } from '../../actions/auth'
+import { follow, unFollow } from '../../actions/interaction'
 import oss from '../../utils/file'
-import { serverOrigin } from '../../utils/API'
+import API, { serverOrigin } from '../../utils/API'
 import DefaultAvatar from '../../utils/image/DefaultAvatar.jpg'
 
 // import { updateBasic, fetchBasicInfo, fetchApplyInfo } from '../../actions/user'
@@ -24,6 +25,8 @@ interface ProfileProps {
   updateBasic: Function, // dispatch
   setUserInfo: Function, // dispatch
   updateApply: Function, // dispatch
+  follow: Function, // dispatch
+  unFollow: Function, // dispatch
   user: any, // redux
 }
 
@@ -89,12 +92,26 @@ class ProfileIndex extends React.Component<RouteComponentProps & ProfileProps, a
     const urlUserId = (match.params as any).userId
     if (urlUserId) {
       // 获取用户信息后setState
+      API.query(`/user/homeInfo/${urlUserId}`, {}).then((json) => {
+        if (json.code === 0) {
+          this.setState({
+            user: fromJS(json.data)
+          })
+        }
+      })
     } else {
       this.props.fetchBasicInfo()
     }
   }
   handleFollow = () => {
-
+    const { user } = this.state
+    const { follow, unFollow } = this.props
+    const promise = user.get('concerned') ? unFollow(user.get('id')) : follow(user.get('id'))
+    promise.then((json) => {
+      if (json.code === 0) {
+        this.fetchBasicInfo()
+      }
+    })
   }
   renderMenu = () => {
     const { contentType } = this.state
@@ -156,19 +173,19 @@ class ProfileIndex extends React.Component<RouteComponentProps & ProfileProps, a
             </div>
             <div className={styles.userName}>{user.get('name')}</div>
             {/* 当前用户id不是这个页面获取的用户id时 */
-              urlUser && urlUser != user.get('id') && (
+              urlUser && urlUser != this.props.user.get('id') && (
                 <div className={styles.follow}>
-                  <Button onClick={() => this.handleFollow()} type="primary" size="small">关注</Button>
+                  <Button onClick={() => this.handleFollow()} type={user.get('concerned') ? 'default' : 'primary'} size="small">{user.get('concerned') ? '取消关注' : '关注'}</Button>
                 </div>
               )
             }
             <div className={styles.btnGroup}>
               <div className={styles.myBtn}>
-                <div>2</div>
+                <div>{user.get('concerNum')}</div>
                 <div>关注</div>
               </div>
               <div className={styles.myBtn}>
-                <div>2</div>
+                <div>{user.get('fansNum')}</div>
                 <div>粉丝</div>
               </div>
             </div>
@@ -177,7 +194,7 @@ class ProfileIndex extends React.Component<RouteComponentProps & ProfileProps, a
           <div className={styles.contentContainer} >
             {contentType === CONTENT_TYPE.HOMEPAGE &&
               <ProfileHomepage 
-                user={this.props.user}
+                user={user}
                 updateBasic={this.props.updateBasic}
                 updateApply={this.props.updateApply}
               />
@@ -216,6 +233,8 @@ function mapDispatchToProps(dispatch) {
     fetchApplyInfo: bindActionCreators(fetchApplyInfo, dispatch),
     fetchBasicInfo: bindActionCreators(fetchBasicInfo, dispatch),
     setUserInfo: bindActionCreators(setUserInfo, dispatch),
+    follow: bindActionCreators(follow, dispatch),
+    unFollow: bindActionCreators(unFollow, dispatch),
   }
 }
 

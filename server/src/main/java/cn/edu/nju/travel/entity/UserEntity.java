@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -45,6 +46,12 @@ public class UserEntity {
 
     @Column(name = "logo_url")
     private String logoUrl;
+
+    @Column(name = "fans_num")
+    private Integer fansNum;
+
+    @Version
+    private Long version;
 
 
 }

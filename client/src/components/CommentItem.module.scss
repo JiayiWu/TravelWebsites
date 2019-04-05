@@ -5,6 +5,8 @@
   position: relative;
   padding: 20px 0;
 
+ 
+
   :local(.avatar) {
     width: 30px;
     height: 30px;
@@ -22,8 +24,25 @@
       margin-left: 5px;
     }
   }
-  :local(.reply) {
-    color: #7594B3;
-    cursor: pointer;
+  :local(.options) {
+    i {
+      display: none;
+      font-size: 14px;
+      margin-right: 10px;
+      
+    }
+    :local(.reply) {
+      display: inline-block;
+      color: #7594B3;
+      cursor: pointer;
+    }
   }
+
+  &:hover {
+    background-color: #e6e6e6;
+    i {
+      display: inline-block;
+    }
+  }
+  
 }

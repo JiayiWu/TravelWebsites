@@ -27,8 +27,9 @@ public interface UserService {
 
     List<UserInfoVO> findAllById(List<Integer> idList) throws Exception;
 
-
     boolean isAdmin(int userId);
+
+    List<UserInfoVO> searchUsers(String keyword, int size, int lastId);
 
 
 
