@@ -59,7 +59,7 @@ public class RelationServiceImpl implements RelationService {
 
     @Override
     public List<RelationEntity> findAllRelationByUserID(Integer userId) {
-        return null;
+        return relationDao.findByUserId(userId);
     }
 
     @Override
