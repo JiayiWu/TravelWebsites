@@ -12,8 +12,7 @@ import DefaultCover from '../../utils/image/ActivityCover.jpg'
 // import CREATOR from '@utils/image/activity/a4.jpg'
 
 import ActivityDetailContent from './components/ActivityDetailContent'
-import CommentInput from '../../components/CommentInput'
-import CommentItem from '../../components/CommentItem'
+
 import { UserBasicProps, USER_TYPE } from '../profile/ProfileHomepage'
 import { fromJS } from 'immutable';
 
@@ -92,11 +91,9 @@ interface ActivityDetailState {
 }
 
 class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetailProps, ActivityDetailState> {
-  private commentInput: React.RefObject<HTMLInputElement>
 
   constructor(props) {
     super(props)
-    this.commentInput = React.createRef()
   }
   state : ActivityDetailState = {
     detail: null,
@@ -340,30 +337,7 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
         </div>
         <div style={{ width: 1000, margin: 'auto' }}>
           <ActivityDetailContent detail={detail}/>
-          <div className={styles.splitLine}/>
-          <div className={styles.commentContainer} ref={this.commentInput}>
-            <CommentInput />
-            <div className={styles.commentList}>
-              {new Array(20).fill(0).map((comment, index) => {
-                return (
-                  <div className={styles.commentItem} key={index}>
-                    <CommentItem 
-                      onReply={() => { 
-                        
-                        (window as any).commentInput = this.commentInput.current
-                    
-                        this.commentInput.current && this.commentInput.current.scrollIntoView({
-                          block: 'start',
-                          behavior: 'smooth'
-                        })
-                        
-                      }}
-                    />
-                  </div>
-                )
-              })}
-            </div>
-          </div>
+          
         </div>
        
         {this.state.showJoinModal && 
