@@ -20,6 +20,9 @@ public class CommentVO {
     @ApiModelProperty("评论者用户名")
     private String commenter;
 
+    @ApiModelProperty("评论者头像")
+    private String commenterLogo;
+
     @ApiModelProperty("被回复者用户名,若无则返回null")
     private String commentedUser;
 
@@ -31,5 +34,8 @@ public class CommentVO {
 
     @ApiModelProperty("评论时间")
     private long createTime;
+
+    @ApiModelProperty("是否是自己的评论")
+    private boolean isMyself;
 
 }

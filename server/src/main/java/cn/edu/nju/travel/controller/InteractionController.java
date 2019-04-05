@@ -6,6 +6,7 @@ import cn.edu.nju.travel.form.ResponseCode;
 import cn.edu.nju.travel.form.SimpleResponse;
 import cn.edu.nju.travel.service.InteractionService;
 import cn.edu.nju.travel.vo.CommentVO;
+import cn.edu.nju.travel.vo.CommentVOWrapper;
 import cn.edu.nju.travel.vo.UserInfoVO;
 import cn.edu.nju.travel.vo.UserInfoVOWrapper;
 import io.swagger.annotations.ApiOperation;
@@ -33,6 +34,9 @@ public class InteractionController {
 
     @Resource
     private UserInfoVOWrapper userInfoVOWrapper;
+
+    @Resource
+    private CommentVOWrapper commentVOWrapper;
 
     @ApiOperation(value = "点赞操作", response = Integer.class, notes = "为活动或朋友圈点赞，返回该实体被赞数"
             + "referId为被点赞实体对应的id，type为被点赞实体类型, 1为活动，2为朋友圈")
@@ -79,7 +83,7 @@ public class InteractionController {
         }
         try{
             CommentVO vo = interactionService.addComment(userId, commentForm);
-            return SimpleResponse.ok(vo);
+            return SimpleResponse.ok(commentVOWrapper.wrapVOWithSelfInfo(userId, vo));
         }catch (Exception e){
             return SimpleResponse.exception(e);
         }
@@ -90,10 +94,11 @@ public class InteractionController {
     @GetMapping("allComments")
     public SimpleResponse getComments(HttpSession httpSession, @RequestParam int referId,
             @RequestParam int type){
+        Integer userId = (Integer) httpSession.getAttribute("userId");
         try{
             List<CommentVO> voList = interactionService.getComments(referId, LikeEntityType
                     .getTypeByValue(type));
-            return SimpleResponse.ok(voList);
+            return SimpleResponse.ok(commentVOWrapper.wrapListWithSelfInfo(userId, voList));
         }catch (Exception e){
             return SimpleResponse.exception(e);
         }

@@ -180,6 +180,7 @@ public class InteractionServiceImpl implements InteractionService {
         vo.setCreateTime(entity.getCreateTime().getTime());//评论时间
         UserEntity creator = userDao.findById(entity.getCreatorId());
         vo.setCommenter(creator.getName());//评论者姓名
+        vo.setCommenterLogo(creator.getLogoUrl());//评论者头像
         Integer parentId = entity.getParentId();
         if(parentId != null && parentId != 0){
             vo.setParentId(parentId);//被回复的评论id

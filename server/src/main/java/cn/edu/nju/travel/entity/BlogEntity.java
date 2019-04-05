@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 /**
  * Created on 2019/4/5
@@ -33,6 +34,7 @@ public class BlogEntity {
     private int likeCount;
 
     @Column(name = "create_time")
+    @CreationTimestamp
     private Timestamp createTime;
 
 
