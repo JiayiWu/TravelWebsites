@@ -41,4 +41,4 @@ target/*
 /.nb-gradle/
 
 ### application.yaml ###
-*/application.yaml
+src/main/java/resources/application.yaml
