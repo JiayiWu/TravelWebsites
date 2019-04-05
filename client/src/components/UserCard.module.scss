@@ -17,6 +17,8 @@
       height: 45px;
       border-radius: 50%;
       background-color: tomato;
+      background-size: cover;
+      background-position: center center;
       margin-right: 10px;
     }
     :local(.infoWrapper) {

@@ -1,13 +1,22 @@
 import React from 'react'
-import { Anchor } from 'antd'
+import { Icon } from 'antd'
 import styles from './CommentItem.module.scss'
 import CommentInput from './CommentInput'
 
 interface CommentItemProps {
-  onReply: () => void
+  onReply: () => void,
+  comment: CommentProps
 }
 
-const Link = Anchor.Link
+export interface CommentProps {
+  commentedUser: string,
+  commenter: string,
+  content: string,
+  createTime: number,
+  id: number,
+  parentId: number
+}
+
 class CommentItem extends React.Component<CommentItemProps, any> {
   // state = {
   //   showReplyInput: false
@@ -20,17 +29,25 @@ class CommentItem extends React.Component<CommentItemProps, any> {
     this.props.onReply()
   }
   render() {
+    const { comment } = this.props
     return (
       <div className={styles.container}>
         <div className={styles.avatar}></div>
         <div className={styles.right}>
-          <span className={styles.user}>张耳朵</span>
-          :
-          <span className={styles.content}>啊啊啊啊啊啊我地妈呀好多我喜欢的电影，而且每一部都特别有意义</span>
+          <span className={styles.user}>{comment.commenter}</span>
+          :&nbsp;
+          {comment.commentedUser &&
+            <span className={styles.user}>@{comment.commentedUser}&nbsp;</span>
+          }
+          <span className={styles.content}>{comment.content}</span>
         </div>
-        <div className={styles.reply} onClick={() => this.handleReply()}>
-          回复
+        <div className={styles.options}>
+          <Icon type="delete" />
+          <div className={styles.reply} onClick={() => this.handleReply()}>
+            回复
+          </div>
         </div>
+        
       </div>
     )
   }

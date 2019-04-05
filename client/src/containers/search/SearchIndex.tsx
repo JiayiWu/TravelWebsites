@@ -7,12 +7,14 @@ import styles from './SearchIndex.module.scss'
 import DynamicScrollPane from '../../components/DynamicScrollPane'
 import ActivityCard from '../activity/components/ActivityCard'
 import {SEARCH_TYPE, SEARCH_TYPES, ActivityItemProps} from '../activity/ActivityHomepage'
+import { UserBasicProps } from '../profile/ProfileHomepage'
 import UserCard from '../../components/UserCard'
 import { fromJS } from 'immutable'
 import { pushURL } from '../../actions/route'
 
 interface SearchIndexProps {
   route: any, // redux
+  user: any, // redux
   pushURL: (url: string, state?: any) => void, // redux
 }
 
@@ -23,7 +25,7 @@ class SearchIndex extends React.Component<SearchIndexProps, any> {
     type: this.props.route.getIn(['state', 'type']) || 0,
     keyword: this.props.route.getIn(['state', 'value']) || '',
     isLoading: false,
-    userList: [],
+    userList: [] as Array<UserBasicProps>,
     actList: [] as Array<ActivityItemProps>
   }
   
@@ -76,15 +78,34 @@ class SearchIndex extends React.Component<SearchIndexProps, any> {
           isLoading: false,
         })
       }
-    }) : Promise.resolve().then(() => {
-      this.setState({
-        isLoading: false,
-      })
+    }) : API.query('/user/searchList', {
+      searchParams: {
+        keyword,
+        size: 10,
+        lastId: userList.length > 0 ? userList[userList.length - 1].id : 0
+      }
+    }).then((json) => {
+      if (json.code === 0) {
+        this.setState({
+          userList: userList.concat(json.data),
+          isLoading: false,
+        })
+      }
     })
   }
 
-  handleFollow = () => {
-    // 调用 关注用户的接口，会传递用户id进来，调完之后刷新list
+  updateCurrentUser = (userId) => {
+    let { userList } = this.state
+    const curUserIndex = userList.findIndex((user) => user.id === userId)
+    if (curUserIndex >= 0) {
+      let curUser = userList[curUserIndex]
+      curUser.concerned = !curUser.concerned
+      curUser.fansNum = curUser.concerned ? curUser.fansNum + 1 : curUser.fansNum - 1
+      // userList[curUserIndex] = curUser
+      this.setState({
+        userList
+      })
+    }
   }
 
   renderAll() {
@@ -128,12 +149,13 @@ class SearchIndex extends React.Component<SearchIndexProps, any> {
   }
 
   renderUsers() {
+    const { userList } = this.state
     return (
       <div className={styles.listContainer}>
-        {new Array(3).fill(0).map((act, index) => {
+        {userList.map((user, index) => {
           return (
-            <div key={index} className={styles.userCard}>
-              <UserCard userId={index} pushURL={this.props.pushURL}/>
+            <div key={user.id} className={styles.userCard}>
+              <UserCard user={user} pushURL={this.props.pushURL} isMe={this.props.user.get('id') === user.id} refresh={() => this.updateCurrentUser(user.id)}/>
             </div>
           )
         })}
@@ -171,7 +193,8 @@ class SearchIndex extends React.Component<SearchIndexProps, any> {
 
 function mapStateToProps(state) {
   return {
-    route: fromJS(state).get('route')
+    route: fromJS(state).get('route'),
+    user: fromJS(state).get('user')
   }
 }
 

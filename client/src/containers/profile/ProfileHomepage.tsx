@@ -28,6 +28,10 @@ export interface UserBasicProps {
   mobile: string,
   name: string,
   type: number,
+  concerned: boolean,
+  fansNum: number,
+  concerNum: number,
+  activityNum: number
 }
 
 const INFO_EDIT_TYPE = {
