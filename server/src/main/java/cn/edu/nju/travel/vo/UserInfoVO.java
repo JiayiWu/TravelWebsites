@@ -34,6 +34,10 @@ public class UserInfoVO {
 
     private boolean isConcerned;
 
+    private int concernNum;
+
+    private int activityNum;
+
     public UserInfoVO(UserEntity userEntity){
         this.id = userEntity.getId();
         this.name = userEntity.getName();

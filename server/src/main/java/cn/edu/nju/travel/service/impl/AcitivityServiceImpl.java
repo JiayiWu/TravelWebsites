@@ -269,6 +269,11 @@ public class AcitivityServiceImpl implements ActivityService{
         return voList;
     }
 
+    @Override
+    public int getCreateActivityNum(int userId) {
+        return activityDao.countActivityEntitiesByCreateId(userId);
+    }
+
     private ActivityInfoVO getActivityInfoVO(ActivityEntity activityEntity,int type) throws Exception{
         UserInfoVO creator = userService.findById(activityEntity.getCreateId());
 

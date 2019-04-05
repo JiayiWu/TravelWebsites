@@ -73,4 +73,6 @@ public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, 
     List<ActivityEntity> findLatestActivities(@Param("size")int size, @Param("lastCreateTime")Timestamp
             lastCreateTime);
 
+    int countActivityEntitiesByCreateId(int createId);
+
 }

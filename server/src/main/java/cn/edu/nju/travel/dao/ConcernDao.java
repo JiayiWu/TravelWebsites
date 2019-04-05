@@ -26,4 +26,6 @@ public interface ConcernDao extends JpaRepository<ConcernEntity, Integer> {
             + "LIMIT :size")
     List<Integer> findConcernedUserIds(@Param("userId") int userId, @Param("size") int size,
             @Param("lastUserId") int lastUserId);
+
+    int countConcernEntitiesByUserId(int userId);
 }

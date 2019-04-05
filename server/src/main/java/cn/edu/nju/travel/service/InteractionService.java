@@ -33,4 +33,7 @@ public interface InteractionService {
 
     boolean isUserConcerned(int userId, int concernedUserId);
 
+    int getConcernNum(int userId);
+
+
 }

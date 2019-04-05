@@ -167,6 +167,11 @@ public class InteractionServiceImpl implements InteractionService {
         return concernDao.findByUserIdAndConcernedId(userId, concernedUserId) != null;
     }
 
+    @Override
+    public int getConcernNum(int userId) {
+        return concernDao.countConcernEntitiesByUserId(userId);
+    }
+
 
     private CommentVO getCommentVOByEntity(CommentEntity entity){
         CommentVO vo = new CommentVO();
