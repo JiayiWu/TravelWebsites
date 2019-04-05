@@ -345,11 +345,11 @@ class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponen
               />
             )}
           </FormItem>
-          {!detail &&
+          {/* {!detail &&
             <FormItem className={styles.btnGroup}>
               <Checkbox value={updateNews} onChange={(e) => this.setState({ updateNews: e.target.checked })}>同步发布到朋友圈</Checkbox>
             </FormItem>
-          }
+          } */}
           <FormItem className={styles.btnGroup}>
             <Button type="default">取消编辑</Button>
             <Button type="primary" onClick={() => this.handleOk()}>{detail ? '保存修改' : '立即创建'}</Button>
