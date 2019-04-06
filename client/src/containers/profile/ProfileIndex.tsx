@@ -6,7 +6,7 @@ import { Icon, Button } from 'antd'
 import Immutable, { fromJS } from 'immutable' 
 import styles from './ProfileIndex.module.scss'
 import HeaderImage from '@utils/image/profile/header.jpeg'
-import ProfileHomepage from './ProfileHomepage'
+import ProfileHomepage, { USER_TYPE } from './ProfileHomepage'
 import ProfileActivity from './ProfileActivity'
 import ProfilePasswd from './ProfilePasswd'
 import ProfileStatis from './ProfileStatis'
@@ -199,7 +199,7 @@ class ProfileIndex extends React.Component<RouteComponentProps & ProfileProps, a
             </div>
             <div className={styles.userName}>{user.get('name')}</div>
             {/* 当前用户id不是这个页面获取的用户id时 */
-              urlUser && urlUser != this.props.user.get('id') && (
+              urlUser && (urlUser != this.props.user.get('id') && this.props.user.get('type') !== USER_TYPE.ADMIN) && (
                 <div className={styles.follow}>
                   <Button onClick={() => this.handleFollow()} type={user.get('concerned') ? 'default' : 'primary'} size="small">{user.get('concerned') ? '取消关注' : '关注'}</Button>
                 </div>
@@ -207,7 +207,7 @@ class ProfileIndex extends React.Component<RouteComponentProps & ProfileProps, a
             }
             <div className={styles.btnGroup}>
               <div className={styles.myBtn}>
-                <div>{user.get('concerNum') || 0}</div>
+                <div>{user.get('concernNum') || 0}</div>
                 <div>关注</div>
               </div>
               <div className={styles.myBtn}>

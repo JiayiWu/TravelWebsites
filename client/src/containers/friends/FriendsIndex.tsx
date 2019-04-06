@@ -4,6 +4,7 @@ import { RouteComponentProps } from 'react-router'
 import { bindActionCreators } from 'redux'
 import { fromJS } from 'immutable'
 import { releaseBlog } from '../../actions/interaction'
+import { pushURL } from '../../actions/route'
 import { Input, Button, Icon, Upload, Popover, Modal, message } from 'antd'
 import styles from './FriendsIndex.module.scss'
 import API, {serverOrigin } from '../../utils/API'
@@ -29,6 +30,7 @@ interface BlogItemProps {
 interface FriendsProps {
   user: any, // redux
   releaseBlog: Function, // redux
+  pushURL: Function, // redux
   userId?: number | string
 }
 class FriendsIndex extends React.Component<RouteComponentProps & FriendsProps, any> {
@@ -231,7 +233,7 @@ class FriendsIndex extends React.Component<RouteComponentProps & FriendsProps, a
             return (
               <div className={styles.messageItem} key={blog.id}>
                 <div className={styles.top}>
-                  <div className={styles.avatar} style={{ backgroundImage: `url(${blog.userAvatar})`}}></div>
+                  <div className={styles.avatar} style={{ backgroundImage: `url(${blog.userAvatar})`}} onClick={() => this.props.pushURL(this.props.user.get('id') === blog.userId ? '/workspace/my' : `/workspace/user/${blog.userId}`)}></div>
                   <div className={styles.content}>
                     <div className={styles.username}>{blog.userName}</div>
                     <div className={styles.time}>{moment(blog.createTime).format('YYYY年MM月DD日 HH:mm:ss')}</div>
@@ -266,7 +268,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    releaseBlog: bindActionCreators(releaseBlog, dispatch)
+    releaseBlog: bindActionCreators(releaseBlog, dispatch),
+    pushURL: bindActionCreators(pushURL, dispatch),
   }
 }
 

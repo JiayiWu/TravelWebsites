@@ -272,11 +272,14 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
               {detail.title}
             </div>
           </h1>
-          <div className={styles.likeBtn}>
-            <Tooltip title={detail.like ? '取消点赞' : '点赞'}>
-              <Button type={detail.like ? "default" : "primary"} onClick={(e) => this.handleLikeAct(e)}>{detail.likeCount}&nbsp;<Icon type="like" /></Button>
-            </Tooltip>
-          </div>
+          {user.get('type') !== USER_TYPE.ADMIN && 
+            <div className={styles.likeBtn}>
+              <Tooltip title={detail.like ? '取消点赞' : '点赞'}>
+                <Button type={detail.like ? "default" : "primary"} onClick={(e) => this.handleLikeAct(e)}>{detail.likeCount}&nbsp;<Icon type="like" /></Button>
+              </Tooltip>
+            </div>
+          }
+          
         </div>
         <div className={styles.infoContainer}>
           <div className={styles.centerContainer}>

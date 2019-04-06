@@ -7,7 +7,7 @@ import styles from './SearchIndex.module.scss'
 import DynamicScrollPane from '../../components/DynamicScrollPane'
 import ActivityCard from '../activity/components/ActivityCard'
 import {SEARCH_TYPE, SEARCH_TYPES, ActivityItemProps} from '../activity/ActivityHomepage'
-import { UserBasicProps } from '../profile/ProfileHomepage'
+import { UserBasicProps, USER_TYPE } from '../profile/ProfileHomepage'
 import UserCard from '../../components/UserCard'
 import { fromJS } from 'immutable'
 import { pushURL } from '../../actions/route'
@@ -155,9 +155,10 @@ class SearchIndex extends React.Component<SearchIndexProps, any> {
     return (
       <div className={styles.listContainer}>
         {userList.map((user, index) => {
+          const showFollow = this.props.user.get('id') !== user.id && this.props.user.get('type') !== USER_TYPE.ADMIN
           return (
             <div key={user.id} className={styles.userCard}>
-              <UserCard user={user} pushURL={this.props.pushURL} isMe={this.props.user.get('id') === user.id} refresh={() => this.updateCurrentUser(user.id)}/>
+              <UserCard user={user} pushURL={this.props.pushURL} isAdmin={this.props.user.get('type') === USER_TYPE.ADMIN} showFollow={showFollow} refresh={() => this.updateCurrentUser(user.id)}/>
             </div>
           )
         })}

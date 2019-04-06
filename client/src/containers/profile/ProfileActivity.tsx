@@ -7,6 +7,7 @@ import { ActivityItemProps } from '../activity/ActivityDetail'
 import API from '../../utils/API'
 import { ACTIVITY_LIST } from '../../utils/constants'
 import messageHandler from '../../utils/messageHandler'
+import { USER_TYPE } from './ProfileHomepage';
 
 
 interface ProfileActivityProps {
@@ -76,7 +77,7 @@ class ProfileActivity extends React.Component<ProfileActivityProps, any> {
   public render() {
     const { urlUserId, user } = this.props
     const { createList, particiList } = this.state
-    const notMe = urlUserId && (urlUserId != user.get('id'))
+    const notMe = (urlUserId && (urlUserId != user.get('id'))) || user.get('type') === USER_TYPE.ADMIN
     return (
       <div className={styles.container}>
         <div className={classnames(styles.countContainer, styles.cardContainer)}>

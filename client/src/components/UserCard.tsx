@@ -8,7 +8,8 @@ import styles from './UserCard.module.scss'
 
 interface UserCardProps {
   user: UserBasicProps,
-  isMe: boolean,
+  showFollow: boolean,
+  isAdmin: boolean, 
   pushURL: (url: string, state?: any) => void,
   refresh?: () => void,
   follow: Function, // dispatch
@@ -27,9 +28,9 @@ class UserCard extends React.Component<UserCardProps, any> {
     })
   }
   render() {
-    const { user, isMe } = this.props
+    const { user, showFollow, isAdmin } = this.props
     return (
-      <div className={styles.userCard} onClick={() => this.props.pushURL(isMe ? '/workspace/my' : `/workspace/user/${user.id}`)}>
+      <div className={styles.userCard} onClick={() => this.props.pushURL((!showFollow && !isAdmin) ? '/workspace/my' : `/workspace/user/${user.id}`)}>
         <div className={styles.left}>
           <div className={styles.img} style={{ backgroundImage: `url(${user.logoUrl})`}}></div>
           <div className={styles.infoWrapper}>
@@ -41,7 +42,7 @@ class UserCard extends React.Component<UserCardProps, any> {
           </div>
         </div>
         <div className={styles.right}>
-          {!isMe &&
+          {showFollow &&
             <Button type={user.concerned ? 'default' : 'primary'} onClick={(e) => this.handleFollow(e)}>
               {user.concerned ? '取消关注' : '关注'}
             </Button>

@@ -103,13 +103,17 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
                 <div className={styles.menuItem} data-active={type === TYPE.HOMEPAGE} onClick={() => this.props.pushURL('/workspace/activity')}>
                   首页
                 </div>
-                <div className={styles.menuItem} data-active={type === TYPE.NEWS} onClick={() => this.props.pushURL('/workspace/news')}>
-                  朋友圈
-                </div>
-                <div className={styles.menuItem} hidden={user.get('type') === USER_TYPE.NORMAL} data-active={type === TYPE.STATISTICS} onClick={() => this.props.pushURL('/workspace/statistics')}>
+                {user.get('type') === USER_TYPE.NORMAL && 
+                  <div className={styles.menuItem} data-active={type === TYPE.NEWS} onClick={() => this.props.pushURL('/workspace/news')}>
+                    朋友圈
+                  </div>
+                }
+                {user.get('type') === USER_TYPE.ADMIN &&
+                  <div className={styles.menuItem} data-active={type === TYPE.STATISTICS} onClick={() => this.props.pushURL('/workspace/statistics')}>
                     网站数据
-                </div>
-
+                  </div>
+                }
+               
               </div>
             </div>
             {userId && user && user.get('id') ? 
@@ -145,7 +149,9 @@ class Header extends React.Component<RouteComponentProps & HeaderProps, any> {
             }
             <Route path={`${url}/user/:userId`} component={ProfileIndex} />
             <Route path={`${url}/search`} component={SearchIndex} />
-            <Route path={`${url}/news`} component={FriendsIndex} />
+            {user.get('type') === USER_TYPE.NORMAL &&
+              <Route path={`${url}/news`} component={FriendsIndex} />
+            }
             <Route path={`${url}/statistics`} component={StatisIndex} />
           </Switch>
         </div>

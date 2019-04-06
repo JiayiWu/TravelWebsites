@@ -162,12 +162,15 @@ class ActivityCard extends React.Component<CardProps, any> {
               {actTime.format('YYYY年MM月D日，')}{actTime.format('HH:mm')}
               {/* {actTime.format('YYYY年MM月D日，')}周{WEEK_DAYS[Number(actTime.format('d'))]}，{actTime.format('HH:mm')} */}
             </div>
-            <div className={styles.likeBtn}>
-              {this.state.likeCount}人点赞
-              <Tooltip title={this.state.isLike ? '取消点赞' : '点赞'}>
-                <Button type={this.state.isLike ? 'default' : 'primary'} size="small" onClick={(e) => this.handleLike(e)}><Icon type="like" /></Button>
-              </Tooltip>
-            </div>
+            {user.get('type') !== USER_TYPE.ADMIN && 
+              <div className={styles.likeBtn}>
+                {this.state.likeCount}人点赞
+                <Tooltip title={this.state.isLike ? '取消点赞' : '点赞'}>
+                  <Button type={this.state.isLike ? 'default' : 'primary'} size="small" onClick={(e) => this.handleLike(e)}><Icon type="like" /></Button>
+                </Tooltip>
+              </div>
+            }
+            
           </div>
           
         </div>
