@@ -1,7 +1,17 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { pushURL } from '../../../actions/route'
 import styles from './ForwardActCard.module.scss'
 
-class ForwardActCard extends React.Component {
+class ForwardActCard extends React.Component<{
+  simpleDetail: {
+    id: number,
+    coverUrl: number,
+    title: string
+  },
+  pushURL: Function, // redux
+}, any> {
   constructor(props) {
     super(props)
     this.state = {
@@ -10,12 +20,18 @@ class ForwardActCard extends React.Component {
   }
 
   render() {
+    const { simpleDetail } = this.props
     return (
-      <div className={styles.container}>
-        <div className={styles.cover}></div>
-        <div className={styles.right}>这是一个活动</div>
+      <div className={styles.container} onClick={() => this.props.pushURL(`/workspace/activity/detail/${simpleDetail.id}`)}>
+        <div className={styles.cover} style={{ backgroundImage: `url(${simpleDetail.coverUrl})`}}></div>
+        <div className={styles.right}>{simpleDetail.title}</div>
       </div>
     )
   }
 }
-export default ForwardActCard
+function mapDispatchToProps(dispatch) {
+  return {
+    pushURL: bindActionCreators(pushURL, dispatch)
+  }
+}
+export default connect(() => ({}), mapDispatchToProps)(ForwardActCard)

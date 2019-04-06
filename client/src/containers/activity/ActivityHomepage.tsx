@@ -214,6 +214,7 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
   renderActCard = (act) => {
     const { user } = this.props
     const actTime = moment(act.startTime)
+    console.log(act.description, act.description.replace(/<[^<+]>/g, ''))
     return (
       <div className={styles.actCard} key={act.id} onClick={() => this.jumpToAct(act)}>
         <div style={{ backgroundImage: `url(${act.coverUrl || DefaultCover})`}} />
@@ -268,8 +269,11 @@ class ActivityHomepage extends React.Component<ActivityHomepageProps, any> {
           </div>
           <div className={styles.content}>
             <LinesEllipsis
-              text={act.description}
-              maxLine={3}
+              text={act.description.replace(/<[^<+]>/g, '')}
+              basedOn="letters"
+              maxLine={2}
+              ellipsis={<span style={{ color: "red" }}>...read more</span>}
+              style={{ "overflow-wrap": "break-word" }}
             />
           </div>
         </div>

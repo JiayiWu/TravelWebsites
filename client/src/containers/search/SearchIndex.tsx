@@ -32,7 +32,7 @@ class SearchIndex extends React.Component<SearchIndexProps, any> {
   componentDidMount() {
     const { route } = this.props
     const [keyword, type] = [route.getIn(['state', 'value']), route.getIn(['state', 'type'])]
-    this.handleSearch({keyword, type})
+    this.handleSearch({keyword: keyword || '', type: type || SEARCH_TYPE.ACT})
   }
 
   // componentWillReceiveProps(nextProps) {
@@ -53,41 +53,43 @@ class SearchIndex extends React.Component<SearchIndexProps, any> {
 
   componentDidUpdate(prevProps, prevState) {
     console.log('update', prevState, this.state)
-    if (prevState.keyword !== this.state.keyword || prevState.type !== this.state.type) {
-      this.handleSearch({keyword: this.state.keyword, type: this.state.type})
+    if ((prevState.keyword !== this.state.keyword) || (prevState.type !== this.state.type)) {
+      this.handleSearch({keyword: this.state.keyword, type: this.state.type}, true)
     }
   }
 
-  handleSearch(obj: { keyword?: string, type?: string | number }) {
+  handleSearch(obj: { keyword?: string, type?: string | number }, isUpdate=false) {
     const { type, keyword } = obj
     const { userList, actList } = this.state
     this.setState({
       isLoading: true,
+      // type: type || this.state.type,
+      // keyword: keyword || this.state.keyword,
     })
     
-    return type === SEARCH_TYPE.ACT ? API.query('/activity/searchList', {
+    return type == SEARCH_TYPE.ACT ? API.query('/activity/searchList', {
       searchParams: {
-        size: 10,
+        size: 100,
         keyword,
-        lastId: actList.length > 0 ? actList[actList.length - 1].id : 0
+        lastId: isUpdate ? 0 : actList.length > 0 ? actList[actList.length - 1].id : 0
       }
     }).then((json) => {
       if (json.code === 0) {
         this.setState({
-          actList: actList.concat(json.data),
+          actList: isUpdate ? json.data : actList.concat(json.data),
           isLoading: false,
         })
       }
     }) : API.query('/user/searchList', {
       searchParams: {
         keyword,
-        size: 10,
-        lastId: userList.length > 0 ? userList[userList.length - 1].id : 0
+        size: 100,
+        lastId: isUpdate ? 0 : userList.length > 0 ? userList[userList.length - 1].id : 0
       }
     }).then((json) => {
       if (json.code === 0) {
         this.setState({
-          userList: userList.concat(json.data),
+          userList: isUpdate ? json.data : userList.concat(json.data),
           isLoading: false,
         })
       }
@@ -175,7 +177,7 @@ class SearchIndex extends React.Component<SearchIndexProps, any> {
             type,
           })}
         />
-        <Tabs defaultActiveKey={type.toString()} onChange={(key) => this.handleSearch({keyword: key})}>
+        <Tabs defaultActiveKey={type.toString()} onChange={(key) => this.setState({ type: key })}>
           {/* <TabPane tab={SEARCH_TYPES[SEARCH_TYPE.ALL].text} key={SEARCH_TYPE.ALL.toString()}>
             {this.renderAll()}
           </TabPane> */}

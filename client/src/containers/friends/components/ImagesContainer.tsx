@@ -3,7 +3,7 @@ import { Icon } from 'antd'
 import classnames from 'classnames'
 import styles from './ImageContainer.module.scss'
 
-class ImagesContainer extends React.Component<any, any> {
+class ImagesContainer extends React.Component<{images: Array<string>}, any> {
   constructor(props) {
     super(props)
     this.state = {
@@ -17,11 +17,13 @@ class ImagesContainer extends React.Component<any, any> {
     return (
       <div className={styles.bigImageContainer}>
         <div className={styles.header} onClick={() => this.setState({ showBig: false, currentPicture: null })}><Icon type="to-top" />&nbsp;收起</div>
-        <div className={styles.image}></div>
+        <div>
+          <img className={styles.image} src={currentPicture} />
+        </div>
         <div className={styles.gallery}>
-          {new Array(6).fill(0).map((image, index) => {
+          {this.props.images.map((image, index) => {
             return (
-              <div className={classnames(styles.galleryImage, currentPicture == index ? styles.activeImage : '')} key={index} onClick={() => this.setState({ currentPicture: index })}></div>
+              <div className={classnames(styles.galleryImage, this.props.images.indexOf(currentPicture) == index ? styles.activeImage : '')} style={{ backgroundImage: `url(${image})`}} key={index} onClick={() => this.setState({ currentPicture: image })}></div>
             )
           })}
         </div>
@@ -30,15 +32,16 @@ class ImagesContainer extends React.Component<any, any> {
   }
 
   render() {
-    const { showBig, currentPicture } = this.state
+    const { images } = this.props
+    const { showBig } = this.state
     return showBig ? this.renderBigMode() : (
       <div className={styles.imageWrapper}>
         {showBig ? 
           this.renderBigMode()
           :
-          new Array(6).fill(0).map((image, index) => {
+          images.map((image, index) => {
             return (
-              <div className={styles.imageItem} key={index} onClick={() => this.setState({ showBig: true, currentPicture: index })}></div>
+              <div className={styles.imageItem} style={{ backgroundImage: `url(${image})`}} key={index} onClick={() => this.setState({ showBig: true, currentPicture: image })}></div>
             )
           })
         }

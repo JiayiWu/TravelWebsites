@@ -11,7 +11,6 @@ import styles from './ActivityCreate.module.scss'
 import MyEditor from '../../components/MyEditor'
 import API, { serverOrigin } from '../../utils/API'
 import messageHandler from '../../utils/messageHandler'
-
 import { pushURL } from '../../actions/route'
 
 interface ActivityCreateProps extends FormComponentProps {
@@ -161,7 +160,7 @@ class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponen
             this.props.pushURL(`/workspace/activity`)
           }
         })
-        // 发布朋友圈
+        
       }
       
     })
@@ -346,11 +345,11 @@ class ActivityCreate extends React.Component<ActivityCreateProps & RouteComponen
               />
             )}
           </FormItem>
-          {!detail &&
+          {/* {!detail &&
             <FormItem className={styles.btnGroup}>
               <Checkbox value={updateNews} onChange={(e) => this.setState({ updateNews: e.target.checked })}>同步发布到朋友圈</Checkbox>
             </FormItem>
-          }
+          } */}
           <FormItem className={styles.btnGroup}>
             <Button type="default">取消编辑</Button>
             <Button type="primary" onClick={() => this.handleOk()}>{detail ? '保存修改' : '立即创建'}</Button>
@@ -370,7 +369,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    pushURL: bindActionCreators(pushURL, dispatch)
+    pushURL: bindActionCreators(pushURL, dispatch),
   }
 }
 

@@ -1,10 +1,12 @@
 :local(.container) {
   width: 100%;
   background-color: #f2f2f5;
+  cursor: pointer;
 
   display: flex;
   :local(.cover) {
-    background-color: tomato;
+    background-size: cover;
+    background-position: center center;
     width: 100px;
     height: 100px;
     margin-right: 10px;

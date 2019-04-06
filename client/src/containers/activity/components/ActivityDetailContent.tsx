@@ -106,6 +106,7 @@ class ActivityDetailCnontent extends React.Component<DetailContentProps, any> {
                     <div className={styles.commentItem} key={comment.id}>
                       <CommentItem
                         comment={comment}
+                        onRefresh={this.fetchCommentList}
                         onReply={() => { 
                           const commentInput = this.commentInput.current
                           if (commentInput) {

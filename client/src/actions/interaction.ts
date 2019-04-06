@@ -16,3 +16,12 @@ export const unFollow = (userId) => () => {
     }
   }).then(messageHandler)
 }
+
+export const releaseBlog = (blogForm: { content: string, photos: string }) => () => {
+  return API.query('/blog/release', {
+    options: {
+      method: 'POST',
+      body: JSON.stringify(blogForm)
+    }
+  })
+}

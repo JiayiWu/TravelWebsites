@@ -2,9 +2,10 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux' 
-import { Icon, message, Button, Anchor, Tooltip } from 'antd'
+import { Icon, message, Button, Tooltip } from 'antd'
 import styles from './ActivityDetail.module.scss'
 import API from '../../utils/API'
+import { releaseBlog } from '../../actions/interaction'
 import messageHandler from '../../utils/messageHandler'
 import DefaultCover from '../../utils/image/ActivityCover.jpg'
 // import Logo from '@utils/image/activity/a1.jpg'
@@ -47,6 +48,7 @@ interface ActivityDetailProps {
   endAct: Function, // redux
   likeRefer: Function, // redux
   route: any, // redux
+  releaseBlog: Function, // redux
 }
 
 const APPLY_TYPE = {
@@ -239,6 +241,21 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
     })
   }
 
+  handleRelease = () => {
+    const { detail } = this.state
+    if (!detail) {
+      return
+    }
+    this.props.releaseBlog({
+      content: `我发现了一个活动，快来看看吧detailInfo=${JSON.stringify({ id: detail.id, title: detail.title, coverUrl: detail.coverUrl })}`,
+      photos: ''
+    }).then((json) => {
+      if (json.code === 0) {
+        message.success('发布成功')
+      }
+    })
+  }
+
   public render() {
     const { detail } = this.state
     const { user, match } = this.props
@@ -285,18 +302,24 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
                     </div>
                   ]
                   : 
-                  <div className={styles.headerBtn} onClick={() => this.handleCancelAct()}>
+                  <div className={styles.headerBtn} key='0' onClick={() => this.handleCancelAct()}>
                     <Icon type="minus-circle" />
                     <br />
                     取消
                   </div>
                 ) : 
                 isAttender ? 
-                <div className={styles.headerBtn} onClick={this.handleQuitAct}>
+                [<div className={styles.headerBtn} key='0' onClick={this.handleRelease}>
+                  <Icon type="export" />
+                  <br />
+                  分享
+                </div>,
+                <div className={styles.headerBtn} key='1' onClick={this.handleQuitAct}>
                   <Icon type="export" />
                   <br />
                   退出
                 </div>
+                ]
                 :
                 (detail.creator.id === user.get('id') ? 
                   [detail.state !== ACTIVITY_STATE.END && detail.state !== ACTIVITY_STATE.DELETE && detail.state !== ACTIVITY_STATE.INVALID &&
@@ -307,6 +330,12 @@ class ActivityDetail extends React.Component<RouteComponentProps & ActivityDetai
                     <Icon type="edit" />
                     <br />
                     编辑
+                  </div>,
+                  detail.state !== ACTIVITY_STATE.DELETE && detail.state !== ACTIVITY_STATE.INVALID && detail.state !== ACTIVITY_STATE.NEW &&
+                  <div className={styles.headerBtn} key='1' onClick={this.handleRelease}>
+                    <Icon type="export" />
+                    <br />
+                    分享
                   </div>,
                   detail.state !== ACTIVITY_STATE.END && detail.state !== ACTIVITY_STATE.DELETE && detail.state !== ACTIVITY_STATE.INVALID &&
                   <div className={styles.headerBtn} key='1' onClick={this.handleCancelAct}>
@@ -375,6 +404,7 @@ function mapDispatchToProps(dispatch) {
     endAct: bindActionCreators(endAct, dispatch),
     pushURL: bindActionCreators(pushURL, dispatch),
     likeRefer: bindActionCreators(likeRefer, dispatch),
+    releaseBlog: bindActionCreators(releaseBlog, dispatch),
   }
 }
 
