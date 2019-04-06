@@ -66,7 +66,9 @@ class ProfileIndex extends React.Component<RouteComponentProps & ProfileProps, a
   }
   componentDidMount() {
     this.fetchBasicInfo()
-    this.props.fetchApplyInfo()
+    if (this.props.location.pathname.indexOf('my') >= 0) {
+      this.props.fetchApplyInfo()
+    }
   }
   componentWillReceiveProps(nextProps) {
     if (!Immutable.is(nextProps.user, this.props.user)) {
