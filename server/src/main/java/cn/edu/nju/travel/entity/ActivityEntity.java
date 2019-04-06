@@ -60,7 +60,7 @@ public class ActivityEntity  {
     private String description;
 
     @Column(name = "like_count")
-    private Integer likeCounts;
+    private int likeCounts;
 
     @Version
     private long version;
