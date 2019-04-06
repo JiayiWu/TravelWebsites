@@ -48,7 +48,7 @@ public class UserEntity {
     private String logoUrl;
 
     @Column(name = "fans_num")
-    private Integer fansNum;
+    private int fansNum;
 
     @Version
     private Long version;
