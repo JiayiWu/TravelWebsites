@@ -21,13 +21,10 @@ public class StatisticController {
             "返回大小为12的数组，值即为index对应的月份的次数（从0开始）")
     @GetMapping("monthData/{userid}")
     public SimpleResponse getMonthData(@PathVariable("userid") int userId){
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         try{
             int[] data = statisticService.getMonthData(userId);
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             return SimpleResponse.ok(data);
         }catch (Exception e){
-            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`");
             return SimpleResponse.exception(e);
         }
     }
