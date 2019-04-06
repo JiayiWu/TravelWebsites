@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>cn.edu.nju</groupId>
 	<artifactId>travel</artifactId>
-	<version>0.0.13-SNAPSHOT</version>
+	<version>0.1.1-SNAPSHOT</version>
 	<name>travel</name>
 	<description>The project of agile development</description>
 
