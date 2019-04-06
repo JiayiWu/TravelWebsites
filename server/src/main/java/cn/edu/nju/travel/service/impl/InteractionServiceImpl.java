@@ -56,8 +56,7 @@ public class InteractionServiceImpl implements InteractionService {
         switch (type){
             case ACTIVITY:
                 ActivityEntity activityEntity = activityDao.findById(referId).get();
-                int newCount = activityEntity.getLikeCounts()==null?1:activityEntity
-                        .getLikeCounts()+1;
+                int newCount = activityEntity.getLikeCounts()+1;
                 activityEntity.setLikeCounts(newCount);
                 activityEntity = activityDao.save(activityEntity);
                 return activityEntity.getLikeCounts();
