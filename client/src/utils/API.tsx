@@ -11,8 +11,8 @@ interface paramProps {
 }
 
 // const serverOrigin = 'http://192.168.31.139:8181'
-// export const serverOrigin = 'http://119.29.157.178:8181' // 线上地址
-export const serverOrigin = 'http://localhost:8181' // 本地地址
+export const serverOrigin = 'http://119.29.157.178:8181' // 线上地址
+// export const serverOrigin = 'http://localhost:8181' // 本地地址
 
 const query = (url, params: paramProps) => {
   const { searchParams, options } = params
