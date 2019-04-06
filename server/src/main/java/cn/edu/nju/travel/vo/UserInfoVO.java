@@ -45,7 +45,8 @@ public class UserInfoVO {
         this.mail = userEntity.getMail();
         this.logoUrl = userEntity.getLogoUrl();
         this.type = RoleTypeCode.USER.getIndex();
-        this.fansNum = userEntity.getFansNum();
+        Integer fn = userEntity.getFansNum();
+        this.fansNum = fn==null?0:fn;
     }
 
     public UserInfoVO(AdminEntity adminEntity){
