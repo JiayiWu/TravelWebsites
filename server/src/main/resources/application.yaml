@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://47.102.128.12:3306/travel
-    username: travel
-    password: 1234qwer
+    url: jdbc:mysql://${自定义地址}
+    username: ${自定义用户名}
+    password: ${自定义密码}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     properties:
